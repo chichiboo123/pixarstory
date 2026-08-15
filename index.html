@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>픽사 스토리 자판기 | 작품·컨셉·인물·세계</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+:root{
+  --color-primary:#006DD2; --color-primary-light:#E8F3FF;
+  --color-secondary:#00A68A; --color-error:#D32F2F;
+  --color-warning:#F57C00; --color-success:#388E3C;
+  --color-pastel-blue:#BFD9F2; --color-pastel-green:#C8EDD9;
+  --color-pastel-yellow:#FFF3B0; --color-pastel-pink:#FFD6E0;
+  --color-pastel-blue-dark:#1A5F8A; --color-pastel-green-dark:#1A6B47;
+  --color-pastel-yellow-dark:#7A6000; --color-pastel-pink-dark:#8A2840;
+  --color-gray-900:#1A1A1A; --color-gray-700:#404040; --color-gray-500:#767676;
+  --color-gray-300:#B2B2B2; --color-gray-100:#F5F5F5; --color-white:#FFFFFF;
+  --border-radius-sm:4px; --border-radius-md:8px; --border-radius-lg:16px;
+  --spacing-xs:4px; --spacing-sm:8px; --spacing-md:16px; --spacing-lg:24px; --spacing-xl:40px;
+  --pad-side:16px;
+  /* 자판기 전용 */
+  --vm-body:#0E3A5C; --vm-body-2:#0A2A44; --vm-edge:#08243A;
+  --vm-glass:#132B3F; --vm-glass-2:#0D2032;
+  --vm-ledge:#1D5C8A; --vm-neon:#5FE3D0; --vm-btn:#123E5F;
+  --vm-text:#DDEAF5; --vm-text-dim:#8FB0C9;
+}
+*{box-sizing:border-box;margin:0;padding:0;
+  font-family:'Pretendard GOV','Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+h1,h2,h3,h4,p,span,li,td,th,a,button,div,label{word-break:keep-all;overflow-wrap:break-word;line-break:strict;}
+html{-webkit-text-size-adjust:100%;}
+body{font-size:16px;line-height:1.6;color:var(--color-gray-900);background:var(--color-gray-100);
+  min-height:100vh;display:flex;flex-direction:column;}
+main{flex:1;width:100%;}
+.wrap{max-width:1120px;margin:0 auto;padding-left:var(--pad-side);padding-right:var(--pad-side);}
+:focus-visible{outline:3px solid var(--color-secondary);outline-offset:2px;border-radius:var(--border-radius-sm);}
+.material-icons-outlined{font-family:'Material Icons Outlined';font-style:normal;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+/* ── 페이지 헤더 ── */
+.pagehead{padding:var(--spacing-lg) 0 var(--spacing-md);text-align:center;}
+.pagehead .eyebrow{display:inline-flex;align-items:center;gap:6px;background:var(--color-white);
+  color:var(--color-pastel-blue-dark);font-size:12px;font-weight:700;padding:6px 13px;
+  border-radius:999px;margin-bottom:var(--spacing-sm);border:1px solid var(--color-gray-300);}
+.pagehead .eyebrow .material-icons-outlined{font-size:15px;}
+.pagehead h1{font-size:25px;line-height:1.3;font-weight:800;color:var(--color-gray-900);letter-spacing:-.5px;}
+.pagehead p{margin:var(--spacing-sm) auto 0;font-size:14px;color:var(--color-gray-500);max-width:52ch;}
+
+/* ── 자판기 본체 ── */
+.machine{background:linear-gradient(180deg,var(--vm-body) 0%,var(--vm-body-2) 100%);
+  border-radius:20px;border:3px solid var(--vm-edge);padding:14px;
+  box-shadow:0 16px 40px rgba(8,36,58,.32), inset 0 2px 0 rgba(255,255,255,.09);}
+.vm-top{display:flex;align-items:center;justify-content:space-between;gap:var(--spacing-sm);
+  padding:0 4px 12px;flex-wrap:wrap;}
+.vm-brand{display:flex;align-items:center;gap:8px;color:var(--vm-neon);font-size:14px;font-weight:800;letter-spacing:.5px;}
+.vm-brand .material-icons-outlined{font-size:19px;}
+.vm-lamps{display:flex;gap:6px;align-items:center;}
+.lamp{width:9px;height:9px;border-radius:50%;background:var(--vm-neon);opacity:.85;}
+.lamp.b{background:#F2C63C;} .lamp.c{background:#F0873C;}
+
+/* 탭 = 자판기 상단 셀렉터 */
+.vm-tabs{display:flex;gap:6px;padding:0 4px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.vm-tab{flex:0 0 auto;padding:10px 15px;border-radius:999px;border:1px solid rgba(95,227,208,.3);
+  background:var(--vm-btn);color:var(--vm-text-dim);font-size:14px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:all .18s;}
+.vm-tab .material-icons-outlined{font-size:18px;}
+.vm-tab:hover{color:var(--vm-text);border-color:var(--vm-neon);}
+.vm-tab[aria-selected="true"]{background:var(--vm-neon);color:#07322A;border-color:var(--vm-neon);}
+
+/* ── 유리창 진열장 ── */
+.vm-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+.glass{background:linear-gradient(180deg,var(--vm-glass) 0%,var(--vm-glass-2) 100%);
+  border-radius:14px;border:2px solid rgba(95,227,208,.18);padding:12px 12px 4px;
+  box-shadow:inset 0 3px 14px rgba(0,0,0,.45);position:relative;overflow:hidden;}
+.glass::after{content:"";position:absolute;top:0;left:-30%;width:38%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.055),transparent);pointer-events:none;}
+.shelf{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+  padding-bottom:12px;margin-bottom:12px;border-bottom:5px solid var(--vm-ledge);
+  border-radius:0 0 3px 3px;box-shadow:0 3px 5px rgba(0,0,0,.28);}
+.shelf:last-child{margin-bottom:6px;}
+.slot{background:rgba(255,255,255,.05);border:1px solid rgba(95,227,208,.16);border-radius:10px;
+  padding:7px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px;
+  transition:transform .18s,background .18s,border-color .18s;position:relative;}
+.slot:hover,.slot:focus-visible{transform:translateY(-4px);background:rgba(95,227,208,.11);border-color:var(--vm-neon);}
+.slot .ph{width:100%;aspect-ratio:5/7;border-radius:6px;overflow:hidden;background:#0A1826;}
+.slot .ph svg{width:100%;height:100%;display:block;}
+.slot .nm{font-size:13px;font-weight:700;color:var(--vm-text);line-height:1.35;}
+.slot .yr{font-size:11px;color:var(--vm-text-dim);}
+.slot .code{position:absolute;top:11px;right:11px;background:#07202F;color:var(--vm-neon);
+  font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 7px;border-radius:5px;
+  border:1px solid rgba(95,227,208,.45);}
+.glass .empty{grid-column:1/-1;text-align:center;padding:var(--spacing-xl) var(--spacing-md);
+  color:var(--vm-text-dim);font-size:14px;}
+
+/* ── 조작 패널 ── */
+.panel{background:linear-gradient(180deg,#0C3350,#0A2A44);border-radius:14px;
+  border:2px solid rgba(95,227,208,.16);padding:12px;display:flex;flex-direction:column;gap:12px;}
+.led{background:#04141F;border:2px solid rgba(95,227,208,.3);border-radius:9px;padding:11px 13px;
+  min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:3px;}
+.led .l1{font-size:11px;color:var(--vm-text-dim);letter-spacing:1px;font-weight:700;}
+.led .l2{font-size:19px;color:var(--vm-neon);font-weight:800;letter-spacing:2px;
+  font-variant-numeric:tabular-nums;min-height:26px;}
+.led .l3{font-size:11px;color:var(--vm-text-dim);}
+
+.keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.key{padding:11px 0;border-radius:8px;border:1px solid rgba(95,227,208,.22);background:var(--vm-btn);
+  color:var(--vm-text);font-size:15px;font-weight:800;cursor:pointer;transition:all .12s;}
+.key:hover{background:#17507A;border-color:var(--vm-neon);}
+.key:active{transform:translateY(2px);}
+.key.wide{grid-column:span 2;font-size:13px;}
+.key.act{background:var(--vm-neon);color:#07322A;border-color:var(--vm-neon);}
+.key.act:hover{background:#7BEEDC;}
+.key.warn{background:#5C2A2A;border-color:rgba(240,135,60,.4);color:#FFD9BD;}
+.key.warn:hover{background:#7A3838;}
+
+.vm-search{position:relative;}
+.vm-search .material-icons-outlined{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--vm-text-dim);font-size:19px;pointer-events:none;}
+.vm-input{width:100%;padding:11px 12px 11px 38px;border:1px solid rgba(95,227,208,.25);
+  border-radius:8px;font-size:16px;color:var(--vm-text);background:#08202F;outline:none;transition:border-color .2s;}
+.vm-input::placeholder{color:#6A8DA6;}
+.vm-input:focus{border-color:var(--vm-neon);box-shadow:0 0 0 3px rgba(95,227,208,.16);}
+
+.pchips{display:flex;flex-wrap:wrap;gap:5px;}
+.pchip{padding:7px 11px;border-radius:999px;border:1px solid rgba(95,227,208,.22);background:var(--vm-btn);
+  font-size:12px;font-weight:700;color:var(--vm-text-dim);cursor:pointer;transition:all .16s;}
+.pchip:hover{color:var(--vm-text);border-color:var(--vm-neon);}
+.pchip[aria-pressed="true"]{background:var(--vm-neon);border-color:var(--vm-neon);color:#07322A;}
+
+/* ── 출고구 ── */
+.tray{background:#06182A;border-radius:12px;border:2px solid rgba(95,227,208,.14);
+  padding:12px;box-shadow:inset 0 5px 16px rgba(0,0,0,.55);}
+.tray .lb{font-size:11px;font-weight:800;color:var(--vm-text-dim);letter-spacing:1.5px;margin-bottom:9px;
+  display:flex;align-items:center;gap:6px;}
+.tray .lb .material-icons-outlined{font-size:15px;}
+.tray .slotmouth{min-height:60px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tray .hint{font-size:12px;color:#5F7F97;}
+.dropped{display:flex;align-items:center;gap:9px;background:rgba(95,227,208,.11);
+  border:1px solid rgba(95,227,208,.35);border-radius:9px;padding:7px 11px 7px 7px;cursor:pointer;}
+.dropped .mini{width:30px;height:42px;border-radius:4px;overflow:hidden;flex:0 0 30px;}
+.dropped .mini svg{width:100%;height:100%;display:block;}
+.dropped .tx{font-size:13px;font-weight:700;color:var(--vm-text);}
+.dropped .tx small{display:block;font-size:11px;font-weight:500;color:var(--vm-text-dim);}
+@keyframes drop{0%{transform:translateY(-26px);opacity:0}60%{transform:translateY(4px);opacity:1}100%{transform:translateY(0)}}
+.dropped.anim{animation:drop .42s cubic-bezier(.3,1.2,.5,1);}
+
+.vm-foot{padding:10px 4px 0;font-size:11px;color:var(--vm-text-dim);text-align:center;}
+
+/* ── 비교 트레이 뷰 ── */
+.cmp-wrap{padding:2px 0 0;}
+.cmp-note{font-size:13px;color:var(--vm-text-dim);padding:0 4px 10px;}
+.cmp-note strong{color:var(--vm-neon);}
+.cmp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scroll-snap-type:x proximity;}
+.cmp-cols{display:flex;gap:11px;min-width:min-content;}
+.cmp-col{flex:0 0 262px;max-width:262px;scroll-snap-align:start;border-radius:12px;overflow:hidden;
+  background:var(--color-white);border:1px solid var(--color-gray-300);}
+.cmp-col .top{padding:12px 14px;background:var(--color-pastel-blue);color:var(--color-pastel-blue-dark);}
+.cmp-col .top .t{font-size:16px;font-weight:800;line-height:1.35;}
+.cmp-col .top .y{font-size:11px;opacity:.85;margin-top:2px;}
+.cmp-row{padding:12px 14px;border-top:1px solid var(--color-gray-100);}
+.cmp-row .lb{font-size:10px;font-weight:800;color:var(--color-gray-500);letter-spacing:.8px;margin-bottom:6px;}
+.cmp-row .vl{font-size:13px;color:var(--color-gray-900);}
+.cmp-row ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.cmp-row li{font-size:12px;color:var(--color-gray-700);padding-left:11px;position:relative;}
+.cmp-row li::before{content:"";position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:var(--color-gray-300);}
+.cmp-row .num{font-size:18px;font-weight:800;color:var(--color-primary);}
+.cmp-row .num small{font-size:12px;color:var(--color-gray-500);font-weight:600;}
+
+.sum-list{display:grid;gap:9px;}
+.sum-item{background:var(--color-white);border:1px solid var(--color-gray-300);border-radius:12px;
+  padding:13px;display:grid;gap:6px;}
+.sum-item .hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:7px;}
+.sum-item .cd{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--color-pastel-blue-dark);
+  background:var(--color-primary-light);padding:2px 7px;border-radius:4px;}
+.sum-item .tt{font-size:15px;font-weight:800;}
+.sum-item .yy{font-size:12px;color:var(--color-gray-500);}
+.sum-item .th{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:var(--color-pastel-yellow);color:var(--color-pastel-yellow-dark);}
+.sum-item .ln{font-size:13px;color:var(--color-gray-700);}
+.sum-item .dv{font-size:12px;color:var(--color-pastel-blue-dark);background:var(--color-primary-light);
+  border-radius:var(--border-radius-sm);padding:8px 10px;}
+.sum-item .st{font-size:11px;color:var(--color-gray-500);}
+
+/* ── 상세 패널 (제품 라벨) ── */
+.overlay{position:fixed;inset:0;background:rgba(6,20,32,.68);display:none;z-index:50;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.overlay.open{display:block;}
+.sheet{max-width:860px;margin:0 auto;background:var(--color-white);min-height:100vh;}
+.sheet-top{position:relative;padding:var(--spacing-lg) var(--pad-side) var(--spacing-md);
+  display:flex;gap:var(--spacing-md);flex-wrap:wrap;align-items:flex-start;}
+.sheet-poster{width:104px;flex:0 0 104px;border-radius:var(--border-radius-md);overflow:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.sheet-poster svg{width:100%;height:auto;display:block;}
+.sheet-head{flex:1 1 180px;min-width:160px;padding-right:44px;}
+.sheet-head .slotcode{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.4px;
+  color:var(--color-pastel-blue-dark);background:var(--color-primary-light);
+  padding:3px 8px;border-radius:4px;margin-bottom:6px;}
+.sheet-head h2{font-size:21px;line-height:1.35;font-weight:800;}
+.sheet-head .en{font-size:12px;color:var(--color-gray-500);margin-top:3px;}
+.sheet-head .en .yr{color:var(--color-gray-700);font-weight:700;}
+.sheet-head .line{margin-top:var(--spacing-sm);font-size:15px;font-weight:700;color:var(--color-pastel-pink-dark);}
+.sheet-head .line .orig{display:block;margin-top:4px;font-size:11px;font-weight:500;
+  color:var(--color-gray-500);font-style:italic;word-break:break-word;}
+.close-btn{position:absolute;top:var(--spacing-md);right:var(--pad-side);width:42px;height:42px;
+  border-radius:999px;border:1px solid var(--color-gray-300);background:var(--color-white);
+  cursor:pointer;display:grid;place-items:center;color:var(--color-gray-700);z-index:2;}
+.close-btn:hover{background:var(--color-gray-100);color:var(--color-gray-900);}
+.sheet-act{padding:0 var(--pad-side) var(--spacing-md);}
+.btn{display:inline-flex;align-items:center;gap:var(--spacing-xs);padding:10px var(--spacing-md);
+  border-radius:var(--border-radius-md);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn .material-icons-outlined{font-size:17px;}
+.btn-secondary{background:var(--color-gray-100);color:var(--color-gray-700);border:1px solid var(--color-gray-300);}
+.btn-secondary:hover{background:var(--color-white);border-color:var(--color-primary);color:var(--color-primary);}
+
+.section{padding:0 var(--pad-side) var(--spacing-lg);}
+.section h3{display:flex;align-items:center;gap:8px;font-size:17px;line-height:1.4;font-weight:700;
+  margin-bottom:var(--spacing-md);padding-top:var(--spacing-lg);border-top:1px solid var(--color-gray-100);}
+.section h3 .material-icons-outlined{font-size:20px;color:var(--color-primary);}
+.section h3 .cnt{font-size:13px;color:var(--color-gray-500);font-weight:600;}
+.concept{background:var(--color-pastel-blue);color:var(--color-pastel-blue-dark);
+  border-radius:var(--border-radius-md);padding:var(--spacing-md);font-size:15px;}
+.concept + .concept{margin-top:var(--spacing-sm);background:var(--color-pastel-yellow);color:var(--color-pastel-yellow-dark);}
+.concept strong{display:block;font-size:12px;font-weight:800;margin-bottom:5px;opacity:.85;}
+.people{display:grid;gap:var(--spacing-sm);}
+.person{border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);padding:var(--spacing-md);}
+.person .row{display:flex;flex-wrap:wrap;align-items:baseline;gap:7px;margin-bottom:5px;}
+.person .nm{font-size:15px;font-weight:700;}
+.person .rl{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:var(--color-pastel-pink);color:var(--color-pastel-pink-dark);}
+.person .ds{font-size:14px;color:var(--color-gray-700);}
+.worlds{display:grid;gap:var(--spacing-sm);}
+.world{background:var(--color-pastel-green);border-radius:var(--border-radius-md);padding:var(--spacing-md);}
+.world .nm{font-size:15px;font-weight:700;color:var(--color-pastel-green-dark);margin-bottom:5px;}
+.world .ds{font-size:14px;color:#14563A;}
+.note{margin:0 var(--pad-side) var(--spacing-md);background:var(--color-gray-100);
+  border-left:4px solid var(--color-primary);padding:var(--spacing-md);font-size:13px;color:var(--color-gray-700);}
+.note strong{color:var(--color-primary);}
+.src{padding:0 var(--pad-side) var(--spacing-xl);font-size:12px;color:var(--color-gray-500);}
+.src a{color:var(--color-primary);}
+
+/* ── 푸터 ── */
+.chichiboo-footer{width:100%;padding:var(--spacing-md) var(--pad-side);background:var(--color-gray-100);
+  border-top:1px solid var(--color-gray-300);text-align:center;margin-top:var(--spacing-xl);}
+.chichiboo-footer a{display:inline-flex;align-items:center;gap:var(--spacing-xs);font-size:13px;
+  color:var(--color-gray-500);text-decoration:none;transition:color .2s;}
+.chichiboo-footer a:hover{color:var(--color-primary);}
+.chichiboo-footer .material-icons-outlined{font-size:16px;}
+
+/* ── 반응형 ── */
+@media (min-width:480px){
+  :root{--pad-side:20px;}
+  .pagehead h1{font-size:28px;}
+  .shelf{grid-template-columns:repeat(3,1fr);}
+  .slot .nm{font-size:14px;}
+}
+@media (min-width:768px){
+  :root{--pad-side:24px;}
+  .machine{padding:18px;border-radius:24px;}
+  .pagehead{padding:var(--spacing-xl) 0 var(--spacing-lg);}
+  .pagehead h1{font-size:32px;}
+  .pagehead p{font-size:15px;}
+  .vm-grid{grid-template-columns:1fr 288px;gap:14px;align-items:start;}
+  .shelf{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .panel{position:sticky;top:14px;}
+  .worlds,.people{grid-template-columns:1fr 1fr;}
+  .overlay{padding:var(--spacing-md);}
+  .sheet{margin:var(--spacing-lg) auto;min-height:0;border-radius:var(--border-radius-lg);overflow:hidden;}
+  .sheet-top{gap:var(--spacing-lg);}
+  .sheet-poster{width:150px;flex:0 0 150px;}
+  .sheet-head{flex:1 1 260px;padding-right:52px;}
+  .sheet-head h2{font-size:23px;}
+  .cmp-col{flex:0 0 296px;max-width:296px;}
+  .sum-list{grid-template-columns:1fr 1fr;}
+}
+@media (min-width:1024px){
+  .sum-list{grid-template-columns:repeat(3,1fr);}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+    <header class="pagehead">
+      <span class="eyebrow"><span class="material-icons-outlined">local_library</span>스토리 리서치 아카이브</span>
+      <h1>픽사 스토리 자판기</h1>
+      <p id="heroDesc"></p>
+    </header>
+
+    <div class="machine">
+      <div class="vm-top">
+        <span class="vm-brand"><span class="material-icons-outlined">bolt</span>PIXAR STORY DISPENSER</span>
+        <span class="vm-lamps"><i class="lamp"></i><i class="lamp b"></i><i class="lamp c"></i></span>
+      </div>
+
+      <div class="vm-tabs" role="tablist" aria-label="보기 방식">
+        <button class="vm-tab" id="tabGallery" role="tab" aria-selected="true" aria-controls="viewGallery">
+          <span class="material-icons-outlined">storefront</span>진열대</button>
+        <button class="vm-tab" id="tabCompare" role="tab" aria-selected="false" aria-controls="viewCompare">
+          <span class="material-icons-outlined">compare_arrows</span>비교 트레이</button>
+      </div>
+
+      <!-- 진열대 -->
+      <section id="viewGallery" role="tabpanel" aria-labelledby="tabGallery">
+        <div class="vm-grid">
+          <div class="glass" id="glass"></div>
+
+          <aside class="panel">
+            <div class="led" aria-live="polite">
+              <p class="l1">SELECT CODE</p>
+              <p class="l2" id="ledCode">- -</p>
+              <p class="l3" id="ledMsg">코드를 누르거나 진열대를 선택하세요</p>
+            </div>
+            <div class="keypad" id="keypad"></div>
+            <div class="vm-search">
+              <span class="material-icons-outlined">search</span>
+              <input id="q" class="vm-input" type="search" placeholder="작품·인물·장소 검색" aria-label="작품 검색" />
+            </div>
+            <div class="pchips" id="chips" role="group" aria-label="주제별 필터"></div>
+          </aside>
+        </div>
+
+        <div class="tray" style="margin-top:12px">
+          <p class="lb"><span class="material-icons-outlined">move_to_inbox</span>출고구</p>
+          <div class="slotmouth" id="tray"><span class="hint">아직 뽑은 작품이 없습니다.</span></div>
+        </div>
+      </section>
+
+      <!-- 비교 트레이 -->
+      <section id="viewCompare" role="tabpanel" aria-labelledby="tabCompare" hidden>
+        <div class="cmp-wrap">
+          <p class="cmp-note" id="cmpNote"></p>
+          <div class="pchips" id="cmpChips" style="padding:0 4px 10px" role="group" aria-label="비교할 작품 선택"></div>
+          <div class="pchips" style="padding:0 4px 12px">
+            <button class="pchip" type="button" id="cmpClear">선택 초기화</button>
+            <button class="pchip" type="button" id="cmpRandom">무작위 3편 뽑기</button>
+          </div>
+          <div id="cmpBody"></div>
+        </div>
+      </section>
+
+      <p class="vm-foot">본 자판기는 창작 리서치용입니다 · 정보 출처 Pixar Animation Studios</p>
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<footer class="chichiboo-footer">
+  <a href="https://litt.ly/chichiboo" target="_blank" rel="noopener noreferrer">
+    <span class="material-icons-outlined">auto_stories</span>
+    Created by. 교육뮤지컬 꿈꾸는 치수쌤
+  </a>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   작품 추가 방법
+   ──────────────────────────────────────────────────────────────
+   아래 FILMS 배열에 객체 하나를 추가하면 됩니다.
+   진열대 슬롯 코드(A1, A2 …)·검색·주제 필터·키패드·비교 트레이가
+   모두 자동으로 다시 계산됩니다. 별도 수정이 필요 없습니다.
+
+   {
+     id       : 'wall-e',                 // 고유 식별자 (영문 소문자)
+     ko       : '월-E',                    // 한글 제목
+     en       : 'WALL·E',                  // 원제
+     year     : 2008,                      // 개봉 연도 (자동 정렬 기준)
+     theme    : '고독·연결',                // 주제 (새 값이면 필터 칩 자동 생성)
+     src      : 'https://www.pixar.com/…', // 정보 출처 URL
+     tagline  : 'After 700 years…',        // 원문 컨셉 문장
+     taglineKo: '700년이 흐른 뒤…',          // 한글 번역
+     concept  : '…',                       // 이야기의 출발점 (2~3문장)
+     core     : '…',                       // 창작 관점의 핵심 장치 (1~2문장)
+     palette  : ['#배경','#주색','#보조색','#글자색'],   // 자동 포스터용
+     poster   : POSTER(…),                 // 선택: 직접 디자인한 포스터
+     people   : [{n:'이름', r:'역할', d:'설명'}, …],
+     worlds   : [{n:'장소', d:'설명'}, …]
+   }
+   ══════════════════════════════════════════════════════════════ */
+
+const POSTER = (bg, shapes, t1, t2, tc) =>
+`<svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${t1} 포스터 이미지">
+<rect width="300" height="420" fill="${bg}"/>${shapes}
+<text x="24" y="352" fill="${tc}" font-family="Pretendard, sans-serif" font-size="30" font-weight="800">${t1}</text>
+<text x="25" y="378" fill="${tc}" opacity=".7" font-family="Pretendard, sans-serif" font-size="12" letter-spacing="1.5">${t2}</text></svg>`;
+
+const AUTO_POSTER = (f) => {
+  const [bg, c1, c2, tc] = f.palette || ['#2C2C3E','#7F77DD','#5FE3D0','#F1EFE8'];
+  return POSTER(bg, `<circle cx="150" cy="150" r="76" fill="${c1}"/>
+    <circle cx="206" cy="96" r="30" fill="${c2}" opacity=".9"/>
+    <circle cx="88" cy="212" r="20" fill="${c2}" opacity=".65"/>`, f.ko, f.en, tc);
+};
+
+const FILMS = [
+{
+ id:'toy', ko:'토이 스토리', en:'TOY STORY', year:1995, theme:'우정',
+ src:'https://www.pixar.com/toy-story',
+ tagline:'You’ve Got A Friend In Me', taglineKo:'네겐 내가 있잖아',
+ palette:['#4FA3E3','#F4C542','#D94F3D','#3A2A08'],
+ poster:POSTER('#4FA3E3',`<circle cx="70" cy="90" r="42" fill="#fff" opacity=".92"/><circle cx="112" cy="98" r="30" fill="#fff" opacity=".92"/>
+ <circle cx="220" cy="160" r="34" fill="#fff" opacity=".8"/><circle cx="252" cy="168" r="24" fill="#fff" opacity=".8"/>
+ <rect x="0" y="250" width="300" height="170" fill="#F4C542"/><rect x="0" y="250" width="300" height="10" fill="#E0A81F"/>
+ <path d="M40 250 L60 210 L80 250 Z" fill="#D94F3D"/><path d="M200 250 L226 200 L252 250 Z" fill="#7A4EAB"/>`,'토이 스토리','TOY STORY','#3A2A08'),
+ concept:'사람이 없을 때 장난감은 무엇을 할까 — 이 하나의 질문에서 세계가 시작된다. 앤디의 사랑을 두고 경쟁하던 우디와 버즈가, 주인에게서 떨어진 뒤 서로의 차이를 내려놓고 불편한 동맹을 맺는 이야기.',
+ core:'주인공의 두려움, 즉 자리를 잃는 것이 곧 갈등의 원인이 된다. 외부 악당보다 내부 질투가 먼저 작동한다.',
+ people:[
+  {n:'우디',r:'주인공',d:'줄을 당기면 소리 나는 목소리 상자를 가진 전통 카우보이 인형. 오랫동안 앤디의 최애 자리를 지켜왔다.'},
+  {n:'버즈 라이트이어',r:'대립 → 동료',d:'레이저와 접히는 날개를 갖춘 우주 특공대 피규어. 자신이 진짜 비밀 임무 중이라고 믿는다.'},
+  {n:'햄',r:'해설자',d:'창가의 돼지 저금통. 세상 모든 일을 다 안다는 듯 참견한다.'},
+  {n:'포테이토 헤드',r:'내부 반대자',d:'얼굴이 자꾸 떨어지는 탓에 냉소적이다. 우디의 권위에 처음 의문을 던지는 인물.'},
+  {n:'렉스',r:'겁쟁이',d:'포효가 약한 것이 콤플렉스인 플라스틱 공룡. 여린 마음의 정서적 완충 역할.'},
+  {n:'슬링키',r:'조력자',d:'우디의 가장 충직한 친구이자 체커 상대. 관계에서 가장 많이 늘어나 주는 쪽.'},
+  {n:'시드',r:'적대자',d:'장난감을 부수고 폭파하며 노는 옆집 아이.'},
+  {n:'앤디',r:'창조자',d:'상자와 크레용으로 이야기를 만들어내는 아이. 그의 놀이 안에서는 늘 선이 이긴다.'},
+  {n:'뮤턴트 장난감',r:'반전 집단',d:'시드가 조립한 기괴한 모습의 장난감들. 겉모습과 달리 서로를 돌보는 존재들.'}],
+ worlds:[
+  {n:'앤디의 방',d:'대부분의 인물이 사는 세계 그 자체. 편안함과 안전을 주는 공간이었기에, 그곳을 떠나는 일과 새 장난감이 들어오는 일이 곧 갈등이 된다.'},
+  {n:'다이노코 주유소',d:'1950년대 주유소의 광택을 살리되 거친 조명, 기름때, 시멘트 질감을 더해 현실감을 만든 세트.'},
+  {n:'피자 플래닛',d:'초기 기획에서는 미니골프 테마였으나, 버즈가 우주선 기지로 오해할 만한 우주 테마 드라이브인으로 바뀌었다.'},
+  {n:'시드의 집',d:'제작진이 오히려 더 애착을 가진 공간. 불편한 창조물을 고안하는 일이 가장 인기 있는 작업이었다.'}]
+},
+{
+ id:'up', ko:'업', en:'UP', year:2009, theme:'모험·상실',
+ src:'https://www.pixar.com/upfilm',
+ tagline:'A Dream Of Adventure', taglineKo:'모험을 꿈꾸다',
+ palette:['#3FA0DB','#E0503C','#F2C63C','#FFF0DC'],
+ poster:POSTER('#3FA0DB',`<circle cx="90" cy="70" r="26" fill="#E0503C"/><circle cx="150" cy="52" r="22" fill="#F2C63C"/><circle cx="204" cy="76" r="24" fill="#4EA85C"/>
+ <circle cx="122" cy="98" r="18" fill="#E0503C"/><circle cx="176" cy="102" r="18" fill="#F2C63C"/>
+ <line x1="90" y1="96" x2="150" y2="220" stroke="#8A6A46" stroke-width="2"/><line x1="150" y1="74" x2="150" y2="220" stroke="#8A6A46" stroke-width="2"/>
+ <line x1="204" y1="100" x2="150" y2="220" stroke="#8A6A46" stroke-width="2"/><line x1="122" y1="116" x2="150" y2="220" stroke="#8A6A46" stroke-width="2"/>
+ <rect x="118" y="220" width="64" height="52" fill="#B5473A"/><rect x="118" y="220" width="64" height="10" fill="#8C3226"/>
+ <rect x="140" y="240" width="20" height="32" fill="#6B4A2E"/>`,'업','UP','#FFF0DC'),
+ concept:'은퇴한 풍선 장수 칼이 78세에 처음으로 진짜 모험을 떠난다. 수천 개의 풍선을 집에 매달아 남미의 야생으로 날아오르며 평생의 꿈을 이루지만, 여덟 살 밀항자 러셀을 발견한 뒤 예상치 못한 동행이 시작된다.',
+ core:'집 자체가 인물이 된다. 떠나는 이야기인데도 살던 공간을 통째로 데리고 떠나게 함으로써, 상실을 짊어진 채 나아가는 모험을 시각화한다.',
+ people:[
+  {n:'칼 프레드릭슨',r:'주인공',d:'세상을 떠난 아내 엘리와 함께 지은 집을 떠나야 할 처지에 놓인 78세 은퇴 풍선 장수. 요양원 대신 수천 개의 풍선으로 집을 띄워 오래전 아내와 한 약속을 이루러 떠난다.'},
+  {n:'러셀',r:'동행자',d:'54부대 12사우나오두막 소속의 열정적인 여덟 살 야생탐험단원. 정식 캠핑 장비를 갖췄지만 실은 도시를 떠나본 적이 없고, 유일한 캠핑 경험은 자기 집 거실이었다.'},
+  {n:'더그',r:'조력자',d:'파라다이스 폭포에 사는 사랑스러운 골든 리트리버. 생각을 말로 옮겨주는 첨단 목걸이를 차고 있지만 무리에서는 놀림받는 존재다.'},
+  {n:'케빈',r:'동행자',d:'파라다이스 폭포 깊은 곳에 숨어 사는 4미터에 가까운 희귀 새. 몸집에 비해 놀랍도록 빠르고 유연하며, 러셀과 단 것을 좋아한다는 공통점으로 급속히 가까워진다.'},
+  {n:'찰스 먼츠',r:'적대자',d:'1930년대의 부유하고 영민한 전설적 탐험가. 한때 칼과 엘리의 우상이었지만, 발견한 생물의 존재를 인정받지 못하자 살아있는 표본을 가져오겠다고 맹세한다.'},
+  {n:'알파 무리',r:'추격자',d:'먼츠의 명령으로 희귀 새를 쫓는 개 무리. 도베르만 알파가 이끌고 로트와일러 베타와 불도그 감마가 뒤따른다.'},
+  {n:'엘리',r:'약속의 시작',d:'세상을 탐험하기를 꿈꾸던 활기찬 소녀. 어린 시절 먼츠를 향한 동경으로 칼과 가까워졌고, 파라다이스 폭포에 함께 가자고 약속했다.'}],
+ worlds:[
+  {n:'테푸이',d:'남미의 신비로운 탁상형 고원. 해발 1마일에 이르는 대지로 지구에서 가장 미답의 장소 중 하나이며, 기괴한 암석과 폭포, 안개 낀 미로가 이곳에서 나왔다.'},
+  {n:'칼의 집',d:'제작진이 인물처럼 다룬 집. 오클랜드와 버클리의 오래된 동네를 답사하며 편안함과 익숙함, 약간의 쓸쓸함이 뒤섞인 인상을 찾아냈다.'},
+  {n:'먼츠의 비행선',d:'1930년대 최첨단 기술을 담은 반 마일 길이의 아르데코풍 비행선. 영웅에서 악당이 된 인물의 전리품으로 가득하다.'}]
+},
+{
+ id:'io1', ko:'인사이드 아웃', en:'INSIDE OUT', year:2015, theme:'감정',
+ src:'https://www.pixar.com/inside-out',
+ tagline:'Growing Up Can Be A Bumpy Road', taglineKo:'자라는 길은 원래 울퉁불퉁하다',
+ palette:['#2C1F52','#FFD84D','#5BA8F0','#FFF3B0'],
+ poster:POSTER('#2C1F52',`<circle cx="80" cy="120" r="40" fill="#FFD84D"/><circle cx="150" cy="90" r="30" fill="#5BA8F0"/>
+ <circle cx="212" cy="128" r="32" fill="#E05B4A"/><circle cx="108" cy="192" r="26" fill="#7FD16A"/><circle cx="186" cy="200" r="28" fill="#B07AD8"/>
+ <path d="M0 262 Q150 236 300 262 L300 272 Q150 246 0 272 Z" fill="#FFD84D" opacity=".5"/>`,'인사이드 아웃','INSIDE OUT','#FFF3B0'),
+ concept:'아빠의 새 직장 때문에 샌프란시스코로 이사한 열한 살 라일리. 그녀의 마음속 본부에서는 기쁨·슬픔·버럭·까칠·소심이 함께 일하지만, 새로운 도시와 학교를 어떻게 헤쳐 나갈지를 두고 서로 부딪힌다.',
+ core:'각 인물이 하나의 동사로 정의된다. 기쁨은 밝히고, 소심은 살피고, 까칠은 걸러낸다. 성격이 아니라 기능이 캐릭터다.',
+ people:[
+  {n:'기쁨',r:'주인공',d:'목표는 오직 라일리를 행복하게 하는 것. 어려움은 기회로, 슬픈 순간은 좋은 곳으로 돌아가는 길의 작은 걸림돌로 본다.'},
+  {n:'슬픔',r:'오해받는 자',d:'다른 감정들이 그 역할을 이해하지 못한다. 본인도 긍정적이 되기 어려워 그냥 바닥에 누워 울고 싶을 때가 있다.'},
+  {n:'버럭',r:'정의감',d:'라일리에게 공정한 일이 일어나기를 강하게 바란다. 계획대로 안 되면 말 그대로 폭발한다.'},
+  {n:'까칠',r:'기준',d:'라일리가 신체적으로도 사회적으로도 나빠지지 않게 지킨다. 브로콜리든 지난 유행이든 기준을 낮추지 않는다.'},
+  {n:'소심',r:'경계',d:'안전이 최우선. 일상의 거의 모든 활동에서 위험과 치명적 가능성을 발견한다.'},
+  {n:'빙봉',r:'상실의 상징',d:'코끼리 코, 고양이 꼬리, 솜사탕 몸을 가진 상상 친구. 라일리가 네 살이 된 뒤로 일이 끊겼고, 잊히지 않으려 애쓴다.'},
+  {n:'라일리',r:'세계의 주인',d:'늘 행복한 아이였지만 열한 살에 낯선 도시로 옮겨지며 처음 겪는 감정의 뒤섞임을 마주한다.'},
+  {n:'엄마와 아빠',r:'외부 시선',d:'새 직장과 새 도시 속에서, 달라진 딸의 감정을 마주하게 된다.'}],
+ worlds:[
+  {n:'감정 본부',d:'다섯 감정이 살며 일하는 통제실. 라일리의 하루하루를 지켜보고 방향을 안내한다.'},
+  {n:'상상의 나라',d:'라일리의 온갖 공상과 백일몽이 실제 크기로 지어져 살아나는 곳. 놀러 가는 장소.'},
+  {n:'성격의 섬',d:'라일리의 삶에서 결정적으로 중요했던 순간, 즉 핵심 기억이 동력이 되어 움직이는 섬들.'},
+  {n:'생각기차',d:'스스로 선로를 만들며 달리는 기차. 공상과 아이디어를 본부로 나르고 기억을 다른 구역으로 옮긴다. 라일리가 잠들면 기관사도 잠든다.'},
+  {n:'꿈 제작소',d:'할리우드 스튜디오처럼 지어진 곳. 라일리의 꿈과 악몽이 만들어지며, 작가들은 논리의 경계에서 과감하게 논다.'},
+  {n:'장기기억 저장소',d:'수백만 개의 기억이 보관된 초고층 창고. 잊는 자들이 각 기억의 쓸모를 판단해 더는 필요 없는 것을 폐기한다.'}]
+},
+{
+ id:'coco', ko:'코코', en:'COCO', year:2017, theme:'가족·기억',
+ src:'https://www.pixar.com/coco',
+ tagline:'A Boy Who Dreams Of Becoming A Great Musician', taglineKo:'위대한 음악가를 꿈꾸는 소년',
+ palette:['#2A1350','#FF7A2F','#F5A623','#FFD9A8'],
+ poster:POSTER('#2A1350',`<path d="M0 300 Q75 250 150 300 T300 300 L300 420 L0 420 Z" fill="#3D1D6B" opacity=".7"/>
+ <circle cx="150" cy="150" r="90" fill="none" stroke="#F5A623" stroke-width="2" opacity=".5"/>
+ ${Array.from({length:26},(_,i)=>{const a=i/26*Math.PI*2;return `<circle cx="${(150+90*Math.cos(a)).toFixed(1)}" cy="${(150+90*Math.sin(a)).toFixed(1)}" r="7" fill="#F5A623"/>`}).join('')}
+ <circle cx="150" cy="150" r="46" fill="#FF7A2F"/><circle cx="150" cy="150" r="22" fill="#FFD84D"/>
+ <rect x="30" y="252" width="240" height="4" rx="2" fill="#F5A623" opacity=".6"/>`,'코코','COCO','#FFD9A8'),
+ concept:'위대한 음악가를 꿈꾸는 열두 살 소년이 조상들의 땅으로 특별한 여행을 떠난다. 그곳에서 매력적인 사기꾼 헥터가 뜻밖의 친구가 되어, 가족의 이야기와 전통에 숨은 비밀을 함께 풀어간다.',
+ core:'세계의 규칙 하나가 이야기 전체를 민다. 산 자가 기억해주지 않으면 건너올 수 없다는 설정이 곧 감정의 장치가 된다.',
+ people:[
+  {n:'미겔',r:'주인공',d:'몇 세대째 이어진 가족의 음악 금지에 맞서는 열두 살. 우상의 기타를 본떠 직접 기타를 만들고 혼자 연주를 익혔다.'},
+  {n:'헥터',r:'동반자',d:'죽은 자들의 땅의 매력적인 사기꾼. 산 자의 땅으로 건너가려고 미겔에게 도움을 구한다.'},
+  {n:'마마 이멜다',r:'금지의 근원',d:'미겔의 고조할머니이자 리베라 집안 구두 사업의 창업자. 음악가였던 남편과 삶의 우선순위가 달랐던 것이 금지의 시작이다.'},
+  {n:'아부엘리타',r:'규칙의 집행자',d:'가족 규칙의 최종 집행자이자 음악 금지의 횃불 지기. 따뜻하다가도 순식간에 단호해진다.'},
+  {n:'마마 코코',r:'기억의 그릇',d:'미겔이 매일의 모험을 들려주는 증조할머니. 기억이 흐려져 가지만 늘 사랑하는 이들에 둘러싸여 있다.'},
+  {n:'에르네스토 데 라 크루스',r:'우상',d:'멕시코 역사상 가장 유명한 음악가. 세상을 떠난 뒤 죽은 자들의 땅에서 더 사랑받는다.'},
+  {n:'단테',r:'조력자',d:'멕시코의 국견 숄로이츠퀸틀레. 미겔이 유일하게 음악을 들려주는 상대이자 속마음을 나누는 친구.'},
+  {n:'페피타',r:'수호자',d:'마마 이멜다의 영혼 안내자인 알레브리헤. 독수리 발톱과 커다란 날개를 가진 위풍당당한 들고양이.'},
+  {n:'프리다',r:'예술의 문',d:'죽은 자들의 땅에서도 표현을 이어가는 인물. 예술가의 삶이 꿈 이상일 수 있음을 미겔에게 처음 보여준다.'},
+  {n:'치차론',r:'경고',d:'헥터의 오랜 친구. 안타깝게도 잊혀 가는 중이다.'}],
+ worlds:[
+  {n:'산타 세실리아',d:'실제 멕시코 마을에서 영감을 얻은 곳. 볕에 바랜 먼지투성이 색조 위에 축제 장식의 강렬한 색이 얹힌다.'},
+  {n:'죽은 자들의 땅',d:'새 주민이 계속 들어오므로 끝없이 확장되어야 한다는 전제에서 출발했다. 물 위에 세워진 고대 도시에서 착안해, 역사가 층층이 쌓인 산호 같은 탑들의 도시가 되었다.'},
+  {n:'묘지',d:'금잔화와 맨드라미, 손으로 만든 장식과 수백 개의 촛불로 채워진다. 어둡고 슬픈 곳이 아니라 축제의 장소다.'},
+  {n:'금잔화 다리',d:'두 세계를 잇는 장치. 거리에서 시작해 제단으로 이어지는 실제 금잔화 꽃길에서 착안했다.'},
+  {n:'오프렌다',d:'세상을 떠난 이들의 영혼을 기리기 위해 가족이 차리는 제단.'},
+  {n:'가족 재회부',d:'금잔화 중앙역 안에 있는 가족 기록 보관소. 빅토리아풍 관공서 분위기로 설계됐다.'}]
+},
+{
+ id:'soul', ko:'소울', en:'SOUL', year:2020, theme:'삶의 의미',
+ src:'https://www.pixar.com/soul',
+ tagline:'What Is It That Makes You...YOU?', taglineKo:'무엇이 당신을 당신답게 만드는가?',
+ palette:['#0D2942','#5FE3D0','#FFD84D','#CFF6EF'],
+ poster:POSTER('#0D2942',`<circle cx="150" cy="140" r="66" fill="#5FE3D0" opacity=".9"/><circle cx="150" cy="140" r="38" fill="#B9F5EC"/>
+ <path d="M0 226 Q40 196 80 226 T160 226 T240 226 T320 226" stroke="#FFD84D" stroke-width="4" fill="none"/>
+ <path d="M0 250 Q40 274 80 250 T160 250 T240 250 T320 250" stroke="#5FE3D0" stroke-width="3" fill="none" opacity=".7"/>
+ <circle cx="52" cy="76" r="5" fill="#FFD84D"/><circle cx="244" cy="60" r="4" fill="#FFD84D"/><circle cx="268" cy="180" r="6" fill="#FFD84D"/>`,'소울','SOUL','#CFF6EF'),
+ concept:'재즈를 향한 열정으로 사는 중학교 밴드 교사 조 가드너. 평생 한 번 올까 말까 한 무대의 기회를 얻은 순간, 한 번의 헛디딤이 그를 뉴욕 거리에서 태어나기 전 세계로 데려간다. 새 영혼들이 성격과 개성, 관심사를 부여받는 곳이다.',
+ core:'주인공과 정확히 반대편에 선 인물을 붙인다. 살고 싶은데 못 사는 조와, 살 수 있는데 안 살려는 22.',
+ people:[
+  {n:'조 가드너',r:'주인공',d:'중학교 밴드 교사. 마흔여섯이지만 큰 무대의 기회가 언제든 올 수 있다고 믿는다. 재즈 역사를 훤히 꿰고 있으며 혼자 살면서 음악에 몰두한다.'},
+  {n:'22',r:'거울',d:'수백 년을 유 세미나에서 보낸 조숙한 영혼. 지구에 갈 조건을 하나만 남겨두었지만 애초에 지구의 삶에 관심이 없다.'},
+  {n:'리바 가드너',r:'현실',d:'조의 어머니. 퀸스에서 오랫동안 양복점을 운영해 온 사업가로, 음악가의 삶이 가혹하다는 걸 알기에 대비책을 권한다.'},
+  {n:'도로시아 윌리엄스',r:'성취',d:'세계적인 재즈 색소폰 연주자. 자신의 밴드를 가족으로 여기며 그 안에 들이는 사람은 극히 드물다.'},
+  {n:'문윈드',r:'다른 길',d:'중년의 각성 끝에 이름과 직업을 바꾼 인물. 맨해튼 길모퉁이에서 간판을 돌리며 몰입 상태에 들어가 아스트랄계로 여행한다.'},
+  {n:'덱',r:'경청자',d:'조의 오랜 이발사이자 직업적 경청자. 손님이 무슨 이야기를 하든 기꺼이 들어준다.'},
+  {n:'컬리',r:'연결 고리',d:'조의 옛 제자. 음악을 계속해 도로시아의 사중주단에 들어갔고, 스승에게 인생의 오디션 기회를 만들어준다.'},
+  {n:'제리들',r:'세계의 관리자',d:'태어나기 전 세계의 상담사들. 모두 제리라 불리며 캠프 지도교사처럼 새 영혼들을 이끈다.'},
+  {n:'테리',r:'추격자',d:'저 너머로 넘어가는 숫자를 세는 담당. 숫자가 맞지 않으면 반드시 바로잡으려 한다.'},
+  {n:'길 잃은 영혼',r:'경고',d:'요리든 게임이든 예술이든, 나쁘지 않은 일이라도 다른 모든 것을 배제할 정도가 되면 길 잃은 영혼이 될 수 있다.'}],
+ worlds:[
+  {n:'뉴욕',d:'재즈의 수도이자 문화의 중심. 사람들이 문자 그대로 서로 부딪히며 살아가는 곳으로, 연결을 다루는 이야기의 무대가 되었다.'},
+  {n:'태어나기 전 세계',d:'주인공의 믿음을 증폭하도록 설계된 공간. 조가 음악가로 태어났다고 믿기에, 영혼이 성격과 관심사를 부여받는 세계로 지어졌다.'},
+  {n:'성격 전시관',d:'새 영혼이 성격을 얻는 건물들. 각 전시관은 그 성격을 추상적으로 표현하며, 예컨대 도도함 전시관은 위로 치켜든 코 모양이다.'},
+  {n:'만물의 전당',d:'영혼이 자신의 불꽃을 찾도록 지구의 모든 것이 모여 있는 곳. 색이 빠진 상태로 있다가 만져야만 색이 살아난다.'},
+  {n:'아스트랄계',d:'움직이는 모래에서 착안한 지형. 배가 지나가면 모래가 비현실적으로 밀려나 주변 형태로 굳는다.'},
+  {n:'하프 노트',d:'실제 재즈 클럽 규모에 충실하게 만든 무대. 벽에는 재즈 거장들의 초상이 걸려 있다.'}]
+},
+{
+ id:'elem', ko:'엘리멘탈', en:'ELEMENTAL', year:2023, theme:'차이·공존',
+ src:'https://www.pixar.com/elemental',
+ tagline:'Opposites React', taglineKo:'서로 다른 둘이 만나 반응하다',
+ palette:['#170F2E','#FF6B2C','#3FB8E8','#FFD9BD'],
+ poster:POSTER('#170F2E',`<path d="M112 244 C68 214 76 150 118 108 C112 148 140 150 138 122 C170 152 168 210 132 244 Z" fill="#FF6B2C"/>
+ <path d="M112 244 C86 224 90 184 116 156 C114 184 130 186 130 168 C150 190 148 224 128 244 Z" fill="#FFC24D"/>
+ <path d="M196 92 C232 138 246 176 246 200 C246 228 224 248 196 248 C168 248 146 228 146 200 C146 176 160 138 196 92 Z" fill="#3FB8E8" opacity=".82"/>
+ <circle cx="60" cy="70" r="4" fill="#FFC24D"/><circle cx="256" cy="66" r="5" fill="#3FB8E8"/>`,'엘리멘탈','ELEMENTAL','#FFD9BD'),
+ concept:'불·물·흙·공기 원소가 함께 살아가는 엘리멘트 시티. 강단 있고 재치 있는 불의 젊은 여성 엠버가, 유쾌하고 물 흐르듯 사는 웨이드를 만나며 자신이 믿어온 세계관이 흔들린다.',
+ core:'공간의 색과 질감이 인물의 심리를 대신 말한다. 엠버가 물의 구역에서 느끼는 불편함이 곧 화면의 온도다.',
+ people:[
+  {n:'엠버 루멘',r:'주인공',d:'불 원소. 이민자 부모의 외동으로 그들의 희생을 잘 알기에 완벽한 딸이 되어 보답하려 한다. 웨이드를 만나며 자기 자리를 묻기 시작한다.'},
+  {n:'웨이드 리플',r:'거울',d:'물 원소인 동시에 감정적으로도 투명하다. 관찰력 있고 공감이 넘치며 마음을 숨기지 못한다.'},
+  {n:'버니 루멘',r:'아버지',d:'불 원소. 고향과 딸과 가게에 대한 자부심으로 타오른다. 엠버가 가게를 물려받을 준비가 되는 날을 기다린다.'},
+  {n:'신더 루멘',r:'어머니',d:'불 원소이자 파이어타운의 중매인. 연기에서 사랑의 냄새를 맡는 재능이 있지만 정작 딸의 짝은 찾지 못한다.'},
+  {n:'브룩 리플',r:'다른 가족상',d:'물 원소. 아들과 함께 실컷 우는 걸 좋아하는 예술가이자, 재능을 알아보는 성공한 건축가.'},
+  {n:'게일',r:'상사',d:'바람 원소. 허풍스럽고 의견이 강하지만 공정함과 팀워크를 가장 중요하게 여긴다.'},
+  {n:'펀',r:'장애물',d:'흙 원소. 책상을 거의 떠나지 않아 사무실이 잎사귀 촉수로 뒤엉킨 관료. 무뚝뚝하고 느리며 어리숙함을 봐주지 않는다.'},
+  {n:'클로드',r:'주변인',d:'엠버를 따르는 낭만적인 흙 원소 소년. 거리 감각이 있으면서도 진심이 담긴 다정함을 지녔다.'}],
+ worlds:[
+  {n:'파이어타운',d:'불꽃의 삼각형과 다이아몬드, 촛불의 형태가 세트 전반의 설계 언어가 되었다. 지나치게 사실적이지 않도록 태우기보다 그을린 질감을 택했다.'},
+  {n:'워터 디스트릭트',d:'파이어타운이 붉고 따뜻하고 건조하다면 이곳은 정반대. 차가운 색조에 더 미끄럽고 반사가 강하며 투명하다. 엠버에게는 위험이 느껴지는 세계다.'},
+  {n:'브룩의 집',d:'거대한 실내 수영장 같은 최고급 펜트하우스. 콘크리트와 유리의 현대적 감각에 물놀이 튜브와 레인 라인이 가구로 놓인다.'},
+  {n:'사이클론 스타디움',d:'공기 원소가 3차원으로 움직이는 경기를 위한 공간. 관중석 아래 조명 패널이 파도처럼 열리고 닫히며, 외형은 시간 속에 멈춘 회오리 모양이다.'},
+  {n:'엘리멘트 시티',d:'베네치아와 암스테르담 같은 운하 도시를 참고했다. 물 원소가 세운 도시여서 운하 교통망이 중심이며, 균질한 용광로가 아니라 서로 다른 문화가 공존하는 곳으로 설계됐다.'}]
+},
+{
+ id:'io2', ko:'인사이드 아웃 2', en:'INSIDE OUT 2', year:2024, theme:'감정',
+ src:'https://www.pixar.com/inside-out-2',
+ tagline:'Return To The Mind Of A Newly Minted Teenager', taglineKo:'막 십대가 된 마음속으로 돌아오다',
+ palette:['#1A1338','#F0873C','#FFD84D','#FFE2C4'],
+ poster:POSTER('#1A1338',`<circle cx="196" cy="120" r="58" fill="#F0873C"/><circle cx="92" cy="96" r="26" fill="#FFD84D"/>
+ <circle cx="60" cy="164" r="20" fill="#5BA8F0"/><circle cx="128" cy="196" r="22" fill="#8FD46E"/>
+ <circle cx="242" cy="204" r="18" fill="#F2A0C0"/><circle cx="150" cy="130" r="14" fill="#B07AD8"/>
+ <path d="M20 240 L90 214 L160 246 L230 216 L290 244" stroke="#F0873C" stroke-width="3" fill="none" opacity=".8"/>`,'인사이드 아웃 2','INSIDE OUT 2','#FFE2C4'),
+ concept:'막 십대가 된 라일리의 마음으로 돌아온다. 본부가 갑작스러운 철거 공사에 들어가고, 전혀 예상하지 못한 것을 위한 자리가 만들어진다. 새로운 감정들이다. 오랫동안 손발을 맞춰온 다섯 감정은 불안의 등장을 어떻게 받아들여야 할지 알지 못한다.',
+ core:'익숙한 공간이 물리적으로 부서지는 것으로 변화를 알린다. 설명 대신 철거반이 들어온다.',
+ people:[
+  {n:'불안',r:'새 중심',d:'가능한 모든 부정적 결과에 라일리가 대비되도록 만든다. 열 걸음 앞을 내다보고 최악의 시나리오를 거리낌 없이 말하며, 완벽을 향해 미는 것이 목표에 가까워지는 길이라 믿는다.'},
+  {n:'따분',r:'무기력',d:'권태롭고 나른하며 눈 굴리기가 몸에 뱄다. 소파에서 일어나지도 않고 휴대폰 앱으로 제어판을 조작한다.'},
+  {n:'부럽',r:'결핍',d:'작지만 원하는 것이 분명하다. 남이 가진 것을 늘 부러워하며 감추지 않는다.'},
+  {n:'당황',r:'위축',d:'분홍빛 피부의 덩치 큰 인물인데도 조용히 숨어 있으려 한다. 어색한 순간이 오면 제어판 위로 엎어진다.'},
+  {n:'기쁨',r:'기존 중심',d:'라일리의 자아감을 지키고 예전의 행복한 아이로 남게 하려 한다. 새 감정들이 들어오기 전까지는 계획이 흔들린 적이 없었다.'},
+  {n:'슬픔',r:'성숙한 조력자',d:'이제는 자신의 자리가 편해졌다. 발걸음이 가볍지는 않지만 중요한 임무를 맡을 각오가 되어 있다.'},
+  {n:'라일리 앤더슨',r:'세계의 주인',d:'고등학교 진학을 앞둔 십대. 새 친구, 선발전, 사춘기를 동시에 겪으며 빠르게 변하는 자아감 사이에서 균형을 잃는다.'},
+  {n:'발렌티나',r:'동경의 대상',d:'모두가 우러러보는 대표팀 하키 주장. 자신감 있고 다정하며, 라일리에게서 가능성을 본다.'}],
+ worlds:[
+  {n:'본부(개조)',d:'상황에 맞는 감정이 라일리를 이끌도록 설계된 콘솔이 있는 마음의 심장부. 속편 시작 몇 분 만에 철거반이 들이닥친다.'},
+  {n:'신념 체계',d:'어두운 푸른 공간 속 빛나는 반투명 요소로 만들어진 곳. 아홉 개 부서가 동시에 매달려 완성했으며, 감정들이 도착했을 때 경외감을 느끼도록 설계되었다.'},
+  {n:'비밀 금고',d:'십대에게 자연히 따라오는 비밀을 보관하는 고보안 장소. 대리석 바닥의 은행 금고 같은 위압감으로 무엇을 뜻하는지 즉시 알게 만든다.'},
+  {n:'하키',d:'라일리의 열정이자 이번 이야기의 큰 축. 감정들이 경기 전체를 조종하는 오프닝 경기 장면이 대표적이다.'}]
+},
+{
+ id:'elio', ko:'엘리오', en:'ELIO', year:2025, theme:'소속감',
+ src:'https://www.pixar.com/elio',
+ tagline:'For centuries, people have called out to the universe looking for answers…',
+ taglineKo:'수 세기 동안 인류는 답을 구하며 우주를 향해 외쳐왔다',
+ palette:['#08102E','#6FE3C8','#8FA8FF','#CFE0FF'],
+ poster:POSTER('#08102E',`<ellipse cx="150" cy="150" rx="112" ry="42" fill="none" stroke="#6FE3C8" stroke-width="2" opacity=".55"/>
+ <ellipse cx="150" cy="150" rx="112" ry="42" fill="none" stroke="#8FA8FF" stroke-width="2" opacity=".45" transform="rotate(58 150 150)"/>
+ <circle cx="150" cy="150" r="40" fill="#6FE3C8"/><circle cx="150" cy="150" r="20" fill="#DFFFF6"/>
+ <circle cx="262" cy="150" r="8" fill="#8FA8FF"/><circle cx="150" cy="82" r="6" fill="#FFD84D"/>
+ <circle cx="54" cy="212" r="3" fill="#fff"/><circle cx="238" cy="240" r="3" fill="#fff"/><circle cx="86" cy="64" r="2.5" fill="#fff"/><circle cx="212" cy="98" r="2" fill="#fff"/>`,'엘리오','ELIO','#CFE0FF'),
+ concept:'수백 년 동안 사람들은 우주를 향해 답을 물어왔고, 마침내 우주가 대답한다. 외계인에게 납치되기를 바랄 만큼 우주에 빠진 소년이, 지구에는 자신의 자리가 없다고 느끼며 있는 그대로 받아들여지는 세계를 꿈꾼다.',
+ core:'적대자는 주인공의 소망을 극단까지 밀고 간 존재다. 그리곤도 엘리오처럼 소속되고 싶어 했고, 거절당했다.',
+ people:[
+  {n:'엘리오 솔리스',r:'주인공',d:'지구에 어울리지 않는다고 느끼는 열한 살. 부모를 잃은 뒤 외로움 속에서 우주의 장대함에 온 힘을 쏟으며, 그곳에서 진짜 연결을 찾으리라 믿는다.'},
+  {n:'올가 솔리스',r:'보호자',d:'우주비행사 프로그램을 준비하던 공군 소령. 조카를 맡으며 진로가 바뀌었고, 조카가 자기 자리를 찾기를 바란다. 단, 지구 위에서.'},
+  {n:'글로든',r:'거울',d:'전쟁 군주 그리곤의 다정한 아들. 곧 갑옷을 입고 아버지 곁에 서야 하며, 그래야 한다고 배웠기에 기대된다고 말한다. 엘리오에게만은 진짜 마음을 털어놓을지도 모른다.'},
+  {n:'그리곤 경',r:'적대자',d:'행성 하이러그를 다스리는 사나운 외계 군주. 커뮤니버스에 들어가려다 거절당하자 분노한다.'},
+  {n:'케스타 대사',r:'수용',d:'행성 곰의 지도자이자 커뮤니버스 최고위 인사. 마음을 읽으며, 만나는 모든 생명에게서 최선을 찾으려는 낙관주의자.'},
+  {n:'우우우',r:'조력 장치',d:'모든 종을 응대하도록 설계된 액체 슈퍼컴퓨터. 답하지 못하는 질문이 없다.'},
+  {n:'헬릭스 대사',r:'고참',d:'이 은하 의회에서 가장 오래된 축. 파티와 말을 좋아하는데, 그중에서도 자기 말을 가장 좋아한다.'},
+  {n:'테그멘·투라이스·미라·아우바',r:'커뮤니버스',d:'떠다니는 바위 같은 논리형, 일이 틀어지면 가장 먼저 당황하는 외눈, 다정한 목소리 뒤에 가장 계산적인 여제, 평화를 사랑하는 긍정형 지도자.'},
+  {n:'건서 멜맥',r:'지구의 외톨이',d:'외계인에 관한 기묘한 이론 탓에 감독 팀에서 멀어진 군 계약자. 그가 옳다면 모든 게 달라진다.'},
+  {n:'브라이스와 케일럽',r:'또래',d:'엘리오 주변을 맴도는 중학생들. 브라이스는 친구가 될 만하지만 자기 불안을 감춘 케일럽에게 자주 휩쓸린다.'}],
+ worlds:[
+  {n:'커뮤니버스',d:'바깥 껍질에서 외계 종들이 작물을 기르고, 수중·숲·툰드라·용암의 네 생물권을 품은 원반이 회전한다. 그 안쪽에 도시의 스카이라인과 빛나는 핵이 자리한다.'},
+  {n:'지구(몬테즈 공군기지)',d:'광활한 아스팔트와 브루탈리즘 콘크리트 건물, 딱딱한 모서리와 반복되는 직사각형 대칭. 엘리오만 색을 가진 존재로 남아 이질감을 드러낸다.'},
+  {n:'납치 장면',d:'엘리오에게 이것은 납치가 아니라 구조다. 평범한 교외의 밤에서 시작해, 우주선이 도착하는 순간 강렬한 초록빛이 쏟아지며 색이 폭발한다.'},
+  {n:'우주선',d:'종이접기에서 착안한 형태.'}]
+}
+];
+
+
+/* ── 파생 데이터 (작품 추가 시 자동 반영) ───────────────────── */
+FILMS.sort((a,b)=>a.year-b.year);
+FILMS.forEach(f=>{ if(!f.poster) f.poster = AUTO_POSTER(f); });
+
+const SLOT_COLS = 4;                                   // 슬롯 코드 열 개수 (A1~A4, B1~B4 …)
+const ROW_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+FILMS.forEach((f,i)=>{ f.code = ROW_LETTERS[Math.floor(i/SLOT_COLS)] + ((i%SLOT_COLS)+1); });
+
+const oneLine = f => (f.concept.split(/(?<=다\.)\s|(?<=[.。])\s/)[0] || f.concept).trim();
+const THEMES = ['전체', ...new Set(FILMS.map(f=>f.theme))];
+const ROWS = [...new Set(FILMS.map(f=>f.code[0]))];     // 사용 중인 행 문자
+const MAX_CMP = 4;
+
+/* ── 상태 ── */
+let activeTheme='전체', query='', cmpSel=[], entry='', history=[];
+
+/* ── DOM ── */
+const $ = id => document.getElementById(id);
+const glass=$('glass'), chipsBox=$('chips'), overlay=$('overlay'), sheet=$('sheet');
+const ledCode=$('ledCode'), ledMsg=$('ledMsg'), trayEl=$('tray');
+const cmpChips=$('cmpChips'), cmpBody=$('cmpBody'), cmpNote=$('cmpNote');
+let lastFocused=null;
+
+$('heroDesc').innerHTML = `${FILMS.length}편의 작품을 <strong>컨셉 · 등장인물 · 세계</strong> 세 축으로 정리했습니다. `
+ + `진열대에서 한 편을 뽑거나, 비교 트레이에 여러 편을 올려 나란히 살펴보세요.`;
+
+/* ── 탭 ── */
+function setTab(name){
+  $('tabGallery').setAttribute('aria-selected', name==='gallery');
+  $('tabCompare').setAttribute('aria-selected', name==='compare');
+  $('viewGallery').hidden = name!=='gallery';
+  $('viewCompare').hidden = name!=='compare';
+  if(name==='compare') renderCompare();
+}
+$('tabGallery').onclick=()=>setTab('gallery');
+$('tabCompare').onclick=()=>setTab('compare');
+
+/* ── 필터 ── */
+THEMES.forEach(t=>{
+  const b=document.createElement('button');
+  b.className='pchip'; b.type='button'; b.textContent=t;
+  b.setAttribute('aria-pressed', t===activeTheme);
+  b.onclick=()=>{activeTheme=t;
+    [...chipsBox.children].forEach(c=>c.setAttribute('aria-pressed', c.textContent===t));
+    renderShelves();};
+  chipsBox.appendChild(b);
+});
+
+function matches(f){
+  if(activeTheme!=='전체' && f.theme!==activeTheme) return false;
+  if(!query) return true;
+  const q=query.toLowerCase();
+  const hay=[f.code,f.ko,f.en,String(f.year),f.theme,f.tagline,f.taglineKo,f.concept,f.core,
+    ...f.people.map(p=>p.n+' '+p.r+' '+p.d),
+    ...f.worlds.map(w=>w.n+' '+w.d)].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+/* ── 진열대 ── */
+function renderShelves(){
+  const list=FILMS.filter(matches);
+  if(!list.length){
+    glass.innerHTML='<p class="empty">해당하는 상품이 없습니다.<br>검색어나 주제를 바꿔 보세요.</p>';
+    setLed(null,'조건에 맞는 상품 없음'); return;
+  }
+  let html='';
+  for(let i=0;i<list.length;i+=SLOT_COLS){
+    html+='<div class="shelf">'+list.slice(i,i+SLOT_COLS).map(f=>`
+      <button class="slot" type="button" data-id="${f.id}" aria-label="${f.code} ${f.ko} ${f.year} 뽑기">
+        <span class="code">${f.code}</span>
+        <span class="ph">${f.poster}</span>
+        <span class="nm">${f.ko}</span>
+        <span class="yr">${f.en} · ${f.year}</span>
+      </button>`).join('')+'</div>';
+  }
+  glass.innerHTML=html;
+  glass.querySelectorAll('.slot').forEach(b=>{
+    b.onclick=()=>dispense(FILMS.find(f=>f.id===b.dataset.id), b);
+  });
+  setLed(null, `${list.length}개 상품 진열 중`);
+}
+$('q').addEventListener('input', e=>{ query=e.target.value.trim(); renderShelves(); });
+
+/* ── LED · 키패드 ── */
+function setLed(code,msg){
+  ledCode.textContent = code || (entry ? entry+'_' : '- -');
+  if(msg) ledMsg.textContent = msg;
+}
+function buildKeypad(){
+  const kp=$('keypad'); kp.innerHTML='';
+  ROWS.forEach(r=>{
+    const b=document.createElement('button');
+    b.className='key'; b.type='button'; b.textContent=r;
+    b.onclick=()=>press(r); kp.appendChild(b);
+  });
+  for(let n=1;n<=SLOT_COLS;n++){
+    const b=document.createElement('button');
+    b.className='key'; b.type='button'; b.textContent=n;
+    b.onclick=()=>press(String(n)); kp.appendChild(b);
+  }
+  const rnd=document.createElement('button');
+  rnd.className='key wide act'; rnd.type='button'; rnd.textContent='랜덤 뽑기';
+  rnd.onclick=()=>{ const f=FILMS[Math.floor(Math.random()*FILMS.length)];
+    entry=''; dispense(f); };
+  kp.appendChild(rnd);
+  const clr=document.createElement('button');
+  clr.className='key wide warn'; clr.type='button'; clr.textContent='취소';
+  clr.onclick=()=>{ entry=''; setLed(null,'입력을 지웠습니다'); };
+  kp.appendChild(clr);
+}
+function press(ch){
+  if(/[A-Z]/.test(ch)){ entry=ch; setLed(null,'번호를 눌러 주세요'); }
+  else {
+    if(!entry){ setLed(null,'먼저 행 문자를 눌러 주세요'); return; }
+    entry+=ch;
+    const f=FILMS.find(x=>x.code===entry);
+    if(f){ const code=entry; entry=''; setLed(code,'출고 중…'); dispense(f); }
+    else { setLed(entry,'없는 코드입니다'); entry=''; }
+    return;
+  }
+  setLed();
+}
+
+/* ── 출고 ── */
+function dispense(f, trigger){
+  if(!f) return;
+  history = [f, ...history.filter(x=>x.id!==f.id)].slice(0,4);
+  renderTray(true);
+  setLed(f.code, `${f.ko} 출고 완료`);
+  openSheet(f, trigger);
+}
+function renderTray(anim){
+  if(!history.length){ trayEl.innerHTML='<span class="hint">아직 뽑은 작품이 없습니다.</span>'; return; }
+  trayEl.innerHTML = history.map((f,i)=>`
+    <button class="dropped ${anim&&i===0?'anim':''}" type="button" data-id="${f.id}" aria-label="${f.ko} 다시 보기">
+      <span class="mini">${f.poster}</span>
+      <span class="tx">${f.ko}<small>${f.code} · ${f.year}</small></span>
+    </button>`).join('');
+  trayEl.querySelectorAll('.dropped').forEach(b=>{
+    b.onclick=()=>openSheet(FILMS.find(f=>f.id===b.dataset.id), b);
+  });
+}
+
+/* ── 상세 (제품 라벨) ── */
+function openSheet(f, trigger){
+  if(!f) return;
+  lastFocused=trigger||null;
+  const inCmp = cmpSel.includes(f.id);
+  sheet.innerHTML=`
+  <div class="sheet-top">
+    <button class="close-btn" type="button" aria-label="닫기" onclick="closeSheet()"><span class="material-icons-outlined">close</span></button>
+    <div class="sheet-poster">${f.poster}</div>
+    <div class="sheet-head">
+      <span class="slotcode">SLOT ${f.code}</span>
+      <h2 id="sheetTitle">${f.ko}</h2>
+      <p class="en">${f.en} · <span class="yr">${f.year}</span> · ${f.theme}</p>
+      <p class="line">“${f.taglineKo}”<span class="orig">${f.tagline}</span></p>
+    </div>
+  </div>
+  <div class="sheet-act">
+    <button class="btn btn-secondary" type="button" id="addCmp">
+      <span class="material-icons-outlined">${inCmp?'remove_circle_outline':'add_circle_outline'}</span>
+      ${inCmp?'비교 트레이에서 빼기':'비교 트레이에 담기'}</button>
+  </div>
+  <section class="section">
+    <h3><span class="material-icons-outlined">lightbulb</span>컨셉</h3>
+    <div class="concept"><strong>이야기의 출발점</strong>${f.concept}</div>
+    <div class="concept"><strong>창작 관점에서 눈여겨볼 점</strong>${f.core}</div>
+  </section>
+  <section class="section">
+    <h3><span class="material-icons-outlined">groups</span>등장인물 <span class="cnt">${f.people.length}명</span></h3>
+    <div class="people">${f.people.map(p=>`
+      <div class="person"><div class="row"><span class="nm">${p.n}</span><span class="rl">${p.r}</span></div>
+      <p class="ds">${p.d}</p></div>`).join('')}</div>
+  </section>
+  <section class="section">
+    <h3><span class="material-icons-outlined">public</span>세계 <span class="cnt">${f.worlds.length}곳</span></h3>
+    <div class="worlds">${f.worlds.map(w=>`
+      <div class="world"><p class="nm">${w.n}</p><p class="ds">${w.d}</p></div>`).join('')}</div>
+  </section>
+  <p class="note"><strong>포스터 안내</strong> — 공식 포스터는 저작권 보호 대상이므로, 각 작품의 컨셉과 색채를 바탕으로 제작한 오리지널 추상 이미지를 사용했습니다.</p>
+  <p class="src">정보 출처: <a href="${f.src}" target="_blank" rel="noopener noreferrer">Pixar Animation Studios 공식 사이트</a><br>${f.src}</p>`;
+  $('addCmp').onclick=()=>{ toggleCmp(f.id); openSheet(f, lastFocused); };
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+  sheet.querySelector('.close-btn').focus();
+}
+function closeSheet(){
+  overlay.classList.remove('open');
+  document.body.style.overflow='';
+  if(lastFocused && document.contains(lastFocused)) lastFocused.focus();
+}
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeSheet(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.classList.contains('open')) closeSheet(); });
+
+/* ── 비교 트레이 ── */
+function buildCmpChips(){
+  cmpChips.innerHTML='';
+  FILMS.forEach(f=>{
+    const b=document.createElement('button');
+    b.className='pchip'; b.type='button'; b.dataset.id=f.id;
+    b.textContent=`${f.code} ${f.ko}`;
+    b.setAttribute('aria-pressed', cmpSel.includes(f.id));
+    b.onclick=()=>{ toggleCmp(f.id); };
+    cmpChips.appendChild(b);
+  });
+}
+function toggleCmp(id){
+  const i=cmpSel.indexOf(id);
+  if(i>=0) cmpSel.splice(i,1);
+  else { if(cmpSel.length>=MAX_CMP) cmpSel.shift(); cmpSel.push(id); }
+  renderCompare();
+}
+$('cmpClear').onclick=()=>{ cmpSel=[]; renderCompare(); };
+$('cmpRandom').onclick=()=>{ cmpSel=[...FILMS].sort(()=>Math.random()-.5).slice(0,3).map(f=>f.id); renderCompare(); };
+
+function renderCompare(){
+  [...cmpChips.children].forEach(c=>c.setAttribute('aria-pressed', cmpSel.includes(c.dataset.id)));
+
+  if(cmpSel.length===0){
+    cmpNote.innerHTML = `트레이가 비어 있어 <strong>전체 ${FILMS.length}편</strong>의 한 줄 요약을 보여 줍니다. 아래에서 작품을 담으면 항목별로 나란히 비교합니다.`;
+    cmpBody.innerHTML = `<div class="sum-list">${FILMS.map(f=>`
+      <article class="sum-item">
+        <div class="hd"><span class="cd">${f.code}</span><span class="tt">${f.ko}</span>
+          <span class="yy">${f.year}</span><span class="th">${f.theme}</span></div>
+        <p class="ln">${oneLine(f)}</p>
+        <p class="dv">${f.core}</p>
+        <p class="st">인물 ${f.people.length}명 · 세계 ${f.worlds.length}곳</p>
+      </article>`).join('')}</div>`;
+    return;
+  }
+
+  const sel = FILMS.filter(f=>cmpSel.includes(f.id));
+  cmpNote.innerHTML = sel.length===1
+    ? '한 편 더 담으면 나란히 비교됩니다. 좌우로 밀어 살펴보세요.'
+    : `<strong>${sel.length}편</strong>을 비교 중입니다. 좌우로 밀어 살펴보세요. (최대 ${MAX_CMP}편)`;
+
+  const row=(lb,html)=>`<div class="cmp-row"><p class="lb">${lb}</p>${html}</div>`;
+  cmpBody.innerHTML = `<div class="cmp-scroll"><div class="cmp-cols">${sel.map(f=>`
+    <article class="cmp-col">
+      <div class="top"><p class="t">${f.code} · ${f.ko}</p><p class="y">${f.en} · ${f.year} · ${f.theme}</p></div>
+      ${row('컨셉 문장', `<p class="vl">“${f.taglineKo}”</p>`)}
+      ${row('이야기의 출발점', `<p class="vl">${oneLine(f)}</p>`)}
+      ${row('창작 장치', `<p class="vl">${f.core}</p>`)}
+      ${row(`주요 인물 (총 ${f.people.length}명)`, `<ul>${f.people.slice(0,4).map(p=>`<li><strong>${p.n}</strong> — ${p.r}</li>`).join('')}</ul>`)}
+      ${row(`주요 세계 (총 ${f.worlds.length}곳)`, `<ul>${f.worlds.slice(0,4).map(w=>`<li>${w.n}</li>`).join('')}</ul>`)}
+      ${row('규모', `<p class="num">${f.people.length}<small> 인물</small> &nbsp; ${f.worlds.length}<small> 세계</small></p>`)}
+    </article>`).join('')}</div></div>`;
+}
+
+/* ── 초기화 ── */
+buildKeypad();
+buildCmpChips();
+renderShelves();
+renderTray(false);
+renderCompare();
+</script>
+</body>
+</html>

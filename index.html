@@ -33,6 +33,10 @@ html{-webkit-text-size-adjust:100%;}
 body{font-size:16px;line-height:1.6;color:var(--color-gray-900);background:var(--color-gray-100);
   min-height:100vh;display:flex;flex-direction:column;}
 main{flex:1;width:100%;}
+.skip-link{position:fixed;left:12px;top:12px;z-index:100;transform:translateY(-160%);padding:10px 14px;
+  border-radius:8px;background:var(--color-white);color:var(--color-primary);font-weight:800;text-decoration:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.24);}
+.skip-link:focus{transform:translateY(0);}
 .wrap{max-width:1120px;margin:0 auto;padding-left:var(--pad-side);padding-right:var(--pad-side);}
 :focus-visible{outline:3px solid var(--color-secondary);outline-offset:2px;border-radius:var(--border-radius-sm);}
 .material-icons-outlined{font-family:'Material Icons Outlined';font-style:normal;}
@@ -96,6 +100,12 @@ main{flex:1;width:100%;}
 /* ── 조작 패널 ── */
 .panel{background:linear-gradient(180deg,#0C3350,#0A2A44);border-radius:14px;
   border:2px solid rgba(95,227,208,.16);padding:12px;display:flex;flex-direction:column;gap:12px;}
+.panel{order:-1;}
+.filter-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px;}
+.result-count{font-size:12px;color:var(--vm-text-dim);}
+.reset-filter{border:0;background:transparent;color:var(--vm-neon);font-size:12px;font-weight:700;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;}
+.reset-filter[hidden]{display:none;}
 .led{background:#04141F;border:2px solid rgba(95,227,208,.3);border-radius:9px;padding:11px 13px;
   min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:3px;}
 .led .l1{font-size:11px;color:var(--vm-text-dim);letter-spacing:1px;font-weight:700;}
@@ -146,6 +156,14 @@ main{flex:1;width:100%;}
 .dropped.anim{animation:drop .42s cubic-bezier(.3,1.2,.5,1);}
 
 .vm-foot{padding:10px 4px 0;font-size:11px;color:var(--vm-text-dim);text-align:center;}
+.tab-count{min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center;border-radius:999px;
+  background:rgba(255,255,255,.13);font-size:11px;line-height:1;}
+.vm-tab[aria-selected="true"] .tab-count{background:rgba(7,50,42,.14);}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));z-index:90;transform:translate(-50%,20px);
+  width:max-content;max-width:calc(100% - 32px);padding:11px 16px;border-radius:999px;background:#04141F;
+  color:var(--color-white);font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;
+  pointer-events:none;transition:opacity .2s,transform .2s;}
+.toast.show{opacity:1;transform:translate(-50%,0);}
 
 /* ── 비교 트레이 뷰 ── */
 .cmp-wrap{padding:2px 0 0;}
@@ -261,6 +279,7 @@ main{flex:1;width:100%;}
   .pagehead h1{font-size:32px;}
   .pagehead p{font-size:15px;}
   .vm-grid{grid-template-columns:1fr 288px;gap:14px;align-items:start;}
+  .panel{order:0;}
   .shelf{grid-template-columns:repeat(4,1fr);gap:12px;}
   .panel{position:sticky;top:14px;}
   .worlds,.people{grid-template-columns:1fr 1fr;}
@@ -280,8 +299,9 @@ main{flex:1;width:100%;}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#mainContent">본문으로 바로가기</a>
 
-<main>
+<main id="mainContent" tabindex="-1">
   <div class="wrap">
     <header class="pagehead">
       <span class="eyebrow"><span class="material-icons-outlined">local_library</span>스토리 리서치 아카이브</span>
@@ -299,7 +319,7 @@ main{flex:1;width:100%;}
         <button class="vm-tab" id="tabGallery" role="tab" aria-selected="true" aria-controls="viewGallery">
           <span class="material-icons-outlined">storefront</span>진열대</button>
         <button class="vm-tab" id="tabCompare" role="tab" aria-selected="false" aria-controls="viewCompare">
-          <span class="material-icons-outlined">compare_arrows</span>비교 트레이</button>
+          <span class="material-icons-outlined">compare_arrows</span>비교 트레이 <span class="tab-count" id="cmpCount">0</span></button>
       </div>
 
       <!-- 진열대 -->
@@ -319,6 +339,10 @@ main{flex:1;width:100%;}
               <input id="q" class="vm-input" type="search" placeholder="작품·인물·장소 검색" aria-label="작품 검색" />
             </div>
             <div class="pchips" id="chips" role="group" aria-label="주제별 필터"></div>
+            <div class="filter-meta">
+              <span class="result-count" id="resultCount" role="status"></span>
+              <button class="reset-filter" id="resetFilter" type="button" hidden>검색·필터 초기화</button>
+            </div>
           </aside>
         </div>
 
@@ -349,6 +373,7 @@ main{flex:1;width:100%;}
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheet" id="sheet"></div>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <footer class="chichiboo-footer">
   <a href="https://litt.ly/chichiboo" target="_blank" rel="noopener noreferrer">
@@ -645,21 +670,34 @@ const $ = id => document.getElementById(id);
 const glass=$('glass'), chipsBox=$('chips'), overlay=$('overlay'), sheet=$('sheet');
 const ledCode=$('ledCode'), ledMsg=$('ledMsg'), trayEl=$('tray');
 const cmpChips=$('cmpChips'), cmpBody=$('cmpBody'), cmpNote=$('cmpNote');
+const resultCount=$('resultCount'), resetFilter=$('resetFilter'), toast=$('toast');
 let lastFocused=null;
+let toastTimer=null;
 
 $('heroDesc').innerHTML = `${FILMS.length}편의 작품을 <strong>컨셉 · 등장인물 · 세계</strong> 세 축으로 정리했습니다. `
  + `진열대에서 한 편을 뽑거나, 비교 트레이에 여러 편을 올려 나란히 살펴보세요.`;
 
 /* ── 탭 ── */
 function setTab(name){
-  $('tabGallery').setAttribute('aria-selected', name==='gallery');
-  $('tabCompare').setAttribute('aria-selected', name==='compare');
+  const galleryActive=name==='gallery';
+  $('tabGallery').setAttribute('aria-selected', galleryActive);
+  $('tabCompare').setAttribute('aria-selected', !galleryActive);
+  $('tabGallery').tabIndex=galleryActive?0:-1;
+  $('tabCompare').tabIndex=galleryActive?-1:0;
   $('viewGallery').hidden = name!=='gallery';
   $('viewCompare').hidden = name!=='compare';
   if(name==='compare') renderCompare();
 }
 $('tabGallery').onclick=()=>setTab('gallery');
 $('tabCompare').onclick=()=>setTab('compare');
+$('tabCompare').tabIndex=-1;
+$('tabGallery').parentElement.addEventListener('keydown',e=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+  e.preventDefault();
+  const toCompare=e.key==='ArrowRight'||e.key==='End';
+  setTab(toCompare?'compare':'gallery');
+  $(toCompare?'tabCompare':'tabGallery').focus();
+});
 
 /* ── 필터 ── */
 THEMES.forEach(t=>{
@@ -685,6 +723,8 @@ function matches(f){
 /* ── 진열대 ── */
 function renderShelves(){
   const list=FILMS.filter(matches);
+  resultCount.textContent=`전체 ${FILMS.length}편 중 ${list.length}편 표시`;
+  resetFilter.hidden=!query && activeTheme==='전체';
   if(!list.length){
     glass.innerHTML='<p class="empty">해당하는 상품이 없습니다.<br>검색어나 주제를 바꿔 보세요.</p>';
     setLed(null,'조건에 맞는 상품 없음'); return;
@@ -706,6 +746,16 @@ function renderShelves(){
   setLed(null, `${list.length}개 상품 진열 중`);
 }
 $('q').addEventListener('input', e=>{ query=e.target.value.trim(); renderShelves(); });
+resetFilter.onclick=()=>{
+  query=''; activeTheme='전체'; $('q').value='';
+  [...chipsBox.children].forEach(c=>c.setAttribute('aria-pressed',c.textContent==='전체'));
+  renderShelves(); $('q').focus();
+};
+
+function showToast(message){
+  toast.textContent=message; toast.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),2600);
+}
 
 /* ── LED · 키패드 ── */
 function setLed(code,msg){
@@ -808,16 +858,29 @@ function openSheet(f, trigger){
   <p class="src">정보 출처: <a href="${f.src}" target="_blank" rel="noopener noreferrer">Pixar Animation Studios 공식 사이트</a><br>${f.src}</p>`;
   $('addCmp').onclick=()=>{ toggleCmp(f.id); openSheet(f, lastFocused); };
   overlay.classList.add('open');
+  document.querySelector('main').setAttribute('inert','');
+  document.querySelector('footer').setAttribute('inert','');
   document.body.style.overflow='hidden';
   sheet.querySelector('.close-btn').focus();
 }
 function closeSheet(){
   overlay.classList.remove('open');
+  document.querySelector('main').removeAttribute('inert');
+  document.querySelector('footer').removeAttribute('inert');
   document.body.style.overflow='';
   if(lastFocused && document.contains(lastFocused)) lastFocused.focus();
 }
 overlay.addEventListener('click', e=>{ if(e.target===overlay) closeSheet(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.classList.contains('open')) closeSheet(); });
+document.addEventListener('keydown', e=>{
+  if(!overlay.classList.contains('open')) return;
+  if(e.key==='Escape'){ closeSheet(); return; }
+  if(e.key!=='Tab') return;
+  const focusable=[...sheet.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')];
+  if(!focusable.length) return;
+  const first=focusable[0], last=focusable[focusable.length-1];
+  if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+});
 
 /* ── 비교 트레이 ── */
 function buildCmpChips(){
@@ -834,14 +897,20 @@ function buildCmpChips(){
 function toggleCmp(id){
   const i=cmpSel.indexOf(id);
   if(i>=0) cmpSel.splice(i,1);
-  else { if(cmpSel.length>=MAX_CMP) cmpSel.shift(); cmpSel.push(id); }
+  else {
+    if(cmpSel.length>=MAX_CMP){ showToast(`최대 ${MAX_CMP}편까지 비교할 수 있습니다.`); return false; }
+    cmpSel.push(id);
+  }
   renderCompare();
+  return true;
 }
 $('cmpClear').onclick=()=>{ cmpSel=[]; renderCompare(); };
 $('cmpRandom').onclick=()=>{ cmpSel=[...FILMS].sort(()=>Math.random()-.5).slice(0,3).map(f=>f.id); renderCompare(); };
 
 function renderCompare(){
   [...cmpChips.children].forEach(c=>c.setAttribute('aria-pressed', cmpSel.includes(c.dataset.id)));
+  $('cmpCount').textContent=cmpSel.length;
+  $('cmpCount').setAttribute('aria-label',`${cmpSel.length}편 선택됨`);
 
   if(cmpSel.length===0){
     cmpNote.innerHTML = `트레이가 비어 있어 <strong>전체 ${FILMS.length}편</strong>의 한 줄 요약을 보여 줍니다. 아래에서 작품을 담으면 항목별로 나란히 비교합니다.`;

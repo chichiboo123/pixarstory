@@ -46,7 +46,7 @@ button{font:inherit;color:inherit;}
   border-radius:8px;background:var(--color-white);color:var(--color-primary);font-weight:800;text-decoration:none;
   box-shadow:0 4px 16px rgba(0,0,0,.24);}
 .skip-link:focus{transform:translateY(0);}
-.wrap{max-width:1180px;margin:0 auto;padding-left:var(--pad-side);padding-right:var(--pad-side);}
+.wrap{max-width:2400px;margin:0 auto;padding-left:var(--pad-side);padding-right:var(--pad-side);}
 :focus-visible{outline:3px solid var(--color-secondary);outline-offset:2px;border-radius:var(--border-radius-sm);}
 .machine :focus-visible,.overlay .on-dark:focus-visible{outline-color:#8CFFEC;}
 .material-icons-outlined{font-family:'Material Icons Outlined';font-style:normal;font-weight:400;
@@ -104,10 +104,10 @@ html.no-icons [data-fb]::after{content:attr(data-fb);font-size:11px;font-weight:
 .vm-grid{display:grid;grid-template-columns:1fr;gap:12px;}
 .glass{background:linear-gradient(180deg,var(--vm-glass) 0%,var(--vm-glass-2) 100%);
   border-radius:14px;border:2px solid rgba(95,227,208,.18);padding:12px 12px 4px;
-  box-shadow:inset 0 3px 14px rgba(0,0,0,.45);position:relative;overflow:hidden;}
+  box-shadow:inset 0 3px 14px rgba(0,0,0,.45);position:relative;overflow:hidden;--shelf-cols:2;}
 .glass::after{content:"";position:absolute;top:0;left:-30%;width:38%;height:100%;
   background:linear-gradient(105deg,transparent,rgba(255,255,255,.055),transparent);pointer-events:none;}
-.shelf{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+.shelf{display:grid;grid-template-columns:repeat(var(--shelf-cols),1fr);gap:10px;
   padding-bottom:12px;margin-bottom:12px;border-bottom:5px solid var(--vm-ledge);
   border-radius:0 0 3px 3px;box-shadow:0 3px 5px rgba(0,0,0,.28);}
 .shelf:last-child{margin-bottom:6px;}
@@ -203,8 +203,11 @@ html.no-icons [data-fb]::after{content:attr(data-fb);font-size:11px;font-weight:
 .sortbar button[aria-pressed="true"]{background:rgba(95,227,208,.9);color:#06302A;border-color:var(--vm-neon);}
 
 /* ── 출고구 ── */
+/* 좁은 화면에서는 래퍼를 투명하게 두어 패널 → 진열장 → 출고구 순서를 유지하고,
+   넓은 화면에서는 패널과 출고구가 한 기둥으로 묶여 우측 여백을 채운다 */
+.side{display:contents;}
 .tray{background:#06182A;border-radius:12px;border:2px solid rgba(95,227,208,.14);
-  padding:12px;box-shadow:inset 0 5px 16px rgba(0,0,0,.55);margin-top:12px;}
+  padding:12px;box-shadow:inset 0 5px 16px rgba(0,0,0,.55);order:1;}
 .tray .lb{font-size:11px;font-weight:800;color:var(--vm-text-dim);letter-spacing:1.5px;margin-bottom:9px;
   display:flex;align-items:center;gap:6px;}
 .tray .lb .material-icons-outlined{font-size:15px;}
@@ -460,14 +463,20 @@ select.sel:focus{outline:3px solid var(--color-secondary);outline-offset:2px;}
 .chichiboo-footer a:hover{color:var(--color-primary);}
 .chichiboo-footer .material-icons-outlined{font-size:16px;}
 
-/* ── 반응형 ── */
+/* ── 반응형 ──
+   진열대 열 수는 .glass의 --shelf-cols 하나로만 정한다. 슬롯 코드(A1~H3)는
+   SLOT_COLS=4로 고정이고, 화면에 몇 장씩 놓을지는 이 값이 결정한다.
+   JS가 이 값을 읽어 카드를 묶으므로 여기만 고치면 된다. */
 @media (min-width:480px){
   :root{--pad-side:20px;}
   .pagehead h1{font-size:28px;}
-  .shelf{grid-template-columns:repeat(3,1fr);}
+  .glass{--shelf-cols:3;}
   .slot .nm{font-size:14px;}
   .sum-list{grid-template-columns:1fr 1fr;}
   .wn{grid-template-columns:1fr 1fr;}
+}
+@media (min-width:700px){
+  .glass{--shelf-cols:4;}
 }
 @media (min-width:768px){
   :root{--pad-side:24px;}
@@ -475,9 +484,7 @@ select.sel:focus{outline:3px solid var(--color-secondary);outline-offset:2px;}
   .pagehead{padding:var(--spacing-xl) 0 var(--spacing-lg);}
   .pagehead h1{font-size:32px;}
   .pagehead p{font-size:15px;}
-  .vm-grid{grid-template-columns:1fr 300px;gap:14px;align-items:start;}
-  .panel{order:0;position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;}
-  .shelf{grid-template-columns:repeat(4,1fr);gap:12px;}
+  .shelf{gap:12px;}
   .worlds,.people,.craft{grid-template-columns:1fr 1fr;}
   .overlay{padding:var(--spacing-md);}
   .sheet{margin:var(--spacing-lg) auto;min-height:0;border-radius:var(--border-radius-lg);}
@@ -492,9 +499,50 @@ select.sel:focus{outline:3px solid var(--color-secondary);outline-offset:2px;}
   .rules{grid-template-columns:1fr 1fr;}
   .lab-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
 }
+/* 조작 패널이 옆으로 붙는 시점 — 그만큼 진열장이 좁아지므로 열 수를 한 번 줄인다 */
+@media (min-width:900px){
+  .vm-grid{grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start;}
+  .side{display:flex;flex-direction:column;gap:12px;order:0;
+    position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;}
+  .panel{order:0;}
+  .tray .slotmouth{flex-direction:column;align-items:stretch;}
+  .glass{--shelf-cols:3;}
+}
 @media (min-width:1024px){
   .sum-list{grid-template-columns:repeat(3,1fr);}
   .rules{grid-template-columns:repeat(3,1fr);}
+}
+@media (min-width:1200px){
+  .glass{--shelf-cols:4;}
+  #patternsBox{grid-template-columns:1fr 1fr;}
+}
+@media (min-width:1280px){
+  .sheet{max-width:1160px;}
+  .worlds,.people,.craft{grid-template-columns:repeat(3,1fr);}
+  /* 비교 칼럼이 남는 폭을 나눠 갖도록 — 좁아지면 다시 가로 스크롤 */
+  .cmp-cols{width:100%;}
+  .cmp-col{flex:1 1 0;min-width:292px;max-width:none;}
+}
+@media (min-width:1440px){
+  .vm-grid{grid-template-columns:minmax(0,1fr) 320px;}
+  .sum-list{grid-template-columns:repeat(4,1fr);}
+  .rules{grid-template-columns:repeat(4,1fr);}
+  .spine-grid{grid-template-columns:repeat(3,1fr);}
+}
+@media (min-width:1400px){
+  .glass{--shelf-cols:5;}
+}
+@media (min-width:1700px){
+  .glass{--shelf-cols:6;}
+  .sum-list{grid-template-columns:repeat(5,1fr);}
+  .rules{grid-template-columns:repeat(5,1fr);}
+  #patternsBox{grid-template-columns:repeat(3,1fr);}
+}
+@media (min-width:2150px){
+  .glass{--shelf-cols:7;}
+  .sum-list{grid-template-columns:repeat(6,1fr);}
+  .rules{grid-template-columns:repeat(6,1fr);}
+  .vm-grid{grid-template-columns:minmax(0,1fr) 340px;}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto;}
@@ -545,7 +593,8 @@ select.sel:focus{outline:3px solid var(--color-secondary);outline-offset:2px;}
         <div class="vm-grid">
           <div class="glass" id="glass"></div>
 
-          <aside class="panel" aria-label="검색 및 조작 패널">
+          <div class="side">
+            <aside class="panel" aria-label="검색 및 조작 패널">
             <div>
               <p class="panel-lb"><span class="material-icons-outlined" aria-hidden="true">search</span>검색</p>
               <div class="vm-search">
@@ -591,16 +640,17 @@ select.sel:focus{outline:3px solid var(--color-secondary);outline-offset:2px;}
                 <div class="keypad" id="keypad"></div>
               </div>
             </details>
-          </aside>
-        </div>
+            </aside>
 
-        <div class="tray">
-          <p class="lb">
-            <span class="material-icons-outlined" aria-hidden="true">move_to_inbox</span>출고구 · 최근 본 작품
-            <span class="sp"></span>
-            <button class="reset-filter" type="button" id="clearHistory" hidden>기록 지우기</button>
-          </p>
-          <div class="slotmouth" id="tray"><span class="hint">아직 뽑은 작품이 없습니다.</span></div>
+            <div class="tray">
+              <p class="lb">
+                <span class="material-icons-outlined" aria-hidden="true">move_to_inbox</span>출고구 · 최근 본 작품
+                <span class="sp"></span>
+                <button class="reset-filter" type="button" id="clearHistory" hidden>기록 지우기</button>
+              </p>
+              <div class="slotmouth" id="tray"><span class="hint">아직 뽑은 작품이 없습니다.</span></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -2156,6 +2206,13 @@ function sortList(list){
   else c.sort((a,b)=>a.year-b.year || a.ko.localeCompare(b.ko,'ko'));
   return c;
 }
+/* 한 선반에 몇 장을 놓을지는 CSS의 --shelf-cols가 정한다.
+   슬롯 코드(A1~H3)는 SLOT_COLS 기준이라 화면 폭과 무관하게 그대로다. */
+let lastCols=null;
+function visualCols(){
+  const v=parseInt(getComputedStyle(glass).getPropertyValue('--shelf-cols'),10);
+  return Number.isFinite(v) && v>0 ? v : SLOT_COLS;
+}
 function renderShelves(){
   const list = sortList(FILMS.filter(matches));
   viewList = list;
@@ -2177,8 +2234,9 @@ function renderShelves(){
     return;
   }
   let html='';
-  for(let i=0;i<list.length;i+=SLOT_COLS){
-    html+='<div class="shelf">'+list.slice(i,i+SLOT_COLS).map(f=>{
+  const cols=visualCols(); lastCols=cols;
+  for(let i=0;i<list.length;i+=cols){
+    html+='<div class="shelf">'+list.slice(i,i+cols).map(f=>{
       const inCmp=cmpSel.includes(f.id);
       return `<div class="slot-wrap">
         <button class="slot${inCmp?' is-cmp':''}" type="button" data-id="${f.id}"
@@ -2225,6 +2283,11 @@ glass.addEventListener('click', e=>{
   if(act.dataset.act==='reset') doReset();
   if(act.dataset.act==='random') randomPick();
 });
+
+/* 창 크기가 바뀌어 열 수가 달라졌을 때만 다시 그린다 */
+window.addEventListener('resize', debounce(()=>{
+  if(visualCols()!==lastCols) renderShelves();
+}, 150));
 
 const onSearch = debounce(()=>{ renderShelves(); save(); syncUrl(); }, 160);
 $('q').addEventListener('input', e=>{ query=e.target.value.trim(); onSearch(); });

@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>픽사 스토리 자판기 | 작품·컨셉·인물·세계</title>
+<title>픽사 스토리 자판기 | 작품·컨셉·인물·세계 그리고 창작 실험실</title>
+<meta name="description" content="픽사 장편 31편의 컨셉·등장인물·세계관을 검색하고 비교하는 창작 리서치 아카이브. 스토리 스파인 빌더와 What-if 프리미스 생성기로 나만의 이야기를 설계해 보세요." />
+<meta name="theme-color" content="#0E3A5C" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="픽사 스토리 자판기" />
+<meta property="og:description" content="픽사 장편 31편의 창작 장치를 뜯어보고, 스토리 스파인으로 내 이야기를 설계하는 리서치 도구." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E3A5C'/%3E%3Ccircle cx='16' cy='13' r='6' fill='%235FE3D0'/%3E%3Crect x='7' y='22' width='18' height='4' rx='2' fill='%235FE3D0' opacity='.6'/%3E%3C/svg%3E" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <style>
@@ -20,27 +26,38 @@
   --border-radius-sm:4px; --border-radius-md:8px; --border-radius-lg:16px;
   --spacing-xs:4px; --spacing-sm:8px; --spacing-md:16px; --spacing-lg:24px; --spacing-xl:40px;
   --pad-side:16px;
-  /* 자판기 전용 */
+  /* 자판기 전용 (어두운 표면 위 텍스트는 명도 대비 4.5:1 이상 확보) */
   --vm-body:#0E3A5C; --vm-body-2:#0A2A44; --vm-edge:#08243A;
   --vm-glass:#132B3F; --vm-glass-2:#0D2032;
   --vm-ledge:#1D5C8A; --vm-neon:#5FE3D0; --vm-btn:#123E5F;
-  --vm-text:#DDEAF5; --vm-text-dim:#8FB0C9;
+  --vm-text:#EAF3FA; --vm-text-dim:#AECBE0; --vm-text-faint:#8FB0C9;
+  --vm-line:rgba(95,227,208,.24);
+  --tap:44px;
 }
 *{box-sizing:border-box;margin:0;padding:0;
   font-family:'Pretendard GOV','Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 h1,h2,h3,h4,p,span,li,td,th,a,button,div,label{word-break:keep-all;overflow-wrap:break-word;line-break:strict;}
-html{-webkit-text-size-adjust:100%;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
 body{font-size:16px;line-height:1.6;color:var(--color-gray-900);background:var(--color-gray-100);
   min-height:100vh;display:flex;flex-direction:column;}
 main{flex:1;width:100%;}
+button{font:inherit;color:inherit;}
 .skip-link{position:fixed;left:12px;top:12px;z-index:100;transform:translateY(-160%);padding:10px 14px;
   border-radius:8px;background:var(--color-white);color:var(--color-primary);font-weight:800;text-decoration:none;
   box-shadow:0 4px 16px rgba(0,0,0,.24);}
 .skip-link:focus{transform:translateY(0);}
-.wrap{max-width:1120px;margin:0 auto;padding-left:var(--pad-side);padding-right:var(--pad-side);}
+.wrap{max-width:1180px;margin:0 auto;padding-left:var(--pad-side);padding-right:var(--pad-side);}
 :focus-visible{outline:3px solid var(--color-secondary);outline-offset:2px;border-radius:var(--border-radius-sm);}
-.material-icons-outlined{font-family:'Material Icons Outlined';font-style:normal;}
+.machine :focus-visible,.overlay .on-dark:focus-visible{outline-color:#8CFFEC;}
+.material-icons-outlined{font-family:'Material Icons Outlined';font-style:normal;font-weight:400;
+  display:inline-block;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;
+  direction:ltr;word-wrap:normal;overflow:hidden;max-width:1em;
+  font-feature-settings:'liga';-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;}
+/* 아이콘 폰트를 못 불러오면(오프라인·CDN 차단) 글리프 대신 짧은 글자를 보여 준다 */
+html.no-icons .material-icons-outlined{display:none;}
+html.no-icons [data-fb]::after{content:attr(data-fb);font-size:11px;font-weight:800;line-height:1;}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+[hidden]{display:none!important;}
 
 /* ── 페이지 헤더 ── */
 .pagehead{padding:var(--spacing-lg) 0 var(--spacing-md);text-align:center;}
@@ -49,7 +66,8 @@ main{flex:1;width:100%;}
   border-radius:999px;margin-bottom:var(--spacing-sm);border:1px solid var(--color-gray-300);}
 .pagehead .eyebrow .material-icons-outlined{font-size:15px;}
 .pagehead h1{font-size:25px;line-height:1.3;font-weight:800;color:var(--color-gray-900);letter-spacing:-.5px;}
-.pagehead p{margin:var(--spacing-sm) auto 0;font-size:14px;color:var(--color-gray-500);max-width:52ch;}
+.pagehead p{margin:var(--spacing-sm) auto 0;font-size:14px;color:var(--color-gray-700);max-width:56ch;}
+.pagehead p strong{color:var(--color-primary);}
 
 /* ── 자판기 본체 ── */
 .machine{background:linear-gradient(180deg,var(--vm-body) 0%,var(--vm-body-2) 100%);
@@ -59,18 +77,28 @@ main{flex:1;width:100%;}
   padding:0 4px 12px;flex-wrap:wrap;}
 .vm-brand{display:flex;align-items:center;gap:8px;color:var(--vm-neon);font-size:14px;font-weight:800;letter-spacing:.5px;}
 .vm-brand .material-icons-outlined{font-size:19px;}
+.vm-topright{display:flex;align-items:center;gap:10px;}
 .vm-lamps{display:flex;gap:6px;align-items:center;}
 .lamp{width:9px;height:9px;border-radius:50%;background:var(--vm-neon);opacity:.85;}
 .lamp.b{background:#F2C63C;} .lamp.c{background:#F0873C;}
+.mini-btn{min-height:36px;padding:6px 12px;border-radius:999px;border:1px solid var(--vm-line);
+  background:var(--vm-btn);color:var(--vm-text);font-size:12px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:background .16s,border-color .16s;}
+.mini-btn:hover{background:#17507A;border-color:var(--vm-neon);}
+.mini-btn .material-icons-outlined{font-size:16px;}
 
 /* 탭 = 자판기 상단 셀렉터 */
-.vm-tabs{display:flex;gap:6px;padding:0 4px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.vm-tab{flex:0 0 auto;padding:10px 15px;border-radius:999px;border:1px solid rgba(95,227,208,.3);
+.vm-tabs{display:flex;gap:6px;padding:0 4px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;}
+.vm-tab{flex:0 0 auto;min-height:var(--tap);padding:10px 15px;border-radius:999px;border:1px solid var(--vm-line);
   background:var(--vm-btn);color:var(--vm-text-dim);font-size:14px;font-weight:700;cursor:pointer;
-  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:all .18s;}
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:background .18s,color .18s,border-color .18s;}
 .vm-tab .material-icons-outlined{font-size:18px;}
 .vm-tab:hover{color:var(--vm-text);border-color:var(--vm-neon);}
-.vm-tab[aria-selected="true"]{background:var(--vm-neon);color:#07322A;border-color:var(--vm-neon);}
+.vm-tab[aria-selected="true"]{background:var(--vm-neon);color:#06302A;border-color:var(--vm-neon);}
+.tab-count{min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center;border-radius:999px;
+  background:rgba(255,255,255,.16);font-size:11px;line-height:1;font-weight:800;}
+.vm-tab[aria-selected="true"] .tab-count{background:rgba(6,48,42,.18);}
 
 /* ── 유리창 진열장 ── */
 .vm-grid{display:grid;grid-template-columns:1fr;gap:12px;}
@@ -83,99 +111,153 @@ main{flex:1;width:100%;}
   padding-bottom:12px;margin-bottom:12px;border-bottom:5px solid var(--vm-ledge);
   border-radius:0 0 3px 3px;box-shadow:0 3px 5px rgba(0,0,0,.28);}
 .shelf:last-child{margin-bottom:6px;}
-.slot{background:rgba(255,255,255,.05);border:1px solid rgba(95,227,208,.16);border-radius:10px;
+.slot-wrap{position:relative;display:flex;}
+.slot{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(95,227,208,.16);border-radius:10px;
   padding:7px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px;
-  transition:transform .18s,background .18s,border-color .18s;position:relative;}
+  transition:transform .18s,background .18s,border-color .18s;}
 .slot:hover,.slot:focus-visible{transform:translateY(-4px);background:rgba(95,227,208,.11);border-color:var(--vm-neon);}
+.slot.is-cmp{border-color:var(--vm-neon);background:rgba(95,227,208,.13);}
 .slot .ph{width:100%;aspect-ratio:5/7;border-radius:6px;overflow:hidden;background:#0A1826;}
 .slot .ph svg{width:100%;height:100%;display:block;}
 .slot .nm{font-size:13px;font-weight:700;color:var(--vm-text);line-height:1.35;}
 .slot .yr{font-size:11px;color:var(--vm-text-dim);}
-.slot .code{position:absolute;top:11px;right:11px;background:#07202F;color:var(--vm-neon);
+.slot .th{font-size:10px;font-weight:700;color:#06302A;background:rgba(95,227,208,.72);
+  border-radius:4px;padding:1px 6px;align-self:flex-start;}
+.slot mark{background:rgba(255,216,77,.34);color:#FFE9A8;border-radius:3px;padding:0 2px;}
+.slot-wrap .code{position:absolute;top:11px;left:11px;background:#07202F;color:var(--vm-neon);
   font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 7px;border-radius:5px;
-  border:1px solid rgba(95,227,208,.45);}
-.glass .empty{grid-column:1/-1;text-align:center;padding:var(--spacing-xl) var(--spacing-md);
-  color:var(--vm-text-dim);font-size:14px;}
+  border:1px solid rgba(95,227,208,.5);pointer-events:none;}
+.slot-add{position:absolute;top:7px;right:7px;width:32px;height:32px;border-radius:8px;
+  border:1px solid rgba(95,227,208,.45);background:rgba(7,32,47,.88);color:var(--vm-neon);
+  display:grid;place-items:center;cursor:pointer;transition:background .16s,transform .16s;z-index:2;}
+.slot-add .material-icons-outlined{font-size:18px;}
+.slot-add:hover{background:var(--vm-neon);color:#06302A;}
+.slot-add[aria-pressed="true"]{background:var(--vm-neon);color:#06302A;}
+.glass .empty{grid-column:1/-1;text-align:center;padding:var(--spacing-xl) var(--spacing-md);color:var(--vm-text-dim);}
+.glass .empty p{font-size:14px;margin-bottom:var(--spacing-md);}
+.glass .empty .acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
 
 /* ── 조작 패널 ── */
 .panel{background:linear-gradient(180deg,#0C3350,#0A2A44);border-radius:14px;
-  border:2px solid rgba(95,227,208,.16);padding:12px;display:flex;flex-direction:column;gap:12px;}
-.panel{order:-1;}
-.filter-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px;}
-.result-count{font-size:12px;color:var(--vm-text-dim);}
+  border:2px solid rgba(95,227,208,.16);padding:12px;display:flex;flex-direction:column;gap:12px;order:-1;}
+.panel-lb{font-size:11px;font-weight:800;letter-spacing:1.2px;color:var(--vm-text-faint);
+  display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+.panel-lb .material-icons-outlined{font-size:14px;}
+.filter-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;flex-wrap:wrap;}
+.result-count{font-size:12px;color:var(--vm-text-dim);font-weight:600;}
+.result-count b{color:var(--vm-neon);}
 .reset-filter{border:0;background:transparent;color:var(--vm-neon);font-size:12px;font-weight:700;cursor:pointer;
-  text-decoration:underline;text-underline-offset:3px;}
-.reset-filter[hidden]{display:none;}
+  text-decoration:underline;text-underline-offset:3px;padding:6px 2px;min-height:32px;}
+
 .led{background:#04141F;border:2px solid rgba(95,227,208,.3);border-radius:9px;padding:11px 13px;
   min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:3px;}
-.led .l1{font-size:11px;color:var(--vm-text-dim);letter-spacing:1px;font-weight:700;}
+.led .l1{font-size:11px;color:var(--vm-text-faint);letter-spacing:1px;font-weight:700;}
 .led .l2{font-size:19px;color:var(--vm-neon);font-weight:800;letter-spacing:2px;
   font-variant-numeric:tabular-nums;min-height:26px;}
 .led .l3{font-size:11px;color:var(--vm-text-dim);}
 
 .keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.key{padding:11px 0;border-radius:8px;border:1px solid rgba(95,227,208,.22);background:var(--vm-btn);
-  color:var(--vm-text);font-size:15px;font-weight:800;cursor:pointer;transition:all .12s;}
+.key{min-height:var(--tap);padding:11px 0;border-radius:8px;border:1px solid rgba(95,227,208,.22);background:var(--vm-btn);
+  color:var(--vm-text);font-size:15px;font-weight:800;cursor:pointer;transition:background .12s,border-color .12s,transform .12s;}
 .key:hover{background:#17507A;border-color:var(--vm-neon);}
 .key:active{transform:translateY(2px);}
 .key.wide{grid-column:span 2;font-size:13px;}
-.key.act{background:var(--vm-neon);color:#07322A;border-color:var(--vm-neon);}
+.key.act{background:var(--vm-neon);color:#06302A;border-color:var(--vm-neon);}
 .key.act:hover{background:#7BEEDC;}
-.key.warn{background:#5C2A2A;border-color:rgba(240,135,60,.4);color:#FFD9BD;}
+.key.warn{background:#5C2A2A;border-color:rgba(240,135,60,.5);color:#FFDCC4;}
 .key.warn:hover{background:#7A3838;}
+.kp-box{border:1px solid var(--vm-line);border-radius:10px;background:rgba(4,20,31,.5);padding:0;}
+.kp-box > summary{list-style:none;cursor:pointer;min-height:var(--tap);display:flex;align-items:center;
+  gap:6px;padding:10px 12px;font-size:12px;font-weight:800;letter-spacing:.8px;color:var(--vm-text-dim);}
+.kp-box > summary::-webkit-details-marker{display:none;}
+.kp-box > summary .material-icons-outlined{font-size:16px;}
+.kp-box > summary .chev{margin-left:auto;transition:transform .2s;}
+.kp-box[open] > summary .chev{transform:rotate(180deg);}
+.kp-box[open] > summary{color:var(--vm-neon);border-bottom:1px solid var(--vm-line);}
+.kp-inner{padding:12px;display:flex;flex-direction:column;gap:10px;}
 
 .vm-search{position:relative;}
-.vm-search .material-icons-outlined{position:absolute;left:11px;top:50%;transform:translateY(-50%);
-  color:var(--vm-text-dim);font-size:19px;pointer-events:none;}
-.vm-input{width:100%;padding:11px 12px 11px 38px;border:1px solid rgba(95,227,208,.25);
-  border-radius:8px;font-size:16px;color:var(--vm-text);background:#08202F;outline:none;transition:border-color .2s;}
-.vm-input::placeholder{color:#6A8DA6;}
+.vm-search > .material-icons-outlined{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--vm-text-faint);font-size:19px;pointer-events:none;}
+.vm-input{width:100%;min-height:var(--tap);padding:11px 42px 11px 38px;border:1px solid rgba(95,227,208,.25);
+  border-radius:8px;font-size:16px;color:var(--vm-text);background:#08202F;outline:none;transition:border-color .2s,box-shadow .2s;}
+.vm-input::placeholder{color:#7C9DB5;}
 .vm-input:focus{border-color:var(--vm-neon);box-shadow:0 0 0 3px rgba(95,227,208,.16);}
+.vm-input::-webkit-search-cancel-button{display:none;}
+.clear-q{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;
+  border-radius:999px;background:rgba(255,255,255,.09);color:var(--vm-text-dim);cursor:pointer;display:grid;place-items:center;}
+.clear-q:hover{background:rgba(255,255,255,.18);color:var(--vm-text);}
+.clear-q .material-icons-outlined{font-size:17px;}
 
 .pchips{display:flex;flex-wrap:wrap;gap:5px;}
-.pchip{padding:7px 11px;border-radius:999px;border:1px solid rgba(95,227,208,.22);background:var(--vm-btn);
-  font-size:12px;font-weight:700;color:var(--vm-text-dim);cursor:pointer;transition:all .16s;}
+.pchip{min-height:34px;padding:7px 11px;border-radius:999px;border:1px solid rgba(95,227,208,.22);background:var(--vm-btn);
+  font-size:12px;font-weight:700;color:var(--vm-text-dim);cursor:pointer;transition:background .16s,color .16s,border-color .16s;}
 .pchip:hover{color:var(--vm-text);border-color:var(--vm-neon);}
-.pchip[aria-pressed="true"]{background:var(--vm-neon);border-color:var(--vm-neon);color:#07322A;}
+.pchip[aria-pressed="true"]{background:var(--vm-neon);border-color:var(--vm-neon);color:#06302A;}
+.pchip[aria-disabled="true"]{opacity:.42;cursor:not-allowed;}
+.pchip .cnt{opacity:.72;font-weight:600;margin-left:3px;}
+
+.sortbar{display:flex;gap:5px;}
+.sortbar button{flex:1;min-height:36px;padding:7px 6px;border-radius:8px;border:1px solid rgba(95,227,208,.22);
+  background:var(--vm-btn);color:var(--vm-text-dim);font-size:12px;font-weight:700;cursor:pointer;}
+.sortbar button[aria-pressed="true"]{background:rgba(95,227,208,.9);color:#06302A;border-color:var(--vm-neon);}
 
 /* ── 출고구 ── */
 .tray{background:#06182A;border-radius:12px;border:2px solid rgba(95,227,208,.14);
-  padding:12px;box-shadow:inset 0 5px 16px rgba(0,0,0,.55);}
+  padding:12px;box-shadow:inset 0 5px 16px rgba(0,0,0,.55);margin-top:12px;}
 .tray .lb{font-size:11px;font-weight:800;color:var(--vm-text-dim);letter-spacing:1.5px;margin-bottom:9px;
   display:flex;align-items:center;gap:6px;}
 .tray .lb .material-icons-outlined{font-size:15px;}
+.tray .lb .sp{margin-left:auto;}
 .tray .slotmouth{min-height:60px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.tray .hint{font-size:12px;color:#5F7F97;}
+.tray .hint{font-size:12px;color:var(--vm-text-faint);}
 .dropped{display:flex;align-items:center;gap:9px;background:rgba(95,227,208,.11);
-  border:1px solid rgba(95,227,208,.35);border-radius:9px;padding:7px 11px 7px 7px;cursor:pointer;}
+  border:1px solid rgba(95,227,208,.35);border-radius:9px;padding:7px 11px 7px 7px;cursor:pointer;min-height:var(--tap);}
+.dropped:hover{background:rgba(95,227,208,.2);}
 .dropped .mini{width:30px;height:42px;border-radius:4px;overflow:hidden;flex:0 0 30px;}
 .dropped .mini svg{width:100%;height:100%;display:block;}
-.dropped .tx{font-size:13px;font-weight:700;color:var(--vm-text);}
+.dropped .tx{font-size:13px;font-weight:700;color:var(--vm-text);text-align:left;}
 .dropped .tx small{display:block;font-size:11px;font-weight:500;color:var(--vm-text-dim);}
 @keyframes drop{0%{transform:translateY(-26px);opacity:0}60%{transform:translateY(4px);opacity:1}100%{transform:translateY(0)}}
 .dropped.anim{animation:drop .42s cubic-bezier(.3,1.2,.5,1);}
 
-.vm-foot{padding:10px 4px 0;font-size:11px;color:var(--vm-text-dim);text-align:center;}
-.tab-count{min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center;border-radius:999px;
-  background:rgba(255,255,255,.13);font-size:11px;line-height:1;}
-.vm-tab[aria-selected="true"] .tab-count{background:rgba(7,50,42,.14);}
+.vm-foot{padding:12px 4px 0;font-size:11px;color:var(--vm-text-dim);text-align:center;line-height:1.7;}
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));z-index:90;transform:translate(-50%,20px);
   width:max-content;max-width:calc(100% - 32px);padding:11px 16px;border-radius:999px;background:#04141F;
-  color:var(--color-white);font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;
-  pointer-events:none;transition:opacity .2s,transform .2s;}
+  color:var(--color-white);font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.34);opacity:0;
+  pointer-events:none;transition:opacity .2s,transform .2s;border:1px solid rgba(95,227,208,.35);}
 .toast.show{opacity:1;transform:translate(-50%,0);}
+
+/* ── 공통 밝은 카드 (비교·창작 실험실) ── */
+.lightcard{background:var(--color-white);border:1px solid var(--color-gray-300);
+  border-radius:var(--border-radius-lg);padding:var(--spacing-md);}
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:var(--spacing-sm);flex-wrap:wrap;}
+.sec-head h3{font-size:16px;font-weight:800;color:var(--color-gray-900);display:flex;align-items:center;gap:7px;}
+.sec-head h3 .material-icons-outlined{font-size:20px;color:var(--color-primary);}
+.sec-head .sp{margin-left:auto;}
+.sec-desc{font-size:13px;color:var(--color-gray-700);margin-bottom:var(--spacing-md);}
+.view-intro{background:rgba(4,20,31,.42);border:1px solid var(--vm-line);border-radius:12px;
+  padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--vm-text-dim);line-height:1.65;}
+.view-intro strong{color:var(--vm-neon);}
 
 /* ── 비교 트레이 뷰 ── */
 .cmp-wrap{padding:2px 0 0;}
 .cmp-note{font-size:13px;color:var(--vm-text-dim);padding:0 4px 10px;}
 .cmp-note strong{color:var(--vm-neon);}
+.cmp-tools{display:flex;flex-wrap:wrap;gap:5px;padding:0 4px 10px;align-items:center;}
+.cmp-pick{position:relative;padding:0 4px 10px;}
 .cmp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scroll-snap-type:x proximity;}
 .cmp-cols{display:flex;gap:11px;min-width:min-content;}
-.cmp-col{flex:0 0 262px;max-width:262px;scroll-snap-align:start;border-radius:12px;overflow:hidden;
+.cmp-col{flex:0 0 272px;max-width:272px;scroll-snap-align:start;border-radius:12px;overflow:hidden;
   background:var(--color-white);border:1px solid var(--color-gray-300);}
-.cmp-col .top{padding:12px 14px;background:var(--color-pastel-blue);color:var(--color-pastel-blue-dark);}
+.cmp-col .top{padding:12px 14px;background:var(--color-pastel-blue);color:var(--color-pastel-blue-dark);
+  display:flex;align-items:flex-start;gap:8px;}
 .cmp-col .top .t{font-size:16px;font-weight:800;line-height:1.35;}
-.cmp-col .top .y{font-size:11px;opacity:.85;margin-top:2px;}
+.cmp-col .top .y{font-size:11px;opacity:.9;margin-top:2px;}
+.cmp-col .top .x{margin-left:auto;flex:0 0 auto;width:30px;height:30px;border-radius:999px;border:0;
+  background:rgba(255,255,255,.6);color:var(--color-pastel-blue-dark);cursor:pointer;display:grid;place-items:center;}
+.cmp-col .top .x:hover{background:var(--color-white);}
+.cmp-col .top .x .material-icons-outlined{font-size:17px;}
 .cmp-row{padding:12px 14px;border-top:1px solid var(--color-gray-100);}
 .cmp-row .lb{font-size:10px;font-weight:800;color:var(--color-gray-500);letter-spacing:.8px;margin-bottom:6px;}
 .cmp-row .vl{font-size:13px;color:var(--color-gray-900);}
@@ -184,10 +266,11 @@ main{flex:1;width:100%;}
 .cmp-row li::before{content:"";position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:var(--color-gray-300);}
 .cmp-row .num{font-size:18px;font-weight:800;color:var(--color-primary);}
 .cmp-row .num small{font-size:12px;color:var(--color-gray-500);font-weight:600;}
+.cmp-row.hl{background:var(--color-primary-light);}
 
 .sum-list{display:grid;gap:9px;}
 .sum-item{background:var(--color-white);border:1px solid var(--color-gray-300);border-radius:12px;
-  padding:13px;display:grid;gap:6px;}
+  padding:13px;display:grid;gap:6px;align-content:start;}
 .sum-item .hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:7px;}
 .sum-item .cd{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--color-pastel-blue-dark);
   background:var(--color-primary-light);padding:2px 7px;border-radius:4px;}
@@ -199,18 +282,100 @@ main{flex:1;width:100%;}
 .sum-item .dv{font-size:12px;color:var(--color-pastel-blue-dark);background:var(--color-primary-light);
   border-radius:var(--border-radius-sm);padding:8px 10px;}
 .sum-item .st{font-size:11px;color:var(--color-gray-500);}
+.sum-item .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;}
+
+/* ── 창작 실험실 ── */
+.lab{display:grid;gap:12px;}
+.lab-nav{display:flex;gap:6px;overflow-x:auto;padding:0 4px 10px;}
+.lab-nav button{flex:0 0 auto;min-height:38px;padding:8px 14px;border-radius:999px;border:1px solid var(--vm-line);
+  background:var(--vm-btn);color:var(--vm-text-dim);font-size:13px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.lab-nav button .material-icons-outlined{font-size:17px;}
+.lab-nav button[aria-selected="true"]{background:var(--color-pastel-yellow);color:var(--color-pastel-yellow-dark);border-color:var(--color-pastel-yellow);}
+.lab-nav button:hover{color:var(--vm-text);border-color:var(--vm-neon);}
+.lab-nav button[aria-selected="true"]:hover{color:var(--color-pastel-yellow-dark);}
+
+/* 스파인 빌더 */
+.spine-grid{display:grid;gap:10px;}
+.spine-step{border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);
+  padding:12px;background:var(--color-white);}
+.spine-step .sh{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.spine-step .no{width:24px;height:24px;flex:0 0 24px;border-radius:999px;background:var(--color-primary);
+  color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;}
+.spine-step .lb{font-size:14px;font-weight:800;color:var(--color-gray-900);}
+.spine-step .tip{font-size:12px;color:var(--color-gray-500);margin-bottom:8px;}
+.spine-step textarea{width:100%;min-height:66px;resize:vertical;padding:10px 12px;font-size:15px;line-height:1.6;
+  border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);color:var(--color-gray-900);
+  background:var(--color-white);outline:none;transition:border-color .2s,box-shadow .2s;}
+.spine-step textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(0,109,210,.15);}
+.spine-step .ex{margin-top:7px;font-size:12px;color:var(--color-pastel-blue-dark);
+  background:var(--color-primary-light);border-radius:var(--border-radius-sm);padding:8px 10px;}
+.spine-step .ex b{font-weight:800;}
+.spine-preview{background:var(--color-pastel-yellow);border-radius:var(--border-radius-md);
+  padding:var(--spacing-md);color:var(--color-pastel-yellow-dark);font-size:15px;line-height:1.85;white-space:pre-wrap;}
+.spine-preview.empty{background:var(--color-gray-100);color:var(--color-gray-500);font-size:13px;}
+.lab-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:var(--spacing-sm);}
+.lab-meta{font-size:12px;color:var(--color-gray-500);margin-top:6px;}
+.field-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:var(--spacing-sm);}
+.field-row label{font-size:12px;font-weight:700;color:var(--color-gray-700);}
+select.sel{min-height:40px;padding:8px 12px;border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);
+  font-size:14px;background:var(--color-white);color:var(--color-gray-900);cursor:pointer;max-width:100%;}
+select.sel:focus{outline:3px solid var(--color-secondary);outline-offset:2px;}
+
+/* What-if 생성기 */
+.gen-out{background:linear-gradient(140deg,#0E3A5C,#123E5F);border-radius:var(--border-radius-lg);
+  padding:var(--spacing-lg) var(--spacing-md);color:var(--vm-text);text-align:center;border:2px solid var(--vm-line);}
+.gen-out .q{font-size:12px;font-weight:800;letter-spacing:1.5px;color:var(--vm-neon);margin-bottom:10px;}
+.gen-out .big{font-size:19px;font-weight:800;line-height:1.55;color:#fff;}
+.gen-out .big em{font-style:normal;color:var(--vm-neon);}
+.gen-parts{display:grid;gap:8px;margin-top:var(--spacing-md);text-align:left;}
+.gen-part{background:rgba(255,255,255,.07);border:1px solid var(--vm-line);border-radius:var(--border-radius-md);padding:10px 12px;}
+.gen-part .k{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--vm-neon);margin-bottom:3px;}
+.gen-part .v{font-size:14px;color:var(--vm-text);}
+.gen-lock{margin-left:auto;}
+
+/* 원칙 카드 */
+.rules{display:grid;gap:9px;}
+.rule{background:var(--color-white);border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);
+  padding:12px 14px;display:grid;gap:5px;}
+.rule .n{font-size:11px;font-weight:800;color:var(--color-primary);letter-spacing:1px;}
+.rule .t{font-size:14px;font-weight:700;color:var(--color-gray-900);line-height:1.55;}
+.rule .w{font-size:12px;color:var(--color-gray-700);background:var(--color-gray-100);
+  border-radius:var(--border-radius-sm);padding:7px 9px;}
+.rule .w b{color:var(--color-pastel-blue-dark);}
+
+/* 패턴 색인 */
+.pat{background:var(--color-white);border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);
+  padding:13px 14px;display:grid;gap:7px;}
+.pat .t{font-size:15px;font-weight:800;color:var(--color-gray-900);display:flex;align-items:center;gap:7px;}
+.pat .t .material-icons-outlined{font-size:19px;color:var(--color-secondary);}
+.pat .d{font-size:13px;color:var(--color-gray-700);}
+.pat .ask{font-size:13px;background:var(--color-pastel-green);color:var(--color-pastel-green-dark);
+  border-radius:var(--border-radius-sm);padding:9px 11px;font-weight:600;}
+.pat .films{display:flex;flex-wrap:wrap;gap:5px;}
+.filmchip{font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;min-height:30px;
+  border:1px solid var(--color-gray-300);background:var(--color-gray-100);color:var(--color-gray-700);cursor:pointer;}
+.filmchip:hover{background:var(--color-primary-light);border-color:var(--color-primary);color:var(--color-primary);}
 
 /* ── 상세 패널 (제품 라벨) ── */
-.overlay{position:fixed;inset:0;background:rgba(6,20,32,.68);display:none;z-index:50;
+.overlay{position:fixed;inset:0;background:rgba(6,20,32,.72);display:none;z-index:50;
   overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .overlay.open{display:block;}
-.sheet{max-width:860px;margin:0 auto;background:var(--color-white);min-height:100vh;}
-.sheet-top{position:relative;padding:var(--spacing-lg) var(--pad-side) var(--spacing-md);
-  display:flex;gap:var(--spacing-md);flex-wrap:wrap;align-items:flex-start;}
+.sheet{max-width:880px;margin:0 auto;background:var(--color-white);min-height:100vh;position:relative;}
+.sheet-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;
+  padding:8px var(--pad-side);background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--color-gray-100);}
+.sheet-bar .nav-btn{width:38px;height:38px;flex:0 0 38px;border-radius:999px;border:1px solid var(--color-gray-300);
+  background:var(--color-white);cursor:pointer;display:grid;place-items:center;color:var(--color-gray-700);}
+.sheet-bar .nav-btn:hover{background:var(--color-gray-100);color:var(--color-primary);border-color:var(--color-primary);}
+.sheet-bar .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
+.sheet-bar .pos{font-size:12px;font-weight:700;color:var(--color-gray-500);font-variant-numeric:tabular-nums;}
+.sheet-bar .sp{margin-left:auto;}
+.sheet-top{padding:var(--spacing-md) var(--pad-side);display:flex;gap:var(--spacing-md);flex-wrap:wrap;align-items:flex-start;}
 .sheet-poster{width:104px;flex:0 0 104px;border-radius:var(--border-radius-md);overflow:hidden;
   box-shadow:0 4px 14px rgba(0,0,0,.2);}
 .sheet-poster svg{width:100%;height:auto;display:block;}
-.sheet-head{flex:1 1 180px;min-width:160px;padding-right:44px;}
+.sheet-head{flex:1 1 180px;min-width:160px;}
 .sheet-head .slotcode{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.4px;
   color:var(--color-pastel-blue-dark);background:var(--color-primary-light);
   padding:3px 8px;border-radius:4px;margin-bottom:6px;}
@@ -220,16 +385,20 @@ main{flex:1;width:100%;}
 .sheet-head .line{margin-top:var(--spacing-sm);font-size:15px;font-weight:700;color:var(--color-pastel-pink-dark);}
 .sheet-head .line .orig{display:block;margin-top:4px;font-size:11px;font-weight:500;
   color:var(--color-gray-500);font-style:italic;word-break:break-word;}
-.close-btn{position:absolute;top:var(--spacing-md);right:var(--pad-side);width:42px;height:42px;
-  border-radius:999px;border:1px solid var(--color-gray-300);background:var(--color-white);
-  cursor:pointer;display:grid;place-items:center;color:var(--color-gray-700);z-index:2;}
-.close-btn:hover{background:var(--color-gray-100);color:var(--color-gray-900);}
-.sheet-act{padding:0 var(--pad-side) var(--spacing-md);}
-.btn{display:inline-flex;align-items:center;gap:var(--spacing-xs);padding:10px var(--spacing-md);
-  border-radius:var(--border-radius-md);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.tagrow{display:flex;flex-wrap:wrap;gap:5px;margin-top:var(--spacing-sm);}
+.tagrow span{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:var(--color-gray-100);color:var(--color-gray-700);border:1px solid var(--color-gray-300);}
+.sheet-act{padding:0 var(--pad-side) var(--spacing-md);display:flex;flex-wrap:wrap;gap:7px;}
+.btn{display:inline-flex;align-items:center;gap:var(--spacing-xs);padding:10px var(--spacing-md);min-height:var(--tap);
+  border-radius:var(--border-radius-md);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:background .2s,color .2s,border-color .2s;}
 .btn .material-icons-outlined{font-size:17px;}
+.btn-primary{background:var(--color-primary);color:#fff;}
+.btn-primary:hover{background:#0056A8;}
 .btn-secondary{background:var(--color-gray-100);color:var(--color-gray-700);border:1px solid var(--color-gray-300);}
 .btn-secondary:hover{background:var(--color-white);border-color:var(--color-primary);color:var(--color-primary);}
+.btn-sm{padding:7px 12px;min-height:36px;font-size:12px;}
+.btn-on{background:var(--color-secondary);color:#fff;border-color:var(--color-secondary);}
+.btn-on:hover{background:#00806B;color:#fff;border-color:#00806B;}
 
 .section{padding:0 var(--pad-side) var(--spacing-lg);}
 .section h3{display:flex;align-items:center;gap:8px;font-size:17px;line-height:1.4;font-weight:700;
@@ -240,6 +409,32 @@ main{flex:1;width:100%;}
   border-radius:var(--border-radius-md);padding:var(--spacing-md);font-size:15px;}
 .concept + .concept{margin-top:var(--spacing-sm);background:var(--color-pastel-yellow);color:var(--color-pastel-yellow-dark);}
 .concept strong{display:block;font-size:12px;font-weight:800;margin-bottom:5px;opacity:.85;}
+
+/* 창작 분석 블록 */
+.craft{display:grid;gap:var(--spacing-sm);}
+.craft-card{border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);padding:var(--spacing-md);}
+.craft-card .k{font-size:11px;font-weight:800;letter-spacing:.8px;color:var(--color-primary);
+  margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.craft-card .k .material-icons-outlined{font-size:16px;}
+.craft-card .v{font-size:14px;color:var(--color-gray-900);line-height:1.65;}
+.craft-card.whatif{background:var(--color-pastel-pink);border-color:transparent;}
+.craft-card.whatif .k{color:var(--color-pastel-pink-dark);}
+.craft-card.whatif .v{color:var(--color-pastel-pink-dark);font-size:16px;font-weight:700;}
+.wn{display:grid;gap:var(--spacing-sm);}
+.wn-item{border-radius:var(--border-radius-md);padding:var(--spacing-md);}
+.wn-item.want{background:var(--color-pastel-yellow);color:var(--color-pastel-yellow-dark);}
+.wn-item.need{background:var(--color-pastel-green);color:var(--color-pastel-green-dark);}
+.wn-item .k{font-size:11px;font-weight:800;letter-spacing:.8px;margin-bottom:5px;opacity:.9;}
+.wn-item .v{font-size:14px;line-height:1.65;}
+.spine-list{display:grid;gap:6px;counter-reset:sp;}
+.spine-list li{list-style:none;display:flex;gap:10px;align-items:flex-start;
+  background:var(--color-gray-100);border-radius:var(--border-radius-md);padding:10px 12px;}
+.spine-list li::before{counter-increment:sp;content:counter(sp);flex:0 0 22px;width:22px;height:22px;
+  border-radius:999px;background:var(--color-primary);color:#fff;font-size:11px;font-weight:800;
+  display:grid;place-items:center;margin-top:2px;}
+.spine-list li .sp-lb{font-size:11px;font-weight:800;color:var(--color-gray-500);display:block;margin-bottom:2px;}
+.spine-list li .sp-tx{font-size:14px;color:var(--color-gray-900);line-height:1.6;}
+
 .people{display:grid;gap:var(--spacing-sm);}
 .person{border:1px solid var(--color-gray-300);border-radius:var(--border-radius-md);padding:var(--spacing-md);}
 .person .row{display:flex;flex-wrap:wrap;align-items:baseline;gap:7px;margin-bottom:5px;}
@@ -271,6 +466,8 @@ main{flex:1;width:100%;}
   .pagehead h1{font-size:28px;}
   .shelf{grid-template-columns:repeat(3,1fr);}
   .slot .nm{font-size:14px;}
+  .sum-list{grid-template-columns:1fr 1fr;}
+  .wn{grid-template-columns:1fr 1fr;}
 }
 @media (min-width:768px){
   :root{--pad-side:24px;}
@@ -278,24 +475,38 @@ main{flex:1;width:100%;}
   .pagehead{padding:var(--spacing-xl) 0 var(--spacing-lg);}
   .pagehead h1{font-size:32px;}
   .pagehead p{font-size:15px;}
-  .vm-grid{grid-template-columns:1fr 288px;gap:14px;align-items:start;}
-  .panel{order:0;}
+  .vm-grid{grid-template-columns:1fr 300px;gap:14px;align-items:start;}
+  .panel{order:0;position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;}
   .shelf{grid-template-columns:repeat(4,1fr);gap:12px;}
-  .panel{position:sticky;top:14px;}
-  .worlds,.people{grid-template-columns:1fr 1fr;}
+  .worlds,.people,.craft{grid-template-columns:1fr 1fr;}
   .overlay{padding:var(--spacing-md);}
-  .sheet{margin:var(--spacing-lg) auto;min-height:0;border-radius:var(--border-radius-lg);overflow:hidden;}
+  .sheet{margin:var(--spacing-lg) auto;min-height:0;border-radius:var(--border-radius-lg);}
+  .sheet-bar{border-radius:var(--border-radius-lg) var(--border-radius-lg) 0 0;}
+  .src{border-radius:0 0 var(--border-radius-lg) var(--border-radius-lg);}
   .sheet-top{gap:var(--spacing-lg);}
   .sheet-poster{width:150px;flex:0 0 150px;}
-  .sheet-head{flex:1 1 260px;padding-right:52px;}
+  .sheet-head{flex:1 1 260px;}
   .sheet-head h2{font-size:23px;}
-  .cmp-col{flex:0 0 296px;max-width:296px;}
-  .sum-list{grid-template-columns:1fr 1fr;}
+  .cmp-col{flex:0 0 300px;max-width:300px;}
+  .spine-grid{grid-template-columns:1fr 1fr;}
+  .rules{grid-template-columns:1fr 1fr;}
+  .lab-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
 }
 @media (min-width:1024px){
   .sum-list{grid-template-columns:repeat(3,1fr);}
+  .rules{grid-template-columns:repeat(3,1fr);}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{transition:none!important;animation:none!important;}
+}
+@media print{
+  body{background:#fff;}
+  .machine,.chichiboo-footer,.skip-link,.toast,.sheet-bar{display:none!important;}
+  .overlay{position:static;display:block;background:#fff;overflow:visible;}
+  .sheet{box-shadow:none;margin:0;max-width:none;}
+  .sheet-act{display:none;}
+}
 </style>
 </head>
 <body>
@@ -304,7 +515,7 @@ main{flex:1;width:100%;}
 <main id="mainContent" tabindex="-1">
   <div class="wrap">
     <header class="pagehead">
-      <span class="eyebrow"><span class="material-icons-outlined">local_library</span>스토리 리서치 아카이브</span>
+      <span class="eyebrow"><span class="material-icons-outlined">local_library</span>스토리 리서치 · 창작 워크벤치</span>
       <h1>픽사 스토리 자판기</h1>
       <p id="heroDesc"></p>
     </header>
@@ -312,60 +523,225 @@ main{flex:1;width:100%;}
     <div class="machine">
       <div class="vm-top">
         <span class="vm-brand"><span class="material-icons-outlined">bolt</span>PIXAR STORY DISPENSER</span>
-        <span class="vm-lamps"><i class="lamp"></i><i class="lamp b"></i><i class="lamp c"></i></span>
+        <span class="vm-topright">
+          <button class="mini-btn" type="button" id="shareBtn">
+            <span class="material-icons-outlined">link</span>현재 화면 링크 복사</button>
+          <span class="vm-lamps" aria-hidden="true"><i class="lamp"></i><i class="lamp b"></i><i class="lamp c"></i></span>
+        </span>
       </div>
 
       <div class="vm-tabs" role="tablist" aria-label="보기 방식">
         <button class="vm-tab" id="tabGallery" role="tab" aria-selected="true" aria-controls="viewGallery">
-          <span class="material-icons-outlined">storefront</span>진열대</button>
-        <button class="vm-tab" id="tabCompare" role="tab" aria-selected="false" aria-controls="viewCompare">
-          <span class="material-icons-outlined">compare_arrows</span>비교 트레이 <span class="tab-count" id="cmpCount">0</span></button>
+          <span class="material-icons-outlined" aria-hidden="true">storefront</span>진열대</button>
+        <button class="vm-tab" id="tabCompare" role="tab" aria-selected="false" aria-controls="viewCompare" tabindex="-1">
+          <span class="material-icons-outlined" aria-hidden="true">compare_arrows</span>비교 트레이
+          <span class="tab-count" id="cmpCount">0</span></button>
+        <button class="vm-tab" id="tabLab" role="tab" aria-selected="false" aria-controls="viewLab" tabindex="-1">
+          <span class="material-icons-outlined" aria-hidden="true">science</span>창작 실험실</button>
       </div>
 
-      <!-- 진열대 -->
-      <section id="viewGallery" role="tabpanel" aria-labelledby="tabGallery">
+      <!-- ══ 진열대 ══ -->
+      <section id="viewGallery" role="tabpanel" aria-labelledby="tabGallery" tabindex="0">
         <div class="vm-grid">
           <div class="glass" id="glass"></div>
 
-          <aside class="panel">
-            <div class="led" aria-live="polite">
-              <p class="l1">SELECT CODE</p>
-              <p class="l2" id="ledCode">- -</p>
-              <p class="l3" id="ledMsg">코드를 누르거나 진열대를 선택하세요</p>
+          <aside class="panel" aria-label="검색 및 조작 패널">
+            <div>
+              <p class="panel-lb"><span class="material-icons-outlined" aria-hidden="true">search</span>검색</p>
+              <div class="vm-search">
+                <span class="material-icons-outlined" aria-hidden="true">search</span>
+                <input id="q" class="vm-input" type="search" autocomplete="off"
+                  placeholder="작품·인물·장소·창작 장치" aria-label="작품 검색"
+                  aria-describedby="resultCount" />
+                <button class="clear-q" type="button" id="clearQ" hidden aria-label="검색어 지우기" data-fb="X">
+                  <span class="material-icons-outlined" aria-hidden="true">close</span></button>
+              </div>
             </div>
-            <div class="keypad" id="keypad"></div>
-            <div class="vm-search">
-              <span class="material-icons-outlined">search</span>
-              <input id="q" class="vm-input" type="search" placeholder="작품·인물·장소 검색" aria-label="작품 검색" />
+
+            <div>
+              <p class="panel-lb"><span class="material-icons-outlined" aria-hidden="true">label</span>주제 (복수 선택)</p>
+              <div class="pchips" id="chips" role="group" aria-label="주제별 필터"></div>
             </div>
-            <div class="pchips" id="chips" role="group" aria-label="주제별 필터"></div>
+
+            <div>
+              <p class="panel-lb"><span class="material-icons-outlined" aria-hidden="true">sort</span>정렬</p>
+              <div class="sortbar" id="sortbar" role="group" aria-label="정렬 방식">
+                <button type="button" data-sort="year-asc" aria-pressed="true">오래된순</button>
+                <button type="button" data-sort="year-desc" aria-pressed="false">최신순</button>
+                <button type="button" data-sort="title" aria-pressed="false">가나다순</button>
+              </div>
+            </div>
+
             <div class="filter-meta">
               <span class="result-count" id="resultCount" role="status"></span>
               <button class="reset-filter" id="resetFilter" type="button" hidden>검색·필터 초기화</button>
             </div>
+
+            <details class="kp-box" id="kpBox">
+              <summary>
+                <span class="material-icons-outlined" aria-hidden="true">dialpad</span>코드로 뽑기 · 랜덤
+                <span class="material-icons-outlined chev" aria-hidden="true">expand_more</span>
+              </summary>
+              <div class="kp-inner">
+                <div class="led">
+                  <p class="l1">SELECT CODE</p>
+                  <p class="l2" id="ledCode">- -</p>
+                  <p class="l3" id="ledMsg" role="status">행 문자와 번호를 순서대로 누르세요</p>
+                </div>
+                <div class="keypad" id="keypad"></div>
+              </div>
+            </details>
           </aside>
         </div>
 
-        <div class="tray" style="margin-top:12px">
-          <p class="lb"><span class="material-icons-outlined">move_to_inbox</span>출고구</p>
+        <div class="tray">
+          <p class="lb">
+            <span class="material-icons-outlined" aria-hidden="true">move_to_inbox</span>출고구 · 최근 본 작품
+            <span class="sp"></span>
+            <button class="reset-filter" type="button" id="clearHistory" hidden>기록 지우기</button>
+          </p>
           <div class="slotmouth" id="tray"><span class="hint">아직 뽑은 작품이 없습니다.</span></div>
         </div>
       </section>
 
-      <!-- 비교 트레이 -->
-      <section id="viewCompare" role="tabpanel" aria-labelledby="tabCompare" hidden>
+      <!-- ══ 비교 트레이 ══ -->
+      <section id="viewCompare" role="tabpanel" aria-labelledby="tabCompare" tabindex="0" hidden>
         <div class="cmp-wrap">
-          <p class="cmp-note" id="cmpNote"></p>
-          <div class="pchips" id="cmpChips" style="padding:0 4px 10px" role="group" aria-label="비교할 작품 선택"></div>
-          <div class="pchips" style="padding:0 4px 12px">
+          <p class="cmp-note" id="cmpNote" role="status"></p>
+          <div class="cmp-tools">
             <button class="pchip" type="button" id="cmpClear">선택 초기화</button>
             <button class="pchip" type="button" id="cmpRandom">무작위 3편 뽑기</button>
+            <button class="pchip" type="button" id="cmpTheme">같은 주제끼리 담기</button>
+          </div>
+          <div class="cmp-pick">
+            <div class="vm-search" style="margin-bottom:8px">
+              <span class="material-icons-outlined" aria-hidden="true">search</span>
+              <input id="cmpFind" class="vm-input" type="search" autocomplete="off"
+                placeholder="담을 작품 찾기" aria-label="비교할 작품 찾기" />
+            </div>
+            <div class="pchips" id="cmpChips" role="group" aria-label="비교할 작품 선택"></div>
           </div>
           <div id="cmpBody"></div>
         </div>
       </section>
 
-      <p class="vm-foot">본 자판기는 창작 리서치용입니다 · 정보 출처 Pixar Animation Studios</p>
+      <!-- ══ 창작 실험실 ══ -->
+      <section id="viewLab" role="tabpanel" aria-labelledby="tabLab" tabindex="0" hidden>
+        <p class="view-intro">
+          픽사 세계관을 닮은 이야기를 직접 설계하는 작업대입니다.
+          <strong>스토리 스파인</strong>으로 뼈대를 세우고, <strong>What-if 생성기</strong>로 출발점을 찾고,
+          <strong>창작 원칙</strong>과 <strong>패턴 색인</strong>으로 지금 쓰는 이야기를 점검하세요.
+          입력한 내용은 이 브라우저에만 저장되며 서버로 전송되지 않습니다.
+        </p>
+
+        <div class="lab-nav" role="tablist" aria-label="창작 도구">
+          <button type="button" role="tab" data-lab="spine" aria-selected="true" aria-controls="labSpine">
+            <span class="material-icons-outlined" aria-hidden="true">timeline</span>스토리 스파인</button>
+          <button type="button" role="tab" data-lab="whatif" aria-selected="false" aria-controls="labWhatif" tabindex="-1">
+            <span class="material-icons-outlined" aria-hidden="true">casino</span>What-if 생성기</button>
+          <button type="button" role="tab" data-lab="rules" aria-selected="false" aria-controls="labRules" tabindex="-1">
+            <span class="material-icons-outlined" aria-hidden="true">rule</span>창작 원칙 22</button>
+          <button type="button" role="tab" data-lab="patterns" aria-selected="false" aria-controls="labPatterns" tabindex="-1">
+            <span class="material-icons-outlined" aria-hidden="true">account_tree</span>패턴 색인</button>
+        </div>
+
+        <div class="lab">
+          <!-- 스토리 스파인 -->
+          <div id="labSpine" role="tabpanel" aria-label="스토리 스파인 빌더">
+            <div class="lightcard">
+              <div class="sec-head">
+                <h3><span class="material-icons-outlined" aria-hidden="true">timeline</span>스토리 스파인 빌더</h3>
+              </div>
+              <p class="sec-desc">
+                픽사 스토리 아티스트들이 피칭에 쓰던 여섯 문장 구조입니다.
+                빈칸을 채우면 아래에 한 편의 줄거리가 완성되고, 브라우저에 자동 저장됩니다.
+              </p>
+              <div class="field-row">
+                <label for="spineExample">참고 작품 예시 넣기</label>
+                <select class="sel" id="spineExample">
+                  <option value="">— 작품 선택 —</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" type="button" id="spineFill">
+                  <span class="material-icons-outlined" aria-hidden="true">content_paste_go</span>내 칸에 채우기</button>
+              </div>
+              <div class="spine-grid" id="spineGrid"></div>
+              <div class="sec-head" style="margin-top:var(--spacing-lg)">
+                <h3><span class="material-icons-outlined" aria-hidden="true">auto_stories</span>완성된 줄거리</h3>
+              </div>
+              <div class="spine-preview empty" id="spinePreview" role="status"></div>
+              <div class="lab-actions">
+                <button class="btn btn-primary" type="button" id="spineCopy">
+                  <span class="material-icons-outlined" aria-hidden="true">content_copy</span>줄거리 복사</button>
+                <button class="btn btn-secondary" type="button" id="spineDownload">
+                  <span class="material-icons-outlined" aria-hidden="true">download</span>텍스트로 저장</button>
+                <button class="btn btn-secondary" type="button" id="spineReset">
+                  <span class="material-icons-outlined" aria-hidden="true">restart_alt</span>모두 지우기</button>
+              </div>
+              <p class="lab-meta" id="spineMeta"></p>
+            </div>
+          </div>
+
+          <!-- What-if 생성기 -->
+          <div id="labWhatif" role="tabpanel" aria-label="What-if 프리미스 생성기" hidden>
+            <div class="lightcard">
+              <div class="sec-head">
+                <h3><span class="material-icons-outlined" aria-hidden="true">casino</span>What-if 프리미스 생성기</h3>
+              </div>
+              <p class="sec-desc">
+                픽사 장편 대부분은 “만약 ○○에게 마음이 있다면?”이라는 한 문장에서 출발합니다.
+                네 개의 재료를 무작위로 조합해 아직 아무도 쓰지 않은 출발점을 만들어 보세요.
+                마음에 드는 재료는 자물쇠를 눌러 고정할 수 있습니다.
+              </p>
+              <div class="gen-out">
+                <p class="q">WHAT IF …</p>
+                <p class="big" id="genLine"></p>
+                <div class="gen-parts" id="genParts"></div>
+              </div>
+              <div class="lab-actions">
+                <button class="btn btn-primary" type="button" id="genRoll">
+                  <span class="material-icons-outlined" aria-hidden="true">refresh</span>다시 뽑기</button>
+                <button class="btn btn-secondary" type="button" id="genCopy">
+                  <span class="material-icons-outlined" aria-hidden="true">content_copy</span>프리미스 복사</button>
+                <button class="btn btn-secondary" type="button" id="genToSpine">
+                  <span class="material-icons-outlined" aria-hidden="true">timeline</span>스파인 1번 칸에 넣기</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 창작 원칙 -->
+          <div id="labRules" role="tabpanel" aria-label="창작 원칙" hidden>
+            <div class="lightcard">
+              <div class="sec-head">
+                <h3><span class="material-icons-outlined" aria-hidden="true">rule</span>이야기를 만드는 22가지 원칙</h3>
+              </div>
+              <p class="sec-desc">
+                픽사 스토리 아티스트 <b>엠마 코츠(Emma Coats)</b>가 공개한 스토리텔링 원칙을
+                한국어로 옮기고, 각 원칙이 잘 드러나는 작품을 짝지었습니다. 작품 이름을 누르면 상세가 열립니다.
+              </p>
+              <div class="rules" id="rulesBox"></div>
+            </div>
+          </div>
+
+          <!-- 패턴 색인 -->
+          <div id="labPatterns" role="tabpanel" aria-label="창작 패턴 색인" hidden>
+            <div class="lightcard">
+              <div class="sec-head">
+                <h3><span class="material-icons-outlined" aria-hidden="true">account_tree</span>작품을 가로지르는 창작 패턴</h3>
+              </div>
+              <p class="sec-desc">
+                31편에서 반복되는 설계 습관을 여덟 가지로 정리했습니다.
+                각 패턴의 <b>점검 질문</b>을 지금 쓰는 이야기에 그대로 던져 보세요.
+              </p>
+              <div class="lab" id="patternsBox"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <p class="vm-foot">
+        본 자판기는 창작 리서치·교육용 도구입니다 · 작품 정보 출처 Pixar Animation Studios 공식 사이트<br>
+        포스터는 저작권 보호를 위해 직접 제작한 추상 이미지이며 공식 키아트가 아닙니다.
+      </p>
     </div>
   </div>
 </main>
@@ -381,49 +757,97 @@ main{flex:1;width:100%;}
     Created by. 교육뮤지컬 꿈꾸는 치수쌤
   </a>
 </footer>
-
 <script>
 /* ══════════════════════════════════════════════════════════════
    작품 추가 방법
    ──────────────────────────────────────────────────────────────
-   아래 FILMS 배열에 객체 하나를 추가하면 됩니다.
-   진열대 슬롯 코드(A1, A2 …)·검색·주제 필터·키패드·비교 트레이가
-   모두 자동으로 다시 계산됩니다. 별도 수정이 필요 없습니다.
+   아래 FILMS 배열에 객체 하나를 추가하면 됩니다. 진열대 슬롯 코드
+   (A1, A2 …)·검색·주제 필터·키패드·비교 트레이·창작 실험실 예시가
+   모두 자동으로 다시 계산됩니다.
 
    {
-     id       : 'wall-e',                 // 고유 식별자 (영문 소문자)
-     ko       : '월-E',                    // 한글 제목
-     en       : 'WALL·E',                  // 원제
-     year     : 2008,                      // 개봉 연도 (자동 정렬 기준)
-     theme    : '고독·연결',                // 주제 (새 값이면 필터 칩 자동 생성)
-     src      : 'https://www.pixar.com/…', // 정보 출처 URL
-     tagline  : 'After 700 years…',        // 원문 컨셉 문장
-     taglineKo: '700년이 흐른 뒤…',          // 한글 번역
-     concept  : '…',                       // 이야기의 출발점 (2~3문장)
-     core     : '…',                       // 창작 관점의 핵심 장치 (1~2문장)
-     palette  : ['#배경','#주색','#보조색','#글자색'],   // 자동 포스터용
-     poster   : POSTER(…),                 // 선택: 직접 디자인한 포스터
+     id       : 'wall-e',                  // 고유 식별자 (영문 소문자)
+     ko       : '월-E',                     // 한글 제목
+     en       : 'WALL·E',                   // 원제
+     year     : 2008,                       // 개봉 연도 (자동 정렬 기준)
+     theme    : '자연·문명',                 // THEME_ORDER 중 하나 (필터 칩)
+     tags     : ['로봇','사랑','환경'],       // 검색 전용 보조 키워드
+     src      : 'https://www.pixar.com/…',  // 공식 정보 출처 URL
+     tagline  : 'After 700 years…',         // 공식 컨셉 문장
+     taglineKo: '700년이 흐른 뒤…',           // 한글 번역
+     concept  : '…',                        // 이야기의 출발점 (2~3문장)
+     core     : '…',                        // 창작 관점의 핵심 장치 (1~2문장)
+     whatif   : '만약 …라면?',                // 한 줄 프리미스
+     want     : '…',                        // 주인공이 원하는 것 (겉)
+     need     : '…',                        // 주인공에게 실제로 필요한 것 (속)
+     rule     : '…',                        // 세계를 굴리는 규칙 한 줄
+     spine    : ['옛날 옛적에…','매일…','그러던 어느 날…','그래서…','그래서…','마침내…'],
+     palette  : ['#배경','#주색','#보조색','#글자색'],
+     shape    : 'orbit',                    // 자동 포스터 모티프 (POSTER_SHAPES 키)
+     poster   : POSTER(…),                  // 선택: 직접 디자인한 포스터
      people   : [{n:'이름', r:'역할', d:'설명'}, …],
      worlds   : [{n:'장소', d:'설명'}, …]
    }
    ══════════════════════════════════════════════════════════════ */
 
 const POSTER = (bg, shapes, t1, t2, tc) =>
-`<svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${t1} 포스터 이미지">
+`<svg viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 <rect width="300" height="420" fill="${bg}"/>${shapes}
 <text x="24" y="352" fill="${tc}" font-family="Pretendard, sans-serif" font-size="30" font-weight="800">${t1}</text>
 <text x="25" y="378" fill="${tc}" opacity=".7" font-family="Pretendard, sans-serif" font-size="12" letter-spacing="1.5">${t2}</text></svg>`;
 
+/* 자동 포스터 모티프 — 작품마다 다른 추상 도형을 배치해 진열대의 시각적 리듬을 만든다 */
+const POSTER_SHAPES = {
+  orbit:(a,b)=>`<circle cx="150" cy="150" r="74" fill="${a}"/><circle cx="150" cy="150" r="36" fill="${b}" opacity=".85"/>
+    <ellipse cx="150" cy="150" rx="118" ry="38" fill="none" stroke="${b}" stroke-width="3" opacity=".55"/>`,
+  waves:(a,b)=>`<path d="M0 130 Q75 92 150 130 T300 130 L300 200 Q225 162 150 200 T0 200 Z" fill="${a}" opacity=".9"/>
+    <path d="M0 208 Q75 170 150 208 T300 208 L300 262 Q225 224 150 262 T0 262 Z" fill="${b}" opacity=".7"/>
+    <circle cx="228" cy="82" r="30" fill="${b}" opacity=".8"/>`,
+  arch:(a,b)=>`<path d="M60 268 L60 158 A90 90 0 0 1 240 158 L240 268 Z" fill="${a}"/>
+    <path d="M104 268 L104 168 A46 46 0 0 1 196 168 L196 268 Z" fill="${b}" opacity=".9"/>
+    <rect x="40" y="264" width="220" height="10" rx="5" fill="${b}" opacity=".6"/>`,
+  stripes:(a,b)=>`<rect x="28" y="70" width="34" height="200" rx="17" fill="${a}"/>
+    <rect x="84" y="110" width="34" height="160" rx="17" fill="${b}" opacity=".85"/>
+    <rect x="140" y="52" width="34" height="218" rx="17" fill="${a}" opacity=".8"/>
+    <rect x="196" y="128" width="34" height="142" rx="17" fill="${b}"/>
+    <rect x="240" y="94" width="34" height="176" rx="17" fill="${a}" opacity=".6"/>`,
+  star:(a,b)=>`<path d="M150 56 L178 130 L256 130 L194 176 L218 250 L150 206 L82 250 L106 176 L44 130 L122 130 Z" fill="${a}"/>
+    <circle cx="150" cy="160" r="30" fill="${b}" opacity=".9"/>
+    <circle cx="58" cy="70" r="6" fill="${b}"/><circle cx="248" cy="222" r="5" fill="${b}"/>`,
+  peak:(a,b)=>`<path d="M0 272 L96 118 L164 214 L212 150 L300 272 Z" fill="${a}"/>
+    <path d="M96 118 L136 182 L56 182 Z" fill="${b}" opacity=".8"/>
+    <circle cx="232" cy="80" r="28" fill="${b}" opacity=".85"/>`,
+  grid:(a,b)=>`<rect x="46" y="60" width="88" height="88" rx="12" fill="${a}"/>
+    <rect x="160" y="60" width="88" height="88" rx="44" fill="${b}" opacity=".85"/>
+    <rect x="46" y="164" width="88" height="88" rx="44" fill="${b}" opacity=".6"/>
+    <rect x="160" y="164" width="88" height="88" rx="12" fill="${a}" opacity=".75"/>`,
+  bloom:(a,b)=>`${Array.from({length:8},(_,i)=>{const g=i/8*Math.PI*2;
+    return `<ellipse cx="${(150+58*Math.cos(g)).toFixed(1)}" cy="${(158+58*Math.sin(g)).toFixed(1)}" rx="34" ry="22" fill="${a}" opacity=".8" transform="rotate(${(g*180/Math.PI).toFixed(1)} ${(150+58*Math.cos(g)).toFixed(1)} ${(158+58*Math.sin(g)).toFixed(1)})"/>`;}).join('')}
+    <circle cx="150" cy="158" r="40" fill="${b}"/>`,
+  spark:(a,b)=>`<path d="M150 46 L176 132 L262 158 L176 184 L150 270 L124 184 L38 158 L124 132 Z" fill="${a}"/>
+    <path d="M150 96 L164 146 L214 158 L164 170 L150 220 L136 170 L86 158 L136 146 Z" fill="${b}"/>`,
+  door:(a,b)=>`<rect x="70" y="72" width="160" height="196" rx="10" fill="${a}"/>
+    <rect x="88" y="90" width="124" height="160" rx="6" fill="${b}" opacity=".85"/>
+    <circle cx="196" cy="176" r="9" fill="${a}"/>
+    <rect x="52" y="264" width="196" height="10" rx="5" fill="${b}" opacity=".6"/>`,
+  road:(a,b)=>`<path d="M120 272 L138 96 L162 96 L180 272 Z" fill="${a}"/>
+    ${[0,1,2,3].map(i=>`<rect x="${146-i*1.2}" y="${112+i*42}" width="${8+i*1.6}" height="24" rx="3" fill="${b}"/>`).join('')}
+    <circle cx="238" cy="82" r="26" fill="${b}" opacity=".85"/>`
+};
+
 const AUTO_POSTER = (f) => {
   const [bg, c1, c2, tc] = f.palette || ['#2C2C3E','#7F77DD','#5FE3D0','#F1EFE8'];
-  return POSTER(bg, `<circle cx="150" cy="150" r="76" fill="${c1}"/>
-    <circle cx="206" cy="96" r="30" fill="${c2}" opacity=".9"/>
-    <circle cx="88" cy="212" r="20" fill="${c2}" opacity=".65"/>`, f.ko, f.en, tc);
+  const draw = POSTER_SHAPES[f.shape] || POSTER_SHAPES.orbit;
+  return POSTER(bg, draw(c1, c2), f.ko, f.en, tc);
 };
+
+/* 주제 필터에 쓰이는 고정 분류 (칩 순서 = 배열 순서) */
+const THEME_ORDER = ['우정·동료','가족·세대','성장·정체성','감정·마음','꿈·재능','모험·미지','차이·공존','상실·기억','자연·문명','삶의 의미'];
 
 const FILMS = [
 {
- id:'toy', ko:'토이 스토리', en:'TOY STORY', year:1995, theme:'우정',
+ id:'toy-story', ko:'토이 스토리', en:'TOY STORY', year:1995, theme:'우정·동료',
+ tags:['장난감','질투','동맹','버디무비'],
  src:'https://www.pixar.com/toy-story',
  tagline:'You’ve Got A Friend In Me', taglineKo:'네겐 내가 있잖아',
  palette:['#4FA3E3','#F4C542','#D94F3D','#3A2A08'],
@@ -433,6 +857,16 @@ const FILMS = [
  <path d="M40 250 L60 210 L80 250 Z" fill="#D94F3D"/><path d="M200 250 L226 200 L252 250 Z" fill="#7A4EAB"/>`,'토이 스토리','TOY STORY','#3A2A08'),
  concept:'사람이 없을 때 장난감은 무엇을 할까 — 이 하나의 질문에서 세계가 시작된다. 앤디의 사랑을 두고 경쟁하던 우디와 버즈가, 주인에게서 떨어진 뒤 서로의 차이를 내려놓고 불편한 동맹을 맺는 이야기.',
  core:'주인공의 두려움, 즉 자리를 잃는 것이 곧 갈등의 원인이 된다. 외부 악당보다 내부 질투가 먼저 작동한다.',
+ whatif:'만약 장난감에게 마음이 있고, 사람이 보지 않을 때만 살아난다면?',
+ want:'앤디의 침대 위 가장 좋은 자리를 되찾는 것.',
+ need:'사랑은 독점이 아니라 나눌 수 있다는 것을 인정하기.',
+ rule:'사람이 보고 있을 때 장난감은 절대 움직여선 안 된다.',
+ spine:['옛날 옛적에 아이 방의 장난감들은 사람이 없을 때만 살아났다.',
+  '매일 카우보이 인형 우디는 앤디가 가장 아끼는 장난감이라는 자리를 지켰다.',
+  '그러던 어느 날 생일 선물로 우주 특공대 버즈 라이트이어가 도착했다.',
+  '그래서 우디는 질투 끝에 버즈를 창밖으로 밀어내고 말았다.',
+  '그래서 둘은 함께 집 밖으로 떨어져 장난감을 부수는 옆집 아이의 손에 들어갔다.',
+  '마침내 우디는 버즈를 구하려 자기 자리를 포기했고, 두 사람은 서로를 최고의 친구로 인정하게 되었다.'],
  people:[
   {n:'우디',r:'주인공',d:'줄을 당기면 소리 나는 목소리 상자를 가진 전통 카우보이 인형. 오랫동안 앤디의 최애 자리를 지켜왔다.'},
   {n:'버즈 라이트이어',r:'대립 → 동료',d:'레이저와 접히는 날개를 갖춘 우주 특공대 피규어. 자신이 진짜 비밀 임무 중이라고 믿는다.'},
@@ -450,7 +884,254 @@ const FILMS = [
   {n:'시드의 집',d:'제작진이 오히려 더 애착을 가진 공간. 불편한 창조물을 고안하는 일이 가장 인기 있는 작업이었다.'}]
 },
 {
- id:'up', ko:'업', en:'UP', year:2009, theme:'모험·상실',
+ id:'a-bugs-life', ko:'벅스 라이프', en:"A BUG'S LIFE", year:1998, theme:'꿈·재능',
+ tags:['개미','발명','약자','서커스','공동체'],
+ src:'https://www.pixar.com/a-bugs-life',
+ tagline:'An Epic Of Miniature Proportions', taglineKo:'아주 작은 규모의 대서사시',
+ palette:['#1E5B2E','#8FD16A','#F4C542','#F2FFE8'], shape:'bloom',
+ concept:'거대한 메뚜기 떼에게 매년 식량을 바치며 사는 개미 왕국. 사고뭉치 발명가 개미 플릭이 공물을 망쳐버린 뒤, 속죄하기 위해 왕국을 지켜 줄 용맹한 전사를 찾아 떠난다. 그가 데려온 것은 실직한 서커스 곤충들이었다.',
+ core:'주인공의 결점(엉뚱한 발명벽)이 그대로 해결책이 된다. 고쳐야 할 단점처럼 보이던 것이 3막에서 유일한 무기가 된다.',
+ whatif:'만약 세상에서 가장 약한 존재가, 자기가 약하다고 믿는 것 때문에만 약한 것이라면?',
+ want:'실수를 만회하고 공동체에게 인정받는 것.',
+ need:'수가 적은 쪽은 강자가 아니라 약자라는 사실을 모두가 깨닫게 하는 것.',
+ rule:'개미는 매년 여름 메뚜기에게 공물을 바쳐야 하고, 그것이 언제나 그래 왔던 방식이다.',
+ spine:['옛날 옛적에 개미 섬의 개미들은 메뚜기 떼에게 공물을 바치며 살았다.',
+  '매일 발명가 개미 플릭의 아이디어는 번번이 사고로 끝났다.',
+  '그러던 어느 날 플릭의 수확기가 공물 더미를 강에 빠뜨렸다.',
+  '그래서 플릭은 왕국을 지켜 줄 전사를 구하러 도시로 떠났다.',
+  '그래서 그는 전사인 줄 알고 서커스 곤충들을 데려왔고, 거짓이 들통났다.',
+  '마침내 플릭은 발명품으로 가짜 새를 만들어 메뚜기를 몰아냈고, 개미들은 수의 힘을 알게 되었다.'],
+ people:[
+  {n:'플릭',r:'주인공',d:'모든 일을 더 쉽게 만들려는 발명가 개미. 아이디어는 늘 사고로 끝나지만 포기하지 않는다.'},
+  {n:'아타 공주',r:'후계자',d:'여왕이 될 준비가 되지 않았다고 스스로 믿는 왕국의 후계자. 플릭의 다른 시선에 흔들린다.'},
+  {n:'하퍼',r:'적대자',d:'개미를 공포로 지배하는 메뚜기 우두머리. 개미가 자기들이 더 많다는 사실을 깨닫는 것을 가장 두려워한다.'},
+  {n:'도트',r:'믿어주는 존재',d:'아직 날지 못하는 어린 개미 공주. 플릭을 처음부터 끝까지 믿는 유일한 인물.'},
+  {n:'서커스 곤충단',r:'가짜 영웅들',d:'프란시스·힘릭·슬림·집시·마니 등 실직한 곡예단. 전사인 척하다 진짜 용기를 배운다.'},
+  {n:'여왕개미',r:'전통',d:'오래된 방식을 지키려는 왕국의 지도자. 변화를 두려워하는 공동체의 목소리를 대변한다.'}],
+ worlds:[
+  {n:'개미 섬',d:'풀줄기 하나가 나무가 되는 축척 뒤집기. 곤충의 눈높이에서 본 평범한 자연이 낯선 대륙이 된다.'},
+  {n:'벌레 도시',d:'버려진 상자와 병뚜껑으로 지어진 곤충들의 대도시. 인간의 쓰레기가 곧 문명의 재료가 된다.'},
+  {n:'공물 바위',d:'개미와 메뚜기의 관계를 한눈에 보여주는 무대 장치. 공포의 계약이 매년 갱신되는 장소.'}]
+},
+{
+ id:'toy-story-2', ko:'토이 스토리 2', en:'TOY STORY 2', year:1999, theme:'상실·기억',
+ tags:['장난감','수집','유한함','선택','구조대'],
+ src:'https://www.pixar.com/toy-story-2',
+ tagline:'The Toys Are Back In Town', taglineKo:'장난감들이 돌아왔다',
+ palette:['#2B4C8C','#F4C542','#E0503C','#FFF4D9'], shape:'star',
+ concept:'우디가 희귀 수집품이라는 사실이 밝혀지고, 장난감 가게 주인에게 도둑맞아 박물관행 상자에 실릴 위기에 놓인다. 버즈와 친구들이 구조에 나서는 사이, 우디는 함께 세트를 이루는 인형들을 만나 전혀 다른 미래를 제안받는다.',
+ core:'주인공에게 “매력적인 잘못된 선택지”를 준다. 영원히 사랑받는 유리장 안의 삶과, 언젠가 버려질 아이 방의 삶 사이에서 고르게 만든다.',
+ whatif:'만약 영원히 보존되는 삶과, 언젠가 끝나지만 사랑받는 삶 중 하나를 골라야 한다면?',
+ want:'팔이 찢어진 채로도 앤디에게 돌아가는 것 — 처음에는 그저 안전해지는 것.',
+ need:'끝이 있다는 것을 알면서도 사랑을 선택할 용기.',
+ rule:'수집품은 완전한 세트로 남아 있을 때만 값어치를 가진다.',
+ spine:['옛날 옛적에 우디는 자기가 그저 평범한 카우보이 인형인 줄 알았다.',
+  '매일 그는 앤디의 방에서 장난감들을 이끌며 지냈다.',
+  '그러던 어느 날 마당 세일에서 수집가에게 납치되었다.',
+  '그래서 우디는 자신이 옛 인기 TV쇼의 희귀 수집품이며, 세트를 이루는 가족이 있음을 알게 되었다.',
+  '그래서 그는 박물관에서 영원히 보존되는 삶을 택할 뻔했다.',
+  '마침내 우디는 언젠가 버려질 것을 알면서도 앤디 곁의 유한한 시간을 골랐다.'],
+ people:[
+  {n:'우디',r:'주인공',d:'자기 과거와 값어치를 처음 알게 되는 인형. 정체성이 흔들리며 소속을 다시 고른다.'},
+  {n:'제시',r:'상처',d:'주인에게 버려졌던 기억으로 상자 안을 두려워하는 카우걸. 우디에게 유한함의 대가를 보여준다.'},
+  {n:'스팅키 피트',r:'적대자',d:'한 번도 상자에서 나와 본 적 없는 광부 인형. 사랑받지 못한 시간이 그를 냉소로 만들었다.'},
+  {n:'불스아이',r:'무조건적 애정',d:'말없이 따르는 우디의 말. 계산 없는 애정의 상징.'},
+  {n:'알 맥위긴',r:'욕망',d:'장난감 가게를 운영하는 수집가. 장난감을 놀이가 아닌 자산으로 본다.'},
+  {n:'버즈 라이트이어',r:'구조대장',d:'이번에는 우디를 구하러 가는 쪽. 1편에서 배운 우정을 실천한다.'}],
+ worlds:[
+  {n:'알스 토이 반',d:'상품이 된 장난감의 세계. 놀이의 공간이 아니라 진열과 거래의 공간이다.'},
+  {n:'앤디의 방(다시)',d:'1편의 안전한 세계가 이번에는 “돌아가야 할 곳”이라는 목표로 뒤집힌다.'},
+  {n:'공항 수하물 구역',d:'컨베이어와 화물칸이 얽힌 시간 압박형 클라이맥스 무대.'}]
+},
+{
+ id:'monsters-inc', ko:'몬스터 주식회사', en:'MONSTERS, INC.', year:2001, theme:'차이·공존',
+ tags:['괴물','공포','웃음','에너지','문','아이'],
+ src:'https://www.pixar.com/monsters-inc',
+ tagline:'We Scare Because We Care', taglineKo:'우리는 아끼기에 겁을 준다',
+ palette:['#123A5E','#4FD1C5','#F2C63C','#EAF7FF'], shape:'door',
+ concept:'몬스터 도시의 전력은 아이들의 비명으로 만들어진다. 최고의 겁주기 사원 설리와 그의 파트너 마이크의 일상은, 인간 아이 부가 문을 통해 몬스터 세계로 넘어오면서 완전히 무너진다.',
+ core:'경제 시스템을 세계관의 뼈대로 쓴다. 비명이 곧 에너지라는 설정 하나가 직업·계급·범죄·정치까지 자동으로 만들어 준다.',
+ whatif:'만약 옷장 속 괴물이 실제로 존재하고, 그것이 겁주는 일을 직업으로 삼고 있다면?',
+ want:'최고 겁주기 기록을 세우고 회사에서 인정받는 것.',
+ need:'아이를 무서워하는 대신 사랑하는 법 — 그리고 두려움보다 웃음이 강하다는 사실.',
+ rule:'인간 아이는 맹독이며, 아이가 몬스터 세계에 들어오면 도시 전체가 봉쇄된다.',
+ spine:['옛날 옛적에 몬스터 도시는 아이들의 비명으로 전기를 만들었다.',
+  '매일 설리와 마이크는 겁주기 실적 1위를 지키며 출근했다.',
+  '그러던 어느 날 인간 아이 부가 문을 통해 몬스터 세계로 넘어왔다.',
+  '그래서 두 사람은 아이의 존재를 숨긴 채 아이를 집에 돌려보내려 했다.',
+  '그래서 회사 안의 음모와 에너지 위기의 진짜 원인이 드러났다.',
+  '마침내 웃음이 비명보다 훨씬 강한 에너지임이 밝혀졌고, 설리는 겁주는 대신 웃기는 회사를 이끌게 되었다.'],
+ people:[
+  {n:'제임스 설리번(설리)',r:'주인공',d:'푸른 털의 최고 겁주기 사원. 직업적 자부심과 아이를 향한 애정 사이에서 무너진다.'},
+  {n:'마이크 와조스키',r:'파트너',d:'외눈 초록 몬스터이자 설리의 코치 겸 사무 담당. 규칙과 실적을 챙기는 현실 감각.'},
+  {n:'부',r:'변화의 촉매',d:'몬스터를 전혀 무서워하지 않는 인간 아이. 두려움의 전제를 무너뜨리는 존재.'},
+  {n:'랜들 보그스',r:'적대자',d:'몸빛을 바꾸는 경쟁자. 실적 조작을 위해 비명 추출 장치를 만든다.'},
+  {n:'헨리 워터누즈',r:'배후',d:'회사의 회장이자 설리의 스승. 에너지 위기를 명분 삼아 선을 넘는다.'},
+  {n:'셀리아',r:'일상',d:'접수 담당이자 마이크의 연인. 이 세계에도 평범한 삶이 있음을 보여준다.'}],
+ worlds:[
+  {n:'몬스터 주식회사 겁주기 층',d:'수천 개의 문이 레일을 타고 오가는 공장. 공포 산업이 실제 물류로 시각화된 공간.'},
+  {n:'문 보관소',d:'세계와 세계를 잇는 무한한 창고. 추격전의 무대이자 세계관의 규칙을 몸으로 설명하는 장치.'},
+  {n:'몬스트로폴리스',d:'몬스터들의 대도시. 기묘한 실루엣의 주민들이 지극히 평범한 출퇴근을 한다는 대비가 유머를 만든다.'},
+  {n:'히말라야 유배지',d:'규칙을 어긴 몬스터가 추방되는 인간 세계의 설원. 세계의 처벌 규정을 보여주는 장소.'}]
+},
+{
+ id:'finding-nemo', ko:'니모를 찾아서', en:'FINDING NEMO', year:2003, theme:'가족·세대',
+ tags:['바다','부성','과보호','기억','산호초'],
+ src:'https://www.pixar.com/finding-nemo',
+ tagline:'There Are 3.7 Trillion Fish In The Ocean. They’re Looking For One.',
+ taglineKo:'바다에는 3조 7천억 마리의 물고기가 있다. 그들이 찾는 건 단 한 마리다',
+ palette:['#0B4A72','#FF8A3D','#5FD3E8','#EAF9FF'], shape:'waves',
+ concept:'그레이트 배리어 리프에 사는 흰동가리 말린은 아들 니모를 잃을까 두려워 한시도 눈을 떼지 못한다. 니모가 다이버에게 붙잡혀 치과 수족관으로 사라지자, 겁 많은 아버지는 바다를 가로지르는 여정을 시작한다.',
+ core:'주인공의 결핍(과보호)과 여정의 형태(끝없이 낯선 바다)를 정확히 반대로 맞춘다. 통제하려는 인물을 통제 불가능한 공간에 던진다.',
+ whatif:'만약 세상에서 가장 겁 많은 아버지가, 세상에서 가장 넓은 곳을 가로질러야 한다면?',
+ want:'아들 니모를 되찾아 다시는 위험에 놓이지 않게 하는 것.',
+ need:'사랑한다면 언젠가 놓아 주어야 한다는 것을 받아들이기.',
+ rule:'바다는 넓고, 한 번 흩어진 것은 스스로 헤엄쳐 돌아와야 한다.',
+ spine:['옛날 옛적에 흰동가리 말린은 아내와 알들을 잃고 아들 니모만 남았다.',
+  '매일 그는 니모를 위험에서 떼어 놓으려 모든 것을 통제했다.',
+  '그러던 어느 날 니모가 반항심에 먼 바다로 나갔다가 다이버에게 붙잡혔다.',
+  '그래서 말린은 건망증 심한 도리와 함께 시드니를 향해 대양을 건넜다.',
+  '그래서 니모는 수족관 안에서 스스로 탈출을 계획하는 법을 배웠다.',
+  '마침내 부자는 다시 만났고, 말린은 아들이 스스로 헤엄치도록 놓아 주었다.'],
+ people:[
+  {n:'말린',r:'주인공',d:'상실의 경험 때문에 위험을 미리 차단하려는 흰동가리 아버지. 여정 내내 통제권을 잃는다.'},
+  {n:'도리',r:'동반자',d:'단기 기억을 잃는 블루탱. 계획을 세울 수 없기에 늘 지금을 산다 — 말린과 정반대의 삶의 방식.'},
+  {n:'니모',r:'세계의 다른 축',d:'한쪽 지느러미가 작은 어린 물고기. 보호받는 대상에서 스스로 행동하는 주체가 된다.'},
+  {n:'길',r:'멘토',d:'상처투성이 외지느러미 물고기이자 수족관 무리의 리더. 바다에서 태어나 어린 나이에 수조로 옮겨졌다.'},
+  {n:'크러시',r:'대조군 부모',d:'150살 바다거북. 아이를 놓아 주는 방식으로 키우며, 말린에게 다른 양육을 보여준다.'},
+  {n:'다알라',r:'위협',d:'물고기를 오래 살려 두지 못하는 조카. 수족관 무리에게는 시한폭탄 같은 존재.'}],
+ worlds:[
+  {n:'그레이트 배리어 리프',d:'니모의 집이자 색과 안전의 기준점. 이후 등장하는 어두운 바다와 대비되는 팔레트를 만든다.'},
+  {n:'동호주 해류',d:'대양을 관통하는 고속도로. 여정의 속도와 규모를 한 장면으로 설명하는 장치.'},
+  {n:'P. 셔먼 치과 수족관',d:'유리 한 장으로 바다와 단절된 소우주. 넓은 바다 이야기 안에 밀실 탈출극을 심어 넣는다.'},
+  {n:'심해',d:'빛이 사라지는 구간. 초롱아귀 장면으로 미지의 공포를 시각화한다.'}]
+},
+{
+ id:'the-incredibles', ko:'인크레더블', en:'THE INCREDIBLES', year:2004, theme:'꿈·재능',
+ tags:['슈퍼히어로','가족','평범함','60년대','재능'],
+ src:'https://www.pixar.com/the-incredibles',
+ tagline:'No Gut, No Glory', taglineKo:'배짱 없이는 영광도 없다',
+ palette:['#2A1B0F','#E23A2E','#F2C63C','#FFE9C4'], shape:'spark',
+ concept:'슈퍼히어로 활동이 금지된 세상. 배가 나온 보험회사 직원 밥 파는 지루한 일상 속에서 법과 질서를 지키던 시절을 그리워한다. 비밀 임무의 유혹에 이끌린 그는 결국 가족 전체를 위험에 끌어들인다.',
+ core:'초능력을 성격의 은유로 배분한다. 아버지는 힘, 어머니는 늘어남, 사춘기 딸은 투명해지는 능력 — 능력이 곧 캐릭터 설명이다.',
+ whatif:'만약 특별한 재능이 법으로 금지되고, 모두가 평범한 척해야 한다면?',
+ want:'다시 영웅으로 살며 인정받는 것.',
+ need:'가족이 곧 팀이라는 것 — 혼자 잘하는 것보다 함께 하는 편이 강하다는 것.',
+ rule:'슈퍼히어로 활동은 불법이며, 능력자는 정체를 감추고 평범하게 살아야 한다.',
+ spine:['옛날 옛적에 슈퍼히어로들은 법에 의해 활동을 금지당했다.',
+  '매일 밥 파는 좁은 칸막이 사무실에서 옛 영광을 그리워했다.',
+  '그러던 어느 날 정체 모를 의뢰인에게서 비밀 임무 제안이 왔다.',
+  '그래서 밥은 가족에게 숨긴 채 섬으로 향했고 함정에 빠졌다.',
+  '그래서 아내 헬렌과 아이들이 그를 구하러 나서며 정체가 모두 드러났다.',
+  '마침내 파 가족은 개인이 아닌 한 팀으로 싸워 도시를 구했다.'],
+ people:[
+  {n:'밥 파(미스터 인크레더블)',r:'주인공',d:'괴력을 지녔지만 평범한 삶에 갇힌 아버지. 인정 욕구가 가족을 위험에 빠뜨린다.'},
+  {n:'헬렌 파(일라스티걸)',r:'중심축',d:'몸을 자유자재로 늘리는 어머니. 가족을 물리적으로도 정서적으로도 이어 붙인다.'},
+  {n:'바이올렛',r:'성장',d:'투명해지고 방어막을 치는 십대. 사춘기의 위축이 그대로 능력이 된다.'},
+  {n:'대쉬',r:'억눌린 재능',d:'초고속으로 달리지만 평범한 척해야 하는 아들. 재능을 숨기라는 요구의 부당함을 대변한다.'},
+  {n:'신드롬(버디)',r:'적대자',d:'능력이 없어 거절당한 옛 팬. “모두가 특별해지면 아무도 특별하지 않다”는 논리로 복수한다.'},
+  {n:'프로존',r:'동료',d:'공기 중 수분으로 얼음을 만드는 밥의 오랜 친구. 스타일과 재치로 유명했던 인물.'},
+  {n:'에드나 모드',r:'전문가',d:'슈퍼 슈트 디자이너. 규칙(망토 금지)을 정하는 세계관의 관리자 역할.'}],
+ worlds:[
+  {n:'메트로빌',d:'1960년대 미드센추리 모던 감각의 도시. 낙관적 미래상이 히어로 금지라는 설정과 충돌한다.'},
+  {n:'노마니산 섬',d:'화산 안에 숨겨진 신드롬의 기지. 스파이 영화 문법을 그대로 빌린 공간.'},
+  {n:'파 가족의 집',d:'평범한 교외 주택. 초능력을 숨기는 삶의 답답함이 인테리어의 규격화로 드러난다.'}]
+},
+{
+ id:'cars', ko:'카', en:'CARS', year:2006, theme:'성장·정체성',
+ tags:['자동차','속도','66번 국도','작은 마을','겸손'],
+ src:'https://www.pixar.com/cars',
+ tagline:'Life Is A Journey. Enjoy The Trip.', taglineKo:'인생은 여정이다. 그 길을 즐겨라',
+ palette:['#8C3A24','#E23A2E','#F2C63C','#FFEFD6'], shape:'road',
+ concept:'우승만 좇던 신인 레이싱카 라이트닝 맥퀸이 결승전으로 향하던 길에 66번 국도의 잊힌 마을 래디에이터 스프링스에 갇힌다. 도로를 부순 대가로 마을을 수리하는 동안, 그는 목적지보다 길이 중요할 수 있음을 배운다.',
+ core:'주인공을 “원하는 것에서 가장 먼 장소”에 물리적으로 가둔다. 속도가 전부인 인물에게서 속도를 빼앗아 성장을 강제한다.',
+ whatif:'만약 세상에서 가장 빠른 존재가, 세상에서 가장 느린 곳에 갇힌다면?',
+ want:'피스톤컵에서 우승해 최고 스폰서를 차지하는 것.',
+ need:'혼자 이기는 것보다 함께 달리는 사람들이 더 중요하다는 것.',
+ rule:'고속도로가 생기면서 옛 국도의 마을들은 지도에서 지워졌다.',
+ spine:['옛날 옛적에 신인 레이싱카 맥퀸은 피스톤컵 우승만을 향해 달렸다.',
+  '매일 그는 팀도 친구도 필요 없다고 믿었다.',
+  '그러던 어느 날 결승전으로 가던 길에 래디에이터 스프링스의 도로를 부수고 붙잡혔다.',
+  '그래서 그는 도로를 새로 포장하며 마을 사람들과 부대끼게 되었다.',
+  '그래서 전설의 챔피언이 마을에 숨어 살고 있음을 알게 되었다.',
+  '마침내 맥퀸은 결승선 직전에 멈춰 서서 우승 대신 존중을 택했다.'],
+ people:[
+  {n:'라이트닝 맥퀸',r:'주인공',d:'재능은 넘치지만 팀을 무시하는 신인 레이서. 승리 외의 가치를 배워야 한다.'},
+  {n:'닥 허드슨',r:'멘토',d:'마을 의사이자 판사. 세 번의 피스톤컵을 거머쥔 전설이었으나 버려진 뒤 자취를 감췄다.'},
+  {n:'샐리 카레라',r:'다른 가치',d:'대도시 변호사 생활을 접고 마을에 정착한 포르쉐. 길의 아름다움을 아는 인물.'},
+  {n:'메이터',r:'우정',d:'녹슨 견인차. 계산 없는 우정으로 맥퀸의 세계관을 흔든다.'},
+  {n:'칙 힉스',r:'적대자',d:'수단을 가리지 않는 경쟁자. 맥퀸이 갈 수도 있었던 미래를 보여준다.'},
+  {n:'더 킹',r:'품격',d:'은퇴를 앞둔 노장 챔피언. 승리의 끝에 무엇이 남는지를 몸으로 보여준다.'}],
+ worlds:[
+  {n:'래디에이터 스프링스',d:'고속도로가 생기며 지도에서 지워진 66번 국도의 마을. 잊힌다는 것이 무엇인지 공간으로 설명한다.'},
+  {n:'피스톤컵 경기장',d:'속도·스폰서·소음의 세계. 마을의 정적과 정확히 반대되는 팔레트를 쓴다.'},
+  {n:'윌리스 뷰트',d:'미국 서부 사막의 절경. 목적지가 아니라 길 자체가 목적이 될 수 있음을 시각으로 설득한다.'}]
+},
+{
+ id:'ratatouille', ko:'라따뚜이', en:'RATATOUILLE', year:2007, theme:'꿈·재능',
+ tags:['요리','파리','쥐','재능','비평'],
+ src:'https://www.pixar.com/ratatouille',
+ tagline:'Anyone Can Cook', taglineKo:'누구나 요리할 수 있다',
+ palette:['#2B1A2E','#E23A2E','#F2C63C','#FFE7C9'], shape:'arch',
+ concept:'위대한 셰프를 꿈꾸는 쥐 레미. 가족의 반대와, 무엇보다 요리계에서 가장 환영받지 못하는 종이라는 사실이 그를 가로막는다. 파리의 유명 레스토랑 주방으로 흘러든 그는 요리 재능이 전혀 없는 청소부 링귀니와 기묘한 동맹을 맺는다.',
+ core:'“누구나 요리할 수 있다”는 문장을 세계관의 헌법으로 삼는다. 모든 인물이 이 한 문장에 찬성하거나 반대하며 배치된다.',
+ whatif:'만약 가장 뛰어난 예술가가, 그 분야에서 가장 혐오받는 존재로 태어났다면?',
+ want:'자기 이름으로 요리를 인정받는 것.',
+ need:'재능이 어디서 오든 상관없다는 것을 세상이 아니라 스스로 믿기.',
+ rule:'위대한 예술가는 어디서든 나올 수 있지만, 누구나 위대해질 수는 없다.',
+ spine:['옛날 옛적에 시골 쥐 레미는 냄새와 맛을 예술로 느끼는 감각을 타고났다.',
+  '매일 그는 가족이 쓰레기를 먹는 동안 요리책을 훔쳐보며 꿈을 키웠다.',
+  '그러던 어느 날 홍수에 휩쓸려 파리의 구스토 레스토랑 지붕 위에 도착했다.',
+  '그래서 레미는 요리에 소질 없는 청소부 링귀니의 머리카락을 조종해 요리하기 시작했다.',
+  '그래서 레스토랑은 되살아났지만 거짓말은 점점 커졌다.',
+  '마침내 정체가 드러나고 별을 잃었지만, 레미는 자기 이름으로 요리하는 작은 식당을 얻었다.'],
+ people:[
+  {n:'레미',r:'주인공',d:'예민한 후각과 미각을 지닌 시골 쥐. 종의 한계가 아니라 자기 확신이 진짜 장벽이다.'},
+  {n:'알프레도 링귀니',r:'파트너',d:'요리 재능이 전혀 없는 신참 청소부. 레미에게 손을, 레미는 그에게 재능을 빌려준다.'},
+  {n:'콜레트 타투',d:'주방의 유일한 여성 요리사이자 링귀니의 스승. 실력으로 자리를 얻은 사람의 원칙을 대변한다.',r:'멘토'},
+  {n:'스키너',r:'적대자',d:'구스토의 이름을 냉동식품에 팔아 치우려는 주방장. 유산을 상품으로만 본다.'},
+  {n:'안톤 이고',r:'심판',d:'파리에서 가장 두려운 음식 평론가. 3막에서 비평의 의미 자체를 다시 정의한다.'},
+  {n:'구스토',r:'믿음의 목소리',d:'“누구나 요리할 수 있다”를 남기고 세상을 떠난 전설의 셰프. 레미의 상상 속 멘토로 등장한다.'},
+  {n:'장고',r:'가족의 반대',d:'레미의 아버지이자 무리의 우두머리. 인간을 믿지 말라는 생존의 지혜를 대변한다.'}],
+ worlds:[
+  {n:'구스토 레스토랑 주방',d:'뜨거운 금속과 불, 좁은 동선의 전쟁터. 쥐 한 마리 크기에서 보면 그대로 장애물 코스가 된다.'},
+  {n:'파리의 지붕과 하수도',d:'같은 도시를 위와 아래에서 두 번 보여주는 구조. 계급과 위치를 공간으로 말한다.'},
+  {n:'이고의 서재',d:'관처럼 생긴 검은 사무실. 비평가의 마음 상태를 건축으로 표현했다.'}]
+},
+{
+ id:'wall-e', ko:'월-E', en:'WALL·E', year:2008, theme:'자연·문명',
+ tags:['로봇','환경','사랑','우주','고독'],
+ src:'https://www.pixar.com/wall-e',
+ tagline:'After 700 Years Of Doing What He Was Built For, He’ll Discover What He Was Meant For.',
+ taglineKo:'700년 동안 만들어진 목적대로 살아온 그가, 마침내 태어난 이유를 발견한다',
+ palette:['#3A2A16','#E8A33D','#8FD8E8','#FFF3DC'], shape:'peak',
+ concept:'쓰레기로 뒤덮인 지구에 홀로 남아 700년째 압축 작업을 반복하는 청소 로봇 월-E. 어느 날 하늘에서 내려온 매끈한 탐사 로봇 이브를 만나면서, 그는 자신이 무엇을 위해 만들어졌는지가 아니라 무엇을 위해 살고 싶은지를 알게 된다.',
+ core:'첫 40분을 거의 대사 없이 끌고 간다. 인물의 욕망을 말이 아니라 수집품·습관·시선으로만 전달하는 극단적 시각 서사.',
+ whatif:'만약 모두가 떠난 행성에 청소 로봇 하나만 남아, 외로움을 배워 버렸다면?',
+ want:'이브의 손을 잡는 것.',
+ need:'살아 있다는 것은 편안함이 아니라 수고를 선택하는 일임을 사람들에게 되돌려 주는 것.',
+ rule:'식물이 발견되면 우주선 액시엄은 반드시 지구로 귀환해야 한다.',
+ spine:['옛날 옛적에 인류는 쓰레기로 덮인 지구를 버리고 우주선으로 떠났다.',
+  '매일 청소 로봇 월-E는 쓰레기를 압축하고 신기한 물건을 모으며 홀로 지냈다.',
+  '그러던 어느 날 탐사 로봇 이브가 지구에 내려왔다.',
+  '그래서 월-E는 자기가 발견한 작은 식물을 이브에게 건넸다.',
+  '그래서 이브는 즉시 우주선으로 회수되었고 월-E는 그녀를 따라 우주로 떠났다.',
+  '마침내 두 로봇은 식물을 지켜냈고, 인류는 700년 만에 지구로 돌아왔다.'],
+ people:[
+  {n:'월-E',r:'주인공',d:'700년째 홀로 작동 중인 폐기물 압축 로봇. 수집벽과 호기심이 그를 기계 이상으로 만든다.'},
+  {n:'이브',r:'상대역',d:'식물 탐사를 위해 파견된 고성능 로봇. 임무 수행 기계에서 선택하는 존재로 변한다.'},
+  {n:'선장 매크리',r:'각성',d:'액시엄의 선장. 자동 조종에 맡겨진 삶에서 스스로 일어서는 인물.'},
+  {n:'오토',r:'적대자',d:'귀환 금지 명령만을 따르는 자동 조종 장치. 규칙이 인격 없이 작동할 때의 위험을 보여준다.'},
+  {n:'모(M-O)',r:'조력자',d:'오염을 참지 못하는 청소 로봇. 규정 밖으로 한 걸음 나가는 작은 반란을 보여준다.'},
+  {n:'존과 메리',r:'깨어나는 사람들',d:'화면만 보던 승객들. 월-E와의 접촉으로 처음 서로를 본다.'}],
+ worlds:[
+  {n:'폐허가 된 지구',d:'쓰레기가 마천루처럼 쌓인 도시. 대사 없이 문명의 결말을 설명하는 배경.'},
+  {n:'액시엄',d:'모든 필요가 자동으로 충족되는 초호화 우주선. 편안함이 곧 퇴화가 되는 역설의 공간.'},
+  {n:'월-E의 창고',d:'라이터·루빅큐브·비디오테이프를 모아 둔 보금자리. 인물의 내면을 사물로 보여주는 방.'}]
+},
+{
+ id:'up', ko:'업', en:'UP', year:2009, theme:'상실·기억',
+ tags:['풍선','노년','약속','모험','남미'],
  src:'https://www.pixar.com/upfilm',
  tagline:'A Dream Of Adventure', taglineKo:'모험을 꿈꾸다',
  palette:['#3FA0DB','#E0503C','#F2C63C','#FFF0DC'],
@@ -462,6 +1143,16 @@ const FILMS = [
  <rect x="140" y="240" width="20" height="32" fill="#6B4A2E"/>`,'업','UP','#FFF0DC'),
  concept:'은퇴한 풍선 장수 칼이 78세에 처음으로 진짜 모험을 떠난다. 수천 개의 풍선을 집에 매달아 남미의 야생으로 날아오르며 평생의 꿈을 이루지만, 여덟 살 밀항자 러셀을 발견한 뒤 예상치 못한 동행이 시작된다.',
  core:'집 자체가 인물이 된다. 떠나는 이야기인데도 살던 공간을 통째로 데리고 떠나게 함으로써, 상실을 짊어진 채 나아가는 모험을 시각화한다.',
+ whatif:'만약 평생 미룬 약속을 지키기 위해 집을 통째로 들고 떠나야 한다면?',
+ want:'아내와 약속한 파라다이스 폭포 옆에 집을 내려놓는 것.',
+ need:'추억을 짐이 아니라 배웅으로 삼고 새로운 관계를 시작하기.',
+ rule:'풍선이 지탱하는 무게에는 한계가 있고, 무언가를 실으면 무언가를 버려야 한다.',
+ spine:['옛날 옛적에 칼과 엘리는 파라다이스 폭포에 가자고 약속했다.',
+  '매일 삶은 그 약속을 조금씩 뒤로 미루었고, 결국 엘리는 세상을 떠났다.',
+  '그러던 어느 날 칼이 요양원으로 보내질 처지가 되었다.',
+  '그래서 그는 수천 개의 풍선으로 집을 띄워 남미로 날아올랐다.',
+  '그래서 밀항자 러셀과 함께 희귀 새를 노리는 옛 영웅과 맞서게 되었다.',
+  '마침내 칼은 집을 놓아 주고, 러셀 곁에서 새로운 일상을 시작했다.'],
  people:[
   {n:'칼 프레드릭슨',r:'주인공',d:'세상을 떠난 아내 엘리와 함께 지은 집을 떠나야 할 처지에 놓인 78세 은퇴 풍선 장수. 요양원 대신 수천 개의 풍선으로 집을 띄워 오래전 아내와 한 약속을 이루러 떠난다.'},
   {n:'러셀',r:'동행자',d:'54부대 12사우나오두막 소속의 열정적인 여덟 살 야생탐험단원. 정식 캠핑 장비를 갖췄지만 실은 도시를 떠나본 적이 없고, 유일한 캠핑 경험은 자기 집 거실이었다.'},
@@ -476,7 +1167,127 @@ const FILMS = [
   {n:'먼츠의 비행선',d:'1930년대 최첨단 기술을 담은 반 마일 길이의 아르데코풍 비행선. 영웅에서 악당이 된 인물의 전리품으로 가득하다.'}]
 },
 {
- id:'io1', ko:'인사이드 아웃', en:'INSIDE OUT', year:2015, theme:'감정',
+ id:'toy-story-3', ko:'토이 스토리 3', en:'TOY STORY 3', year:2010, theme:'성장·정체성',
+ tags:['장난감','작별','어린이집','탈출','한 시절'],
+ src:'https://www.pixar.com/toy-story-3',
+ tagline:'No Toy Gets Left Behind', taglineKo:'남겨지는 장난감은 없다',
+ palette:['#7A3F1D','#F2C63C','#E0503C','#FFF0DC'], shape:'grid',
+ concept:'앤디가 대학으로 떠날 나이가 되면서 장난감들은 다락과 기부 상자 사이의 갈림길에 놓인다. 착오로 써니사이드 어린이집에 기증된 그들은, 겉보기에 천국 같은 그곳이 실은 엄격한 위계가 지배하는 곳임을 알게 된다.',
+ core:'시리즈의 시간을 실제 관객의 시간과 나란히 흐르게 한다. 15년 뒤의 속편이라는 사실 자체가 이야기의 감정 재료가 된다.',
+ whatif:'만약 존재의 이유였던 사람이 더는 나를 필요로 하지 않는다면?',
+ want:'앤디 곁에 남는 것.',
+ need:'한 시절의 끝을 인정하고 스스로 다음 자리를 고르는 것.',
+ rule:'장난감의 값어치는 소유가 아니라, 자기를 가지고 놀아 줄 아이가 있는지에 달려 있다.',
+ spine:['옛날 옛적에 앤디의 장난감들은 언젠가 다시 놀아 주기를 기다리며 상자 안에 있었다.',
+  '매일 그들은 점점 줄어드는 놀이 시간을 견뎠다.',
+  '그러던 어느 날 앤디가 대학으로 떠나게 되었고, 장난감들은 착오로 어린이집에 기증되었다.',
+  '그래서 그들은 폭군 곰 랏소가 지배하는 위계 속에 갇혔다.',
+  '그래서 우디가 돌아와 대탈출을 이끌었지만 소각장 앞에서 모두 손을 잡았다.',
+  '마침내 우디는 앤디를 설득해 장난감들을 새 아이 보니에게 물려주게 했다.'],
+ people:[
+  {n:'우디',r:'주인공',d:'끝까지 앤디에게 돌아가려는 리더. 이번에는 지키는 대신 보내 주는 법을 배운다.'},
+  {n:'랏소 허그베어',r:'적대자',d:'딸기 향이 나는 곰 인형. 버려진 상처를 지배욕으로 바꾼 인물로, 상실의 또 다른 결말을 보여준다.'},
+  {n:'버즈 라이트이어',r:'동료',d:'초기화되어 원래 설정으로 돌아가며, 우정이 기억 없이도 남는지를 시험한다.'},
+  {n:'보니',r:'다음 세대',d:'상상력이 넘치는 어린 소녀. 장난감의 미래를 상징한다.'},
+  {n:'켄',r:'전향자',d:'써니사이드의 패션 담당. 사랑 때문에 체제를 배신하는 유머러스한 축.'},
+  {n:'앤디',r:'작별',d:'성인이 되는 문턱에 선 소유자. 마지막 장면에서 이야기를 넘겨주는 사람이 된다.'}],
+ worlds:[
+  {n:'써니사이드 어린이집',d:'낙원처럼 보이지만 신참은 거친 반으로 배정되는 계급 사회. 유토피아 뒤집기 구조.'},
+  {n:'앤디의 방(마지막)',d:'1편의 출발점이 이제는 비워야 할 공간이 된다. 같은 공간의 의미를 바꿔 시간을 보여준다.'},
+  {n:'쓰레기 소각장',d:'시리즈 전체가 향해 온 감정의 임계점. 무력함을 인정하고 손을 잡는 장면의 무대.'}]
+},
+{
+ id:'cars-2', ko:'카 2', en:'CARS 2', year:2011, theme:'우정·동료',
+ tags:['첩보','우정','세계 대회','오해','대체 연료'],
+ src:'https://www.pixar.com/cars-2',
+ tagline:'New Cars. New Adventures.', taglineKo:'새로운 자동차, 새로운 모험',
+ palette:['#0E2C4C','#E23A2E','#5FD3E8','#EAF6FF'], shape:'orbit',
+ concept:'라이트닝 맥퀸이 세계 그랑프리에 출전하기 위해 일본과 유럽으로 향한다. 함께 간 견인차 메이터가 국제 첩보전에 휘말려 특급 요원으로 오해받으면서, 레이싱 영화가 스파이 코미디로 방향을 튼다.',
+ core:'조연을 주인공 자리에 앉혀 시리즈의 톤을 바꾼다. 같은 세계관을 유지한 채 장르만 갈아 끼우는 실험.',
+ whatif:'만약 아무도 진지하게 여기지 않는 친구가, 세계를 구할 유일한 사람으로 오해받는다면?',
+ want:'메이터는 친구 맥퀸에게 부끄럽지 않은 존재가 되고 싶어 한다.',
+ need:'자기를 바꾸는 대신, 있는 그대로의 자신을 친구가 받아들이게 하는 것.',
+ rule:'세계 그랑프리는 대체 연료 알리놀의 성능을 증명하기 위한 무대다.',
+ spine:['옛날 옛적에 견인차 메이터는 래디에이터 스프링스에서 누구에게도 창피할 일 없이 살았다.',
+  '매일 그는 친구 맥퀸의 곁을 지켰다.',
+  '그러던 어느 날 세계 그랑프리를 따라 도쿄에 갔다가 첩보 요원으로 오해받았다.',
+  '그래서 메이터는 영국 스파이들과 함께 음모의 한복판에 들어갔다.',
+  '그래서 그의 엉뚱함 때문에 맥퀸이 경기에서 곤란을 겪고 두 사람은 다투었다.',
+  '마침내 메이터는 자기 방식 그대로 사건을 해결했고, 맥퀸은 친구를 있는 그대로 인정했다.'],
+ people:[
+  {n:'메이터',r:'주인공',d:'녹슨 견인차. 이번 편에서는 자신의 촌스러움을 부끄러워하기 시작한다.'},
+  {n:'라이트닝 맥퀸',r:'친구',d:'세계 무대에 선 챔피언. 친구를 창피해한 자신을 돌아본다.'},
+  {n:'핀 맥미사일',r:'멘토',d:'영국 첩보 요원. 메이터를 유능한 위장 요원으로 오해한다.'},
+  {n:'홀리 시프트웰',r:'파트너',d:'현장에 처음 나온 신참 요원. 기술과 열의를 겸비했다.'},
+  {n:'프란체스코 베르누이',r:'라이벌',d:'화려한 이탈리아 포뮬러카. 맥퀸의 자만을 비추는 거울.'},
+  {n:'마일즈 액슬로드',r:'배후',d:'대체 연료를 내세운 사업가. 겉으로 내건 명분과 진짜 목적이 다르다.'}],
+ worlds:[
+  {n:'도쿄',d:'네온과 초고층의 밀도. 시리즈에서 가장 화려한 야경 시퀀스가 펼쳐진다.'},
+  {n:'포르토 코르사',d:'이탈리아 리비에라를 자동차의 형태로 재해석한 해안 도시.'},
+  {n:'런던',d:'첩보 장르의 관습을 그대로 빌려 온 클라이맥스 무대.'}]
+},
+{
+ id:'brave', ko:'메리다와 마법의 숲', en:'BRAVE', year:2012, theme:'가족·세대',
+ tags:['스코틀랜드','모녀','활','전설','운명'],
+ src:'https://www.pixar.com/brave',
+ tagline:'Change Your Fate', taglineKo:'운명을 바꿔라',
+ palette:['#1B3A2A','#E0503C','#7ED0A8','#F4FFF2'], shape:'bloom',
+ concept:'스코틀랜드 고원의 공주 메리다는 뛰어난 궁수이지만, 어머니가 정한 정략혼과 왕국의 관습에 맞선다. 다툼 끝에 마녀에게 청한 소원이 왕국 전체를 위협하는 저주로 돌아오면서, 그녀는 진짜 용기가 무엇인지 배우게 된다.',
+ core:'적대자를 없애고 갈등을 어머니와 딸 사이에만 둔다. 외부의 악당 대신 사랑하는 사람이 장애물이 되는 구조.',
+ whatif:'만약 내 운명을 바꾸려던 소원이, 사랑하는 사람을 바꿔 버린다면?',
+ want:'정해진 혼사에서 벗어나 자기 삶을 스스로 고르는 것.',
+ need:'어머니의 말을 듣는 것이 아니라, 어머니와 서로의 말을 듣는 법을 배우는 것.',
+ rule:'운명을 바꾸려는 소원에는 반드시 대가가 따르며, 그 대가는 사흘 안에 되돌려야 한다.',
+ spine:['옛날 옛적에 던브로 왕국의 공주 메리다는 활을 쏘며 자유롭게 자랐다.',
+  '매일 어머니 엘리노 왕비는 그녀에게 공주다움과 정략혼을 가르쳤다.',
+  '그러던 어느 날 메리다는 자기 손으로 청혼 경기에 나가 관습을 깨뜨렸다.',
+  '그래서 어머니와 크게 다툰 뒤 마녀에게 “어머니를 바꿔 달라”고 청했다.',
+  '그래서 왕비는 곰으로 변했고, 왕은 곰을 사냥하려 했다.',
+  '마침내 메리다는 진심으로 관계를 고쳐 매듭을 풀었고, 두 사람은 서로를 처음으로 이해했다.'],
+ people:[
+  {n:'메리다',r:'주인공',d:'붉은 곱슬머리의 궁수 공주. 자유를 원하지만 그 대가를 아직 모른다.'},
+  {n:'엘리노 왕비',r:'대립하는 사랑',d:'왕국의 질서를 지키는 어머니. 딸을 위한다는 확신이 갈등의 원인이 된다.'},
+  {n:'퍼거스 왕',r:'중재자',d:'곰에게 다리를 잃은 호탕한 왕. 가족을 지키려다 아내를 사냥할 뻔한다.'},
+  {n:'마녀',r:'계기',d:'나무 조각가로 위장한 마법사. 소원의 대가를 정확히 말해 주지 않는다.'},
+  {n:'세 쌍둥이',r:'유머와 조력',d:'장난꾸러기 남동생들. 결정적 순간에 누나를 돕는다.'},
+  {n:'모르두',r:'경고',d:'옛날 같은 소원을 빌었던 왕자의 말로. 메리다가 갈 수 있었던 미래.'}],
+ worlds:[
+  {n:'던브로 성',d:'전통과 위계가 층층이 쌓인 공간. 메리다에게는 규칙의 감옥으로 읽힌다.'},
+  {n:'고원의 숲',d:'도깨비불이 이끄는 신비의 영역. 규칙이 통하지 않는 곳에서 변화가 시작된다.'},
+  {n:'폐허가 된 왕국',d:'같은 선택을 했던 과거를 보여주는 유적. 이야기의 규칙을 설명하는 장치.'}]
+},
+{
+ id:'monsters-university', ko:'몬스터 대학교', en:'MONSTERS UNIVERSITY', year:2013, theme:'꿈·재능',
+ tags:['대학','재능','실패','팀','전편의 앞이야기'],
+ src:'https://www.pixar.com/monsters-university',
+ tagline:'School Never Looked So Scary', taglineKo:'이렇게 무서운 학교는 없었다',
+ palette:['#123A5E','#7ED957','#F2C63C','#EAF7FF'], shape:'arch',
+ concept:'최고의 겁주기 선수가 되겠다는 꿈 하나로 몬스터 대학교에 입학한 마이크. 타고난 재능은 넘치지만 노력은 하지 않는 설리와 부딪치며 둘은 최악의 관계로 시작한다. 겁주기 학과에서 함께 쫓겨난 뒤, 두 사람은 낙오자 동아리와 함께 마지막 기회를 잡는다.',
+ core:'“노력하면 무엇이든 된다”를 정면으로 반박한다. 주인공이 결국 원하던 재능을 얻지 못한다는 결말로, 꿈의 형태를 바꾸는 법을 이야기한다.',
+ whatif:'만약 세상에서 가장 간절히 원하는 일에, 내가 재능이 없다면?',
+ want:'역사상 최고의 겁주기 선수가 되는 것.',
+ need:'재능이 없다는 사실을 인정하고, 그 분야에서 자기 자리를 새로 만드는 것.',
+ rule:'겁주기 대회에서 진 팀의 학생은 겁주기 학과에서 퇴출된다.',
+ spine:['옛날 옛적에 작은 몬스터 마이크는 최고의 겁주기 선수가 되겠다고 결심했다.',
+  '매일 그는 이론과 규칙을 완벽하게 외우며 준비했다.',
+  '그러던 어느 날 대학에서 타고난 재능만 믿는 설리와 부딪쳐 둘 다 학과에서 쫓겨났다.',
+  '그래서 두 사람은 낙오자 동아리 우즈마 카파와 손잡고 겁주기 대회에 나갔다.',
+  '그래서 마이크는 자기가 결코 무섭지 않다는 사실을 인간 세계에서 확인했다.',
+  '마침내 둘은 우편실 사원부터 다시 시작해, 함께 최고의 팀이 되는 길을 찾았다.'],
+ people:[
+  {n:'마이크 와조스키',r:'주인공',d:'노력과 지식은 최고지만 무섭지 않은 외눈 몬스터. 재능의 벽을 정면으로 만난다.'},
+  {n:'제임스 설리번',r:'라이벌 → 동료',d:'유명한 겁주기 가문의 아들. 재능을 믿고 노력을 게을리한다.'},
+  {n:'하드스크래블 학장',r:'심판',d:'냉정한 기준을 세우는 지네형 학장. 실력의 현실을 대변한다.'},
+  {n:'랜들 보그스',r:'다른 길',d:'인정받기 위해 무리에 편승하는 룸메이트. 전편의 악당이 되는 과정을 보여준다.'},
+  {n:'우즈마 카파',r:'팀',d:'돈·아트·테리·테리·스쿼시로 이루어진 낙오자 동아리. 각자의 결함이 팀의 전술이 된다.'}],
+ worlds:[
+  {n:'몬스터 대학교 캠퍼스',d:'미국 대학 문화를 그대로 옮긴 공간. 잔디밭과 동아리 문화가 계급을 시각화한다.'},
+  {n:'겁주기 대회장',d:'경쟁의 규칙이 눈에 보이는 무대. 실력 격차를 관객이 즉시 이해하게 만든다.'},
+  {n:'인간 세계 캠프',d:'모든 규칙이 통하지 않는 진짜 세계. 주인공이 자기 한계를 확인하는 장소.'}]
+},
+{
+ id:'inside-out', ko:'인사이드 아웃', en:'INSIDE OUT', year:2015, theme:'감정·마음',
+ tags:['감정','기억','이사','성장','슬픔'],
  src:'https://www.pixar.com/inside-out',
  tagline:'Growing Up Can Be A Bumpy Road', taglineKo:'자라는 길은 원래 울퉁불퉁하다',
  palette:['#2C1F52','#FFD84D','#5BA8F0','#FFF3B0'],
@@ -485,6 +1296,16 @@ const FILMS = [
  <path d="M0 262 Q150 236 300 262 L300 272 Q150 246 0 272 Z" fill="#FFD84D" opacity=".5"/>`,'인사이드 아웃','INSIDE OUT','#FFF3B0'),
  concept:'아빠의 새 직장 때문에 샌프란시스코로 이사한 열한 살 라일리. 그녀의 마음속 본부에서는 기쁨·슬픔·버럭·까칠·소심이 함께 일하지만, 새로운 도시와 학교를 어떻게 헤쳐 나갈지를 두고 서로 부딪힌다.',
  core:'각 인물이 하나의 동사로 정의된다. 기쁨은 밝히고, 소심은 살피고, 까칠은 걸러낸다. 성격이 아니라 기능이 캐릭터다.',
+ whatif:'만약 우리 머릿속 감정들이 각자의 인격을 가진 직원이라면?',
+ want:'기쁨은 라일리를 언제나 행복하게 지키고 싶어 한다.',
+ need:'슬픔이 있어야 다른 사람이 다가올 수 있음을 인정하는 것.',
+ rule:'핵심 기억이 성격의 섬을 움직이고, 본부를 떠난 감정은 스스로 돌아와야 한다.',
+ spine:['옛날 옛적에 열한 살 라일리의 머릿속에는 다섯 감정이 함께 일하고 있었다.',
+  '매일 기쁨은 조종간을 잡고 라일리를 행복한 아이로 지켰다.',
+  '그러던 어느 날 가족이 샌프란시스코로 이사하며 모든 것이 낯설어졌다.',
+  '그래서 기쁨과 슬픔이 핵심 기억과 함께 본부 밖으로 튕겨 나갔다.',
+  '그래서 성격의 섬들이 차례로 무너지고 라일리는 가출을 결심했다.',
+  '마침내 기쁨은 슬픔에게 조종간을 넘겼고, 라일리는 부모에게 마음을 털어놓을 수 있었다.'],
  people:[
   {n:'기쁨',r:'주인공',d:'목표는 오직 라일리를 행복하게 하는 것. 어려움은 기회로, 슬픈 순간은 좋은 곳으로 돌아가는 길의 작은 걸림돌로 본다.'},
   {n:'슬픔',r:'오해받는 자',d:'다른 감정들이 그 역할을 이해하지 못한다. 본인도 긍정적이 되기 어려워 그냥 바닥에 누워 울고 싶을 때가 있다.'},
@@ -503,7 +1324,97 @@ const FILMS = [
   {n:'장기기억 저장소',d:'수백만 개의 기억이 보관된 초고층 창고. 잊는 자들이 각 기억의 쓸모를 판단해 더는 필요 없는 것을 폐기한다.'}]
 },
 {
- id:'coco', ko:'코코', en:'COCO', year:2017, theme:'가족·기억',
+ id:'the-good-dinosaur', ko:'굿 다이노', en:'THE GOOD DINOSAUR', year:2015, theme:'성장·정체성',
+ tags:['공룡','두려움','서부극','자연','소년'],
+ src:'https://www.pixar.com/the-good-dinosaur',
+ tagline:'What If The Asteroid That Forever Changed Life On Earth Missed The Planet Completely?',
+ taglineKo:'지구의 생명을 영원히 바꿔 놓은 그 소행성이, 지구를 완전히 비껴갔다면?',
+ palette:['#1E4A3C','#7ED0A8','#F2C63C','#F2FFF8'], shape:'peak',
+ concept:'소행성이 지구를 비껴가 공룡이 멸종하지 않은 세계. 겁 많은 아파토사우루스 알로는 아버지를 잃고 집에서 멀리 떨어진 곳에 홀로 남는다. 돌아가는 길에서 그는 스팟이라는 이름의 인간 소년과 뜻밖의 우정을 맺는다.',
+ core:'익숙한 관계를 뒤집는다. 공룡이 농부이고 인간이 야생 동물처럼 행동하는 역할 교환 하나로 세계 전체가 새로워진다.',
+ whatif:'만약 소행성이 지구를 비껴가, 공룡이 농사를 짓고 인간이 야생에 살고 있다면?',
+ want:'집으로 돌아가는 것.',
+ need:'두려움을 없애는 것이 아니라, 두려운 채로 앞으로 나아가는 법을 배우는 것.',
+ rule:'제 몫을 해야 곡식 창고에 자기 발자국을 찍을 수 있다.',
+ spine:['옛날 옛적에 소행성이 지구를 비껴가 공룡들은 농사를 지으며 살아남았다.',
+  '매일 겁 많은 알로는 형제들과 달리 제 몫을 해내지 못했다.',
+  '그러던 어느 날 폭풍우 속에서 아버지를 잃고 강물에 휩쓸려 집에서 멀어졌다.',
+  '그래서 그는 야생의 인간 아이 스팟과 함께 돌아갈 길을 찾아 나섰다.',
+  '그래서 두려움과 맞서는 법을 배우며 진짜 상실도 마주하게 되었다.',
+  '마침내 알로는 스팟을 인간 가족에게 보내 주고, 스스로 집으로 돌아가 발자국을 찍었다.'],
+ people:[
+  {n:'알로',r:'주인공',d:'가족 중 가장 작고 겁 많은 아파토사우루스. 두려움 자체가 그의 적이다.'},
+  {n:'스팟',r:'동행자',d:'말을 하지 못하는 야생의 인간 소년. 대사 없이 우정을 쌓는 관계 설계의 핵심.'},
+  {n:'포피',r:'상실',d:'알로의 아버지. 짧은 등장으로 이후 여정 전체의 동력을 만든다.'},
+  {n:'부치 가족',r:'멘토',d:'소를 모는 티라노사우루스 목장주 가족. 두려움을 다루는 다른 방식을 알려준다.'},
+  {n:'프테로닥틸 무리',r:'위협',d:'폭풍을 신봉하는 익룡 떼. 자연의 잔혹함을 대변한다.'}],
+ worlds:[
+  {n:'클로 워터 강',d:'여정의 지도이자 시계. 강을 따라가면 집에 닿는다는 단순한 규칙이 이야기를 끌고 간다.'},
+  {n:'알로의 농장',d:'공룡이 인간처럼 경작하는 역전된 일상. 세계관의 전제를 한 장면으로 설명한다.'},
+  {n:'북서부 산악지대',d:'실제 미국 서부 풍경을 사실적으로 렌더링해, 만화적 인물과 극단적으로 대비시킨다.'}]
+},
+{
+ id:'finding-dory', ko:'도리를 찾아서', en:'FINDING DORY', year:2016, theme:'상실·기억',
+ tags:['바다','기억','장애','부모','수족관'],
+ src:'https://www.pixar.com/finding-dory',
+ tagline:'Just Keep Swimming', taglineKo:'그냥 계속 헤엄쳐',
+ palette:['#0A3E63','#5FD3E8','#FF8A3D','#EAF9FF'], shape:'waves',
+ concept:'건망증이 심한 블루탱 도리가 문득 떠오른 기억의 조각을 따라 잃어버린 부모를 찾아 나선다. 캘리포니아의 해양 생물 연구소에 닿은 그녀는, 계획을 세울 수 없는 자신만의 방식으로 길을 찾아간다.',
+ core:'주인공의 약점을 이야기의 진행 방식 자체로 만든다. 기억을 잃는 인물이 주인공이므로 서사가 목표 지향이 아니라 순간 지향으로 굴러간다.',
+ whatif:'만약 방금 있었던 일을 잊는 사람이, 아주 오래된 기억 하나를 좇아야 한다면?',
+ want:'잃어버린 부모를 다시 만나는 것.',
+ need:'자기 방식이 결함이 아니라 능력일 수 있음을 스스로 믿는 것.',
+ rule:'도리는 곧 잊어버린다 — 그래서 지금 눈앞의 단서만이 유일한 지도다.',
+ spine:['옛날 옛적에 블루탱 도리는 단기 기억을 잃은 채 산호초에서 살고 있었다.',
+  '매일 그녀는 방금 한 일을 잊으면서도 밝게 지냈다.',
+  '그러던 어느 날 “보석 같은 곳”이라는 어린 시절 기억이 떠올랐다.',
+  '그래서 도리는 말린·니모와 함께 캘리포니아의 해양 연구소로 향했다.',
+  '그래서 그녀는 수조와 배관 속에서 홀로 떨어져 문어 행크와 길을 찾게 되었다.',
+  '마침내 도리는 부모가 남긴 조개껍데기 길을 따라가 가족을 다시 만났다.'],
+ people:[
+  {n:'도리',r:'주인공',d:'단기 기억을 잃는 블루탱. 조연에서 주인공으로 자리를 옮기며 약점이 곧 방법이 된다.'},
+  {n:'행크',r:'동반자',d:'다리 하나가 없는 문어. 바다로 돌아가기를 거부하는, 도리와 정반대의 욕망을 지녔다.'},
+  {n:'말린과 니모',r:'가족',d:'전편의 부자. 이번에는 도리를 찾는 쪽이 되어 관계가 뒤집힌다.'},
+  {n:'데스티니',r:'옛 인연',d:'앞이 잘 보이지 않는 고래상어. 어린 도리와 배관으로 대화하던 친구.'},
+  {n:'베일리',r:'능력의 재발견',d:'반향정위를 못 쓴다고 믿는 흰돌고래. 스스로의 능력을 되찾는 부수 서사.'},
+  {n:'제니와 찰리',r:'뿌리',d:'도리의 부모. 딸의 특성을 결함이 아니라 방식으로 가르쳤다.'}],
+ worlds:[
+  {n:'해양 생물 연구소',d:'구조·재활·방류라는 규칙이 명시된 인공 공간. 여정을 미로처럼 만든다.'},
+  {n:'배관과 수조',d:'물이 흐르는 곳이면 어디든 통로가 된다는 규칙이 액션을 만든다.'},
+  {n:'열린 바다',d:'전편의 무대가 이번에는 기억의 배경으로 쓰인다.'}]
+},
+{
+ id:'cars-3', ko:'카 3: 새로운 도전', en:'CARS 3', year:2017, theme:'성장·정체성',
+ tags:['세대교체','멘토','은퇴','훈련','기술'],
+ src:'https://www.pixar.com/cars-3',
+ tagline:'From This Moment, Everything Will Change', taglineKo:'이 순간부터, 모든 것이 달라진다',
+ palette:['#7A1E1E','#E23A2E','#F2C63C','#FFE9D6'], shape:'road',
+ concept:'첨단 기술로 무장한 신세대 레이서들에게 밀려난 라이트닝 맥퀸이 큰 사고를 겪는다. 은퇴 대신 복귀를 택한 그는 젊은 트레이너 크루즈 라미레즈와 함께 훈련하며, 자기 자리를 다시 정의하게 된다.',
+ core:'주인공에게서 주인공 자리를 빼앗아 후배에게 넘긴다. 승리가 아니라 계승을 결말로 삼아 시리즈의 세대를 교체한다.',
+ whatif:'만약 최고였던 사람이 더는 최고일 수 없다는 사실을 인정해야 한다면?',
+ want:'다시 우승해 자신이 끝나지 않았음을 증명하는 것.',
+ need:'다음 사람을 달리게 하는 것이 자신이 계속 달리는 방법임을 아는 것.',
+ rule:'레이서는 스스로 은퇴를 고를 수 있을 때 가장 존엄하다.',
+ spine:['옛날 옛적에 라이트닝 맥퀸은 피스톤컵의 살아 있는 전설이었다.',
+  '매일 그는 젊은 신형 레이서들에게 조금씩 밀려나고 있었다.',
+  '그러던 어느 날 무리한 추격 끝에 큰 사고를 당했다.',
+  '그래서 그는 은퇴 대신 트레이너 크루즈와 함께 훈련을 시작했다.',
+  '그래서 크루즈에게 자신이 포기한 꿈이 있다는 사실을 알게 되었다.',
+  '마침내 맥퀸은 결승전 도중 크루즈에게 자리를 넘겨주고 멘토가 되었다.'],
+ people:[
+  {n:'라이트닝 맥퀸',r:'주인공',d:'전성기를 지난 챔피언. 이번에는 이기는 법이 아니라 물러나는 법을 배운다.'},
+  {n:'크루즈 라미레즈',r:'계승자',d:'꿈을 접고 트레이너가 된 젊은 레이서. 자격이 없다고 스스로 믿는다.'},
+  {n:'잭슨 스톰',r:'적대자',d:'데이터와 시뮬레이터로 만들어진 차세대 레이서. 시대의 변화 그 자체.'},
+  {n:'스모키',r:'멘토의 멘토',d:'닥 허드슨을 가르쳤던 정비사. 세대의 사슬을 한 단계 더 뒤로 늘린다.'},
+  {n:'닥 허드슨',r:'기억',d:'회상으로만 등장하는 옛 멘토. 맥퀸이 물려받은 것이 무엇인지 알려준다.'}],
+ worlds:[
+  {n:'러스트이즈 스피드웨이',d:'닥의 시대가 남은 흙 트랙. 기술 이전의 레이싱을 상징한다.'},
+  {n:'첨단 훈련 센터',d:'시뮬레이터와 데이터가 지배하는 공간. 맥퀸의 시대와 정면 대비된다.'},
+  {n:'서더 스피드웨이',d:'해변 모래 위 옛 경기장. 계보를 몸으로 확인하는 장소.'}]
+},
+{
+ id:'coco', ko:'코코', en:'COCO', year:2017, theme:'가족·세대',
+ tags:['음악','멕시코','죽은 자의 날','기억','금지'],
  src:'https://www.pixar.com/coco',
  tagline:'A Boy Who Dreams Of Becoming A Great Musician', taglineKo:'위대한 음악가를 꿈꾸는 소년',
  palette:['#2A1350','#FF7A2F','#F5A623','#FFD9A8'],
@@ -514,6 +1425,16 @@ const FILMS = [
  <rect x="30" y="252" width="240" height="4" rx="2" fill="#F5A623" opacity=".6"/>`,'코코','COCO','#FFD9A8'),
  concept:'위대한 음악가를 꿈꾸는 열두 살 소년이 조상들의 땅으로 특별한 여행을 떠난다. 그곳에서 매력적인 사기꾼 헥터가 뜻밖의 친구가 되어, 가족의 이야기와 전통에 숨은 비밀을 함께 풀어간다.',
  core:'세계의 규칙 하나가 이야기 전체를 민다. 산 자가 기억해주지 않으면 건너올 수 없다는 설정이 곧 감정의 장치가 된다.',
+ whatif:'만약 산 사람이 기억해 주지 않으면 죽은 사람이 한 번 더 사라진다면?',
+ want:'음악가가 되어 가족의 금지를 깨는 것.',
+ need:'꿈과 가족 중 하나를 고르는 대신, 가족의 진짜 이야기를 되찾는 것.',
+ rule:'오프렌다에 사진이 걸린 영혼만 금잔화 다리를 건널 수 있고, 아무도 기억하지 않으면 최종적으로 소멸한다.',
+ spine:['옛날 옛적에 리베라 가문은 몇 세대에 걸쳐 음악을 금지해 왔다.',
+  '매일 미겔은 몰래 기타를 만들고 혼자 연주를 익혔다.',
+  '그러던 어느 날 죽은 자의 날 밤에 우상의 기타를 건드려 죽은 자들의 땅으로 넘어갔다.',
+  '그래서 그는 해뜨기 전에 가족의 축복을 받아야만 돌아갈 수 있게 되었다.',
+  '그래서 사기꾼 헥터와 함께 우상의 정체와 가문의 비밀을 파헤쳤다.',
+  '마침내 미겔은 마마 코코에게 노래를 불러 헥터의 기억을 되살렸고, 가족은 음악을 되찾았다.'],
  people:[
   {n:'미겔',r:'주인공',d:'몇 세대째 이어진 가족의 음악 금지에 맞서는 열두 살. 우상의 기타를 본떠 직접 기타를 만들고 혼자 연주를 익혔다.'},
   {n:'헥터',r:'동반자',d:'죽은 자들의 땅의 매력적인 사기꾼. 산 자의 땅으로 건너가려고 미겔에게 도움을 구한다.'},
@@ -534,7 +1455,97 @@ const FILMS = [
   {n:'가족 재회부',d:'금잔화 중앙역 안에 있는 가족 기록 보관소. 빅토리아풍 관공서 분위기로 설계됐다.'}]
 },
 {
+ id:'incredibles-2', ko:'인크레더블 2', en:'INCREDIBLES 2', year:2018, theme:'가족·세대',
+ tags:['슈퍼히어로','육아','역할 교환','미디어','아기'],
+ src:'https://www.pixar.com/incredibles-2',
+ tagline:'Back To Work', taglineKo:'다시 일하러 갑니다',
+ palette:['#1B1030','#E23A2E','#F2C63C','#FFE9C4'], shape:'spark',
+ concept:'전편이 끝난 그 순간에서 곧바로 이어진다. 히어로 활동을 다시 합법화하려는 캠페인의 얼굴로 헬렌이 선택되고, 밥은 집에 남아 세 아이를 돌본다. 그사이 화면을 통해 사람을 조종하는 스크린슬레이버가 등장한다.',
+ core:'전작의 역할을 통째로 뒤집는다. 바깥에서 싸우던 사람을 집에 넣고, 집을 지키던 사람을 바깥에 내보내 같은 세계를 새 각도에서 보게 한다.',
+ whatif:'만약 세상을 구하는 일보다 아이 셋을 재우는 일이 더 어렵다면?',
+ want:'밥은 다시 인정받는 영웅이 되고 싶어 한다.',
+ need:'뒤에서 뒷받침하는 역할도 영웅의 일임을 인정하는 것.',
+ rule:'슈퍼히어로는 여전히 불법이며, 여론이 바뀌어야만 다시 활동할 수 있다.',
+ spine:['옛날 옛적에 파 가족은 여전히 불법인 신분으로 정체를 감추고 있었다.',
+  '매일 그들은 능력을 쓰고 싶은 마음을 억눌렀다.',
+  '그러던 어느 날 히어로 합법화 캠페인이 헬렌을 얼굴로 지목했다.',
+  '그래서 밥은 집에 남아 잭잭의 폭주하는 능력과 씨름하게 되었다.',
+  '그래서 헬렌이 쫓던 스크린슬레이버의 정체가 캠페인 내부에 있음이 드러났다.',
+  '마침내 가족은 다시 한 팀으로 뭉쳐 세뇌된 히어로들을 되돌리고 위기를 막았다.'],
+ people:[
+  {n:'헬렌 파(일라스티걸)',r:'주인공',d:'이번 편의 중심. 공적 영웅으로 전면에 나서며 새로운 압박을 감당한다.'},
+  {n:'밥 파',r:'뒤바뀐 역할',d:'육아와 숙제, 잭잭의 능력 폭주를 감당하는 아버지. 인정 욕구와 지지자 역할 사이에서 흔들린다.'},
+  {n:'바이올렛',r:'사춘기',d:'첫사랑의 기억이 지워지는 사고로 감정이 폭발한다. 히어로 정체성과 사생활의 충돌.'},
+  {n:'잭잭',r:'변수',d:'열일곱 가지 이상의 능력이 무작위로 발현되는 아기. 통제 불가능한 육아의 은유.'},
+  {n:'에블린 데버',r:'적대자',d:'화면 뒤에서 사람을 조종하는 기술 담당자. 영웅에 의존하는 사회를 비판한다.'},
+  {n:'윈스턴 데버',r:'후원자',d:'히어로 합법화를 추진하는 사업가. 낙관과 이상주의를 대변한다.'}],
+ worlds:[
+  {n:'파 가족의 새 저택',d:'유리와 물, 자동화로 이루어진 미드센추리 저택. 육아 참사의 무대가 된다.'},
+  {n:'데버테크',d:'통신과 미디어를 쥔 기업. 여론이 곧 히어로의 존폐를 결정한다는 세계관의 축.'},
+  {n:'뉴 어바인',d:'전편보다 확장된 도시. 대중교통과 미디어가 액션의 재료가 된다.'}]
+},
+{
+ id:'toy-story-4', ko:'토이 스토리 4', en:'TOY STORY 4', year:2019, theme:'삶의 의미',
+ tags:['장난감','존재 이유','로드무비','자유','포키'],
+ src:'https://www.pixar.com/toy-story-4',
+ tagline:'It’s Time To Get Back To Play', taglineKo:'이제 다시 놀 시간이다',
+ palette:['#3A2456','#F2C63C','#7ED0A8','#FFF3D9'], shape:'grid',
+ concept:'보니의 손에서 새 삶을 살던 우디. 보니가 쓰레기로 직접 만든 장난감 포키가 스스로를 쓰레기라 믿고 계속 달아나면서, 우디는 로드 트립 위에서 옛 친구 보 핍과 재회하고 장난감의 존재 이유 자체를 다시 묻게 된다.',
+ core:'주인공의 정체성(누군가의 장난감)이 곧 감옥이었음을 마지막에 뒤집는다. 시리즈의 대전제를 스스로 해체하는 결말.',
+ whatif:'만약 존재 이유가 “누군가의 것이 되는 것”이라고 배운 존재가, 주인 없는 삶을 만난다면?',
+ want:'보니가 포키를 잃지 않게 지켜 주는 것.',
+ need:'다른 사람의 필요가 아니라 스스로 고른 목적으로 사는 법.',
+ rule:'장난감은 아이 곁에 있어야 한다 — 시리즈 내내 지켜 온 이 규칙이 이번에 시험대에 오른다.',
+ spine:['옛날 옛적에 우디는 보니의 방에서 예전만큼 선택받지 못하고 있었다.',
+  '매일 그는 그래도 아이를 지키는 것이 자기 일이라 믿었다.',
+  '그러던 어느 날 보니가 쓰레기로 만든 포키가 자꾸 쓰레기통으로 달아났다.',
+  '그래서 우디는 가족 여행 중 포키를 쫓다 골동품 가게에 발이 묶였다.',
+  '그래서 잃어버렸던 보 핍과 재회해 주인 없이 사는 삶을 처음 보게 되었다.',
+  '마침내 우디는 보안관 배지를 넘기고, 스스로 고른 길로 떠났다.'],
+ people:[
+  {n:'우디',r:'주인공',d:'평생 지켜 온 역할을 처음으로 의심하는 인형. 시리즈의 결론을 짊어진다.'},
+  {n:'보 핍',r:'대안',d:'9년간 주인 없이 살아온 도자기 인형. 자유로운 삶의 모델을 제시한다.'},
+  {n:'포키',r:'질문',d:'스포크와 점토로 만들어진 장난감. “나는 왜 존재하는가”를 문자 그대로 반복해 묻는다.'},
+  {n:'개비 개비',r:'적대자이자 거울',d:'목소리 상자가 고장 난 인형. 사랑받고 싶다는 같은 소망이 다른 방향으로 뒤틀린 인물.'},
+  {n:'듀크 카붐',r:'실패의 그림자',d:'광고만큼 잘 뛰지 못해 버려진 스턴트 장난감. 기대에 못 미친 존재의 자책.'},
+  {n:'더키와 버니',r:'유머',d:'경품으로 걸린 채 아무도 데려가지 않은 인형 콤비.'}],
+ worlds:[
+  {n:'세컨드 챈스 골동품점',d:'주인을 기다리는 물건들의 창고. 시간이 멈춘 공간에서 존재의 의미를 묻는다.'},
+  {n:'놀이공원',d:'짧은 즐거움과 버려짐이 공존하는 장소. 장난감의 수명 주기를 압축해 보여준다.'},
+  {n:'캠핑카 여행길',d:'로드무비 형식을 빌려 시리즈를 방 밖으로 완전히 꺼낸다.'}]
+},
+{
+ id:'onward', ko:'온워드: 단 하루의 기적', en:'ONWARD', year:2020, theme:'가족·세대',
+ tags:['형제','판타지','마법','아버지','퀘스트'],
+ src:'https://www.pixar.com/onward',
+ tagline:'Their Quest Is Their Gift', taglineKo:'그들의 여정이 곧 선물이었다',
+ palette:['#241A45','#7F77DD','#5FE3D0','#EDEBFF'], shape:'spark',
+ concept:'마법이 편리한 기술에 밀려 잊힌 교외 판타지 세계. 십대 엘프 형제 이안과 발리가 아버지를 하루 동안 되살리는 주문을 얻지만, 주문이 반쯤만 성공하면서 남은 시간 안에 나머지를 완성해야 하는 여정에 오른다.',
+ core:'제한 시간을 몸으로 보이게 만든다. 하반신만 되살아난 아버지가 화면에 계속 존재함으로써, 타이머가 감정 그 자체가 된다.',
+ whatif:'만약 세상 모두가 마법을 잊었을 때, 아버지를 하루만 되살릴 수 있다면?',
+ want:'아버지를 온전히 되살려 단 하루를 함께 보내는 것.',
+ need:'이미 곁에 있던 형이 아버지의 자리를 채워 왔다는 사실을 알아보는 것.',
+ rule:'되살림 주문은 단 하루만 유효하며, 불사조 보석 없이는 완성되지 않는다.',
+ spine:['옛날 옛적에 마법이 존재했지만 사람들은 편리한 기술을 택해 마법을 잊었다.',
+  '매일 소심한 엘프 이안은 얼굴도 모르는 아버지를 그리워하며 살았다.',
+  '그러던 어느 날 열여섯 번째 생일에 아버지가 남긴 마법 지팡이와 되살림 주문을 받았다.',
+  '그래서 형 발리와 함께 주문을 시도했지만 아버지는 하반신만 돌아왔다.',
+  '그래서 두 형제는 하루가 끝나기 전에 불사조 보석을 찾아 떠났다.',
+  '마침내 이안은 아버지와의 마지막 인사를 형에게 양보하고, 진짜로 자기를 키운 사람이 누구인지 알게 되었다.'],
+ people:[
+  {n:'이안 라이트풋',r:'주인공',d:'자신감 없는 열여섯 살 엘프. 아버지의 부재를 결핍의 목록으로 안고 산다.'},
+  {n:'발리 라이트풋',r:'형',d:'마법과 옛 전설에 심취한 형. 철없어 보이지만 이 세계의 규칙을 유일하게 아는 사람.'},
+  {n:'로렐 라이트풋',r:'어머니',d:'두 아들을 홀로 키운 어머니. 아이들을 찾아 스스로 모험에 나선다.'},
+  {n:'맨티코어',r:'잃어버린 용기',d:'모험가였다가 패밀리 레스토랑 사장이 된 존재. 안전을 택한 어른의 초상.'},
+  {n:'아버지(윌든)',r:'목표',d:'대사 없이 하반신으로만 등장. 목표이자 타이머로 기능하는 인물.'}],
+ worlds:[
+  {n:'뉴 머쉬룸톤',d:'유니콘이 쓰레기통을 뒤지는 교외. 마법이 일상에 흡수되어 사라진 세계를 유머로 설명한다.'},
+  {n:'맨티코어 선술집',d:'모험의 시작점이 관광 상품이 된 장소. 세계관의 주제를 압축한 세트.'},
+  {n:'까마귀 바위 길',d:'옛 지도를 따라가는 고전 판타지 퀘스트 구간.'}]
+},
+{
  id:'soul', ko:'소울', en:'SOUL', year:2020, theme:'삶의 의미',
+ tags:['재즈','영혼','목적','뉴욕','몰입'],
  src:'https://www.pixar.com/soul',
  tagline:'What Is It That Makes You...YOU?', taglineKo:'무엇이 당신을 당신답게 만드는가?',
  palette:['#0D2942','#5FE3D0','#FFD84D','#CFF6EF'],
@@ -544,6 +1555,16 @@ const FILMS = [
  <circle cx="52" cy="76" r="5" fill="#FFD84D"/><circle cx="244" cy="60" r="4" fill="#FFD84D"/><circle cx="268" cy="180" r="6" fill="#FFD84D"/>`,'소울','SOUL','#CFF6EF'),
  concept:'재즈를 향한 열정으로 사는 중학교 밴드 교사 조 가드너. 평생 한 번 올까 말까 한 무대의 기회를 얻은 순간, 한 번의 헛디딤이 그를 뉴욕 거리에서 태어나기 전 세계로 데려간다. 새 영혼들이 성격과 개성, 관심사를 부여받는 곳이다.',
  core:'주인공과 정확히 반대편에 선 인물을 붙인다. 살고 싶은데 못 사는 조와, 살 수 있는데 안 살려는 22.',
+ whatif:'만약 인생의 목적이 태어나기 전에 정해진다고 믿는 사람이, 목적 없이 사는 법을 배워야 한다면?',
+ want:'하프 노트 무대에 서서 진짜 음악가가 되는 것.',
+ need:'목적이 아니라 살아 있는 순간 자체가 삶이라는 것을 아는 것.',
+ rule:'영혼은 지구 통행증에 마지막 “불꽃”을 채워야만 지구로 갈 수 있다.',
+ spine:['옛날 옛적에 중학교 밴드 교사 조 가드너는 재즈 무대를 꿈꾸며 살았다.',
+  '매일 그는 진짜 인생은 아직 시작되지 않았다고 믿었다.',
+  '그러던 어느 날 꿈에 그리던 무대의 기회를 잡은 그날, 맨홀에 빠져 저 너머로 향했다.',
+  '그래서 그는 태어나기 전 세계로 달아나 지구에 가기 싫어하는 영혼 22의 멘토가 되었다.',
+  '그래서 두 사람은 지구로 함께 떨어져, 22가 처음으로 하늘과 피자와 바람을 경험했다.',
+  '마침내 조는 목적이 아니라 하루하루가 삶이라는 것을 알고, 22에게 자기 통행증을 넘겼다.'],
  people:[
   {n:'조 가드너',r:'주인공',d:'중학교 밴드 교사. 마흔여섯이지만 큰 무대의 기회가 언제든 올 수 있다고 믿는다. 재즈 역사를 훤히 꿰고 있으며 혼자 살면서 음악에 몰두한다.'},
   {n:'22',r:'거울',d:'수백 년을 유 세미나에서 보낸 조숙한 영혼. 지구에 갈 조건을 하나만 남겨두었지만 애초에 지구의 삶에 관심이 없다.'},
@@ -564,7 +1585,96 @@ const FILMS = [
   {n:'하프 노트',d:'실제 재즈 클럽 규모에 충실하게 만든 무대. 벽에는 재즈 거장들의 초상이 걸려 있다.'}]
 },
 {
- id:'elem', ko:'엘리멘탈', en:'ELEMENTAL', year:2023, theme:'차이·공존',
+ id:'luca', ko:'루카', en:'LUCA', year:2021, theme:'우정·동료',
+ tags:['이탈리아','여름','바다괴물','비밀','우정'],
+ src:'https://www.pixar.com/luca',
+ tagline:'Dive Into A Summer Of Adventure', taglineKo:'모험의 여름 속으로 뛰어들다',
+ palette:['#0E5A6E','#5FD3E8','#F2C63C','#EFFCFF'], shape:'waves',
+ concept:'이탈리아 리비에라의 눈부신 여름. 물 밖으로 나오면 사람의 모습이 되는 바다 괴물 소년 루카가 알베르토를 만나 처음으로 육지를 밟는다. 두 소년은 젤라토와 파스타, 스쿠터로 가득한 인간 마을에서 정체를 숨긴 채 우정을 쌓는다.',
+ core:'정체를 감춘다는 설정을 물 한 방울로 시각화한다. 물이 닿으면 본모습이 드러난다는 규칙 하나가 모든 장면에 긴장을 심는다.',
+ whatif:'만약 물 한 방울에 정체가 드러나는 아이가, 물의 도시에서 여름을 보내야 한다면?',
+ want:'스쿠터를 사서 세상을 보러 떠나는 것.',
+ need:'숨기지 않아도 받아들여질 수 있다는 것을, 그리고 친구를 놓아 줄 줄도 알아야 한다는 것.',
+ rule:'물에 닿으면 본모습이 드러나고, 마을 사람들은 바다 괴물을 사냥해 왔다.',
+ spine:['옛날 옛적에 바다 괴물 소년 루카는 수면 위로 올라가는 것이 금지된 삶을 살았다.',
+  '매일 그는 물고기 떼를 몰며 바깥세상을 상상만 했다.',
+  '그러던 어느 날 알베르토를 만나 물 밖에서는 사람이 된다는 사실을 알게 되었다.',
+  '그래서 두 소년은 스쿠터를 사기 위해 마을의 삼종 경기에 나가기로 했다.',
+  '그래서 새 친구 줄리아와 가까워지며 루카와 알베르토 사이가 어긋났다.',
+  '마침내 두 소년은 빗속에서 정체가 드러났지만 마을이 그들을 받아들였고, 루카는 기차를 타고 학교로 떠났다.'],
+ people:[
+  {n:'루카 파구로',r:'주인공',d:'호기심 많은 바다 괴물 소년. 금지된 세계를 향한 동경이 이야기의 동력.'},
+  {n:'알베르토 스코르파노',r:'친구',d:'육지에서 혼자 지내온 소년. 자유로워 보이지만 버려짐의 상처를 감추고 있다.'},
+  {n:'줄리아 마르코발도',r:'세 번째 축',d:'여름마다 아버지를 찾아오는 인간 소녀. 우정의 삼각 구도를 만든다.'},
+  {n:'에르콜레 비스콘티',r:'적대자',d:'마을 경기를 독차지해 온 청년. 작은 사회의 권력을 상징한다.'},
+  {n:'마시모 마르코발도',r:'수용',d:'줄리아의 아버지이자 어부. 편견을 넘어 아이들을 지켜 주는 어른.'},
+  {n:'다니엘라와 로렌초',r:'보호',d:'루카의 부모. 안전을 위해 세상을 좁히려는 사랑의 방식.'}],
+ worlds:[
+  {n:'포르토로소',d:'이탈리아 리비에라 마을을 손그림 감각으로 재해석한 무대. 여름의 온도가 곧 감정의 온도다.'},
+  {n:'바닷속 마을',d:'바다 괴물들이 목축하듯 물고기를 기르는 일상 공간. 이질적 존재를 평범하게 그려 편견을 뒤집는다.'},
+  {n:'알베르토의 탑',d:'버려진 망루. 어른 없이 자란 아이의 세계이자 우정의 근거지.'}]
+},
+{
+ id:'turning-red', ko:'메이의 새빨간 비밀', en:'TURNING RED', year:2022, theme:'성장·정체성',
+ tags:['사춘기','모녀','토론토','아이돌','레드팬더'],
+ src:'https://www.pixar.com/turning-red',
+ tagline:'Growing Up Is A Beast', taglineKo:'자란다는 건 원래 짐승 같은 일',
+ palette:['#3A1030','#FF6B8A','#F2C63C','#FFE6EE'], shape:'bloom',
+ concept:'2002년 토론토. 모범생이자 효녀인 열세 살 메이린은 어느 아침 거대한 레드팬더로 변한 자신을 발견한다. 감정이 크게 흔들릴 때마다 변신하는 가문의 유산 앞에서, 그녀는 어머니의 기대와 자기 자신 사이에서 선택해야 한다.',
+ core:'사춘기의 변화를 은유가 아니라 문자 그대로 몸으로 구현한다. 감정이 커질수록 커지는 몸이라는 규칙이 곧 주제다.',
+ whatif:'만약 감정이 흔들릴 때마다 거대한 짐승으로 변한다면?',
+ want:'어머니가 자랑스러워하는 완벽한 딸로 남으면서 친구들과 콘서트에 가는 것.',
+ need:'억누르는 대신 자기 안의 무질서한 부분을 자기 것으로 인정하는 것.',
+ rule:'가문의 여성은 붉은 달 의식으로 팬더를 봉인할 수 있지만, 봉인은 단 한 번뿐이다.',
+ spine:['옛날 옛적에 리 가문의 여성들에게는 레드팬더로 변하는 유산이 있었다.',
+  '매일 열세 살 메이린은 어머니의 완벽한 딸로 살며 속마음을 눌렀다.',
+  '그러던 어느 날 아침, 감정이 폭발하며 거대한 레드팬더로 변해 버렸다.',
+  '그래서 그녀는 친구들과 함께 팬더를 이용해 콘서트 티켓 값을 모으기 시작했다.',
+  '그래서 붉은 달 봉인 의식 날, 어머니와의 갈등이 극에 달했다.',
+  '마침내 메이린은 팬더를 봉인하지 않고 자기 일부로 받아들였고, 어머니도 자신의 팬더와 화해했다.'],
+ people:[
+  {n:'메이린 리',r:'주인공',d:'성적도 태도도 완벽한 열세 살. 억눌러 온 욕구가 통째로 몸으로 터져 나온다.'},
+  {n:'밍 리',r:'대립하는 사랑',d:'딸을 향한 기대와 통제가 강한 어머니. 자신도 같은 유산을 억누르며 살아왔다.'},
+  {n:'미리엄·프리야·애비',r:'친구들',d:'있는 그대로의 메이린을 받아 주는 삼인방. 또래 공동체의 힘을 보여준다.'},
+  {n:'4★타운',r:'욕망의 대상',d:'소녀들이 열광하는 보이그룹. 세대의 언어이자 갈등의 도화선.'},
+  {n:'우 할머니와 이모들',r:'가문',d:'봉인 의식을 주관하는 여성들. 대를 이어 전해진 억압의 구조를 보여준다.'}],
+ worlds:[
+  {n:'토론토 차이나타운',d:'2002년의 질감을 그대로 살린 도시. 이민 2세대의 두 문화가 한 화면에 겹친다.'},
+  {n:'리 가문 사당',d:'조상과 규율이 살아 있는 공간. 가족의 규칙이 물리적으로 존재한다.'},
+  {n:'스카이돔 콘서트장',d:'봉인 의식과 같은 시간에 열리는 무대. 두 세계가 정면 충돌하는 클라이맥스.'}]
+},
+{
+ id:'lightyear', ko:'버즈 라이트이어', en:'LIGHTYEAR', year:2022, theme:'모험·미지',
+ tags:['SF','시간','우주','집착','로봇 고양이'],
+ src:'https://www.pixar.com/lightyear',
+ tagline:'The Story That Inspired The Toy', taglineKo:'그 장난감을 만들어 낸 바로 그 이야기',
+ palette:['#08142E','#6FE3C8','#8FA8FF','#DDEBFF'], shape:'orbit',
+ concept:'1995년 앤디가 버즈 라이트이어 장난감을 갖고 싶어 하게 만든 바로 그 영화. 자신의 실수로 탐사대를 미지의 행성에 좌초시킨 우주 특공대 버즈가, 초광속 비행 실험을 반복하며 모두를 집으로 돌려보내려 한다. 그러나 비행 한 번마다 지상에서는 몇 년이 흘러간다.',
+ core:'액자 구조로 시리즈의 상상력을 확장한다. “장난감의 원작 영화”라는 설정 하나가 톤·장르·관객 시점을 모두 바꿀 자유를 준다.',
+ whatif:'만약 실수를 되돌리려는 시도 자체가, 사랑하는 사람들의 시간을 빼앗는 일이라면?',
+ want:'임무를 완수해 모두를 원래 행성으로 데려가는 것.',
+ need:'잃어버린 시간을 되돌리는 대신 지금의 사람들과 사는 법을 배우는 것.',
+ rule:'초광속 비행을 한 번 시도할 때마다 지상에서는 약 4년이 흐른다.',
+ spine:['옛날 옛적에 우주 특공대 버즈 라이트이어는 자기 판단으로 탐사대를 낯선 행성에 좌초시켰다.',
+  '매일 그는 초광속 연료를 완성해 모두를 집으로 보내겠다는 임무에 매달렸다.',
+  '그러던 어느 날 비행 한 번마다 지상에서 몇 년이 흐른다는 사실이 드러났다.',
+  '그래서 버즈가 임무를 반복하는 사이 친구도 동료도 늙어 세상을 떠났다.',
+  '그래서 그는 자기 미래의 자신과 맞서게 되었다.',
+  '마침내 버즈는 과거를 고치려는 집착을 버리고 지금의 동료들과 함께 살기로 했다.'],
+ people:[
+  {n:'버즈 라이트이어',r:'주인공',d:'실수를 인정하지 못해 임무에 갇힌 우주 특공대원. 혼자 해내려는 성향이 결함이다.'},
+  {n:'속스',r:'조력자',d:'감정 지원용 로봇 고양이. 유머와 정보 제공을 겸하며 관객의 안내자 역할을 한다.'},
+  {n:'이지 호손',r:'다음 세대',d:'버즈의 옛 동료 앨리샤의 손녀. 두려움을 인정하는 새로운 리더십을 보여준다.'},
+  {n:'앨리샤 호손',r:'다른 삶',d:'버즈가 비행하는 동안 지상에서 가정을 이루고 삶을 완성한 동료. 대비의 축.'},
+  {n:'저그',r:'적대자',d:'같은 목표를 다른 방식으로 밀어붙인 존재. 주인공의 집착이 도달할 종착점.'}],
+ worlds:[
+  {n:'행성 티카니 프라임',d:'덩굴과 곤충이 위협이 되는 좌초지. 탈출 욕구를 환경으로 계속 자극한다.'},
+  {n:'우주정거장 콜로니',d:'세월이 흐를 때마다 조금씩 변해 시간의 흐름을 시각화하는 장치.'},
+  {n:'초광속 궤도',d:'비행 시퀀스마다 세계의 시간을 뒤바꾸는 이야기의 엔진.'}]
+},
+{
+ id:'elemental', ko:'엘리멘탈', en:'ELEMENTAL', year:2023, theme:'차이·공존',
+ tags:['원소','이민','도시','사랑','가업'],
  src:'https://www.pixar.com/elemental',
  tagline:'Opposites React', taglineKo:'서로 다른 둘이 만나 반응하다',
  palette:['#170F2E','#FF6B2C','#3FB8E8','#FFD9BD'],
@@ -574,6 +1684,16 @@ const FILMS = [
  <circle cx="60" cy="70" r="4" fill="#FFC24D"/><circle cx="256" cy="66" r="5" fill="#3FB8E8"/>`,'엘리멘탈','ELEMENTAL','#FFD9BD'),
  concept:'불·물·흙·공기 원소가 함께 살아가는 엘리멘트 시티. 강단 있고 재치 있는 불의 젊은 여성 엠버가, 유쾌하고 물 흐르듯 사는 웨이드를 만나며 자신이 믿어온 세계관이 흔들린다.',
  core:'공간의 색과 질감이 인물의 심리를 대신 말한다. 엠버가 물의 구역에서 느끼는 불편함이 곧 화면의 온도다.',
+ whatif:'만약 서로 닿으면 사라져 버리는 두 존재가 사랑에 빠진다면?',
+ want:'아버지의 가게를 물려받아 부모의 희생에 보답하는 것.',
+ need:'물려받은 삶이 아니라 스스로 고른 삶을 살아도 된다는 허락.',
+ rule:'원소끼리는 섞이지 않는다 — 도시의 구획도, 사람들의 인식도 그 전제 위에 세워져 있다.',
+ spine:['옛날 옛적에 이민자 부모가 파이어타운에 가게를 열어 딸 엠버를 키웠다.',
+  '매일 엠버는 아버지의 가게를 물려받을 완벽한 딸이 되려 애썼다.',
+  '그러던 어느 날 가게의 배관이 터지며 시청 검사관 웨이드가 나타났다.',
+  '그래서 엠버는 가게를 지키려고 물 원소인 웨이드와 함께 도시의 누수를 추적했다.',
+  '그래서 두 사람은 서로에게 끌렸고, 엠버는 자기가 진짜 원하는 것이 무엇인지 처음 물었다.',
+  '마침내 엠버는 가게를 아버지에게 정식으로 넘겨받아 문을 닫고, 자기 길로 떠났다.'],
  people:[
   {n:'엠버 루멘',r:'주인공',d:'불 원소. 이민자 부모의 외동으로 그들의 희생을 잘 알기에 완벽한 딸이 되어 보답하려 한다. 웨이드를 만나며 자기 자리를 묻기 시작한다.'},
   {n:'웨이드 리플',r:'거울',d:'물 원소인 동시에 감정적으로도 투명하다. 관찰력 있고 공감이 넘치며 마음을 숨기지 못한다.'},
@@ -591,7 +1711,8 @@ const FILMS = [
   {n:'엘리멘트 시티',d:'베네치아와 암스테르담 같은 운하 도시를 참고했다. 물 원소가 세운 도시여서 운하 교통망이 중심이며, 균질한 용광로가 아니라 서로 다른 문화가 공존하는 곳으로 설계됐다.'}]
 },
 {
- id:'io2', ko:'인사이드 아웃 2', en:'INSIDE OUT 2', year:2024, theme:'감정',
+ id:'inside-out-2', ko:'인사이드 아웃 2', en:'INSIDE OUT 2', year:2024, theme:'감정·마음',
+ tags:['사춘기','불안','자아','하키','신념'],
  src:'https://www.pixar.com/inside-out-2',
  tagline:'Return To The Mind Of A Newly Minted Teenager', taglineKo:'막 십대가 된 마음속으로 돌아오다',
  palette:['#1A1338','#F0873C','#FFD84D','#FFE2C4'],
@@ -601,6 +1722,16 @@ const FILMS = [
  <path d="M20 240 L90 214 L160 246 L230 216 L290 244" stroke="#F0873C" stroke-width="3" fill="none" opacity=".8"/>`,'인사이드 아웃 2','INSIDE OUT 2','#FFE2C4'),
  concept:'막 십대가 된 라일리의 마음으로 돌아온다. 본부가 갑작스러운 철거 공사에 들어가고, 전혀 예상하지 못한 것을 위한 자리가 만들어진다. 새로운 감정들이다. 오랫동안 손발을 맞춰온 다섯 감정은 불안의 등장을 어떻게 받아들여야 할지 알지 못한다.',
  core:'익숙한 공간이 물리적으로 부서지는 것으로 변화를 알린다. 설명 대신 철거반이 들어온다.',
+ whatif:'만약 나를 지켜 주려는 감정이, 나를 가장 힘들게 만드는 감정이라면?',
+ want:'불안은 라일리가 새 친구들 사이에서 살아남게 하고 싶어 한다.',
+ need:'자아는 좋은 기억만으로 만들어지지 않으며, 모든 감정이 자기 자리를 가져야 한다는 것.',
+ rule:'핵심 기억이 모여 신념이 되고, 신념이 모여 자아가 된다.',
+ spine:['옛날 옛적에 라일리의 감정 다섯은 손발이 잘 맞는 한 팀이었다.',
+  '매일 그들은 좋은 기억을 골라 라일리의 자아를 “나는 좋은 사람이야”로 지켰다.',
+  '그러던 어느 날 사춘기 경보가 울리고 불안·따분·부럽·당황이 도착했다.',
+  '그래서 불안이 본부를 장악하고 기존 감정들은 기억 저편으로 밀려났다.',
+  '그래서 라일리는 새 자아를 좇다가 친구도 자신도 잃을 뻔했다.',
+  '마침내 감정들은 모든 기억을 되돌려 놓았고, 복잡한 그대로의 자아를 받아들였다.'],
  people:[
   {n:'불안',r:'새 중심',d:'가능한 모든 부정적 결과에 라일리가 대비되도록 만든다. 열 걸음 앞을 내다보고 최악의 시나리오를 거리낌 없이 말하며, 완벽을 향해 미는 것이 목표에 가까워지는 길이라 믿는다.'},
   {n:'따분',r:'무기력',d:'권태롭고 나른하며 눈 굴리기가 몸에 뱄다. 소파에서 일어나지도 않고 휴대폰 앱으로 제어판을 조작한다.'},
@@ -617,7 +1748,8 @@ const FILMS = [
   {n:'하키',d:'라일리의 열정이자 이번 이야기의 큰 축. 감정들이 경기 전체를 조종하는 오프닝 경기 장면이 대표적이다.'}]
 },
 {
- id:'elio', ko:'엘리오', en:'ELIO', year:2025, theme:'소속감',
+ id:'elio', ko:'엘리오', en:'ELIO', year:2025, theme:'모험·미지',
+ tags:['우주','소속감','외계','대사','고아'],
  src:'https://www.pixar.com/elio',
  tagline:'For centuries, people have called out to the universe looking for answers…',
  taglineKo:'수 세기 동안 인류는 답을 구하며 우주를 향해 외쳐왔다',
@@ -629,6 +1761,16 @@ const FILMS = [
  <circle cx="54" cy="212" r="3" fill="#fff"/><circle cx="238" cy="240" r="3" fill="#fff"/><circle cx="86" cy="64" r="2.5" fill="#fff"/><circle cx="212" cy="98" r="2" fill="#fff"/>`,'엘리오','ELIO','#CFE0FF'),
  concept:'수백 년 동안 사람들은 우주를 향해 답을 물어왔고, 마침내 우주가 대답한다. 외계인에게 납치되기를 바랄 만큼 우주에 빠진 소년이, 지구에는 자신의 자리가 없다고 느끼며 있는 그대로 받아들여지는 세계를 꿈꾼다.',
  core:'적대자는 주인공의 소망을 극단까지 밀고 간 존재다. 그리곤도 엘리오처럼 소속되고 싶어 했고, 거절당했다.',
+ whatif:'만약 지구에 자기 자리가 없다고 느끼는 아이가, 지구의 대표로 뽑힌다면?',
+ want:'우주로 떠나 자기를 있는 그대로 받아 주는 곳에 소속되는 것.',
+ need:'지구에서 이미 자기를 사랑하고 있던 사람을 알아보는 것.',
+ rule:'커뮤니버스에는 각 행성의 지도자만 들어올 수 있고, 자격을 인정받지 못한 자는 거절된다.',
+ spine:['옛날 옛적에 열한 살 엘리오는 부모를 잃고 이모와 함께 공군기지에서 살았다.',
+  '매일 그는 외계인이 자기를 데려가 주기를 간절히 바랐다.',
+  '그러던 어느 날 정말로 커뮤니버스에 소환되어 지구의 대표로 오해받았다.',
+  '그래서 엘리오는 지구 지도자인 척하며 은하 의회에 들어갔다.',
+  '그래서 거절당한 전쟁 군주 그리곤과, 그의 아들 글로든과 얽히게 되었다.',
+  '마침내 엘리오는 자기가 찾던 소속이 이미 이모 곁에 있었음을 알고 집으로 돌아왔다.'],
  people:[
   {n:'엘리오 솔리스',r:'주인공',d:'지구에 어울리지 않는다고 느끼는 열한 살. 부모를 잃은 뒤 외로움 속에서 우주의 장대함에 온 힘을 쏟으며, 그곳에서 진짜 연결을 찾으리라 믿는다.'},
   {n:'올가 솔리스',r:'보호자',d:'우주비행사 프로그램을 준비하던 공군 소령. 조카를 맡으며 진로가 바뀌었고, 조카가 자기 자리를 찾기를 바란다. 단, 지구 위에서.'},
@@ -645,119 +1787,464 @@ const FILMS = [
   {n:'지구(몬테즈 공군기지)',d:'광활한 아스팔트와 브루탈리즘 콘크리트 건물, 딱딱한 모서리와 반복되는 직사각형 대칭. 엘리오만 색을 가진 존재로 남아 이질감을 드러낸다.'},
   {n:'납치 장면',d:'엘리오에게 이것은 납치가 아니라 구조다. 평범한 교외의 밤에서 시작해, 우주선이 도착하는 순간 강렬한 초록빛이 쏟아지며 색이 폭발한다.'},
   {n:'우주선',d:'종이접기에서 착안한 형태.'}]
+},
+{
+ id:'hoppers', ko:'호퍼스', en:'HOPPERS', year:2026, theme:'자연·문명',
+ tags:['동물','의식 전송','개발','자연','비버'],
+ src:'https://www.pixar.com/hoppers',
+ tagline:'Scientists Have Discovered How To Hop Human Consciousness Into Lifelike Robotic Animals.',
+ taglineKo:'과학자들이 인간의 의식을 동물 로봇에 옮기는 방법을 찾아냈다',
+ palette:['#12402C','#7ED0A8','#F2C63C','#F2FFF6'], shape:'bloom',
+ concept:'과학자들이 인간의 의식을 진짜 같은 동물 로봇에 “홉”시키는 기술을 개발해, 사람이 동물의 몸으로 동물과 대화할 수 있게 된다. 동물을 사랑하는 메이블이 이 기회를 붙잡고 비버의 몸으로 들어가면서, 상상도 못 한 동물 세계의 비밀을 마주한다.',
+ core:'시점 전환을 기술 설정으로 정당화한다. 인간이 동물의 몸을 빌린다는 규칙 하나가, 관객을 자연스럽게 반대편 진영에 앉힌다.',
+ whatif:'만약 동물의 몸을 빌려 동물의 말을 알아들을 수 있게 된다면?',
+ want:'동물들과 진짜로 대화하고 그들의 세계를 이해하는 것.',
+ need:'이해했다면 편을 들어야 한다는 것 — 관찰자에서 당사자로 넘어가는 책임.',
+ rule:'의식은 동물 로봇 안에 머무는 동안에만 동물의 언어를 이해할 수 있다.',
+ spine:['옛날 옛적에 과학자들이 사람의 의식을 동물 로봇에 옮기는 기술을 완성했다.',
+  '매일 동물을 사랑하는 메이블은 동물의 마음을 알고 싶어 했다.',
+  '그러던 어느 날 그녀는 비버 로봇의 몸으로 들어가 동물 세계에 발을 들였다.',
+  '그래서 그녀는 비버들의 왕 조지와 만나 그들의 삶을 안에서 보게 되었다.',
+  '그래서 습지를 밀어 버리려는 시장의 개발 계획이 임박했음을 알게 되었다.',
+  '마침내 메이블은 동물들을 규합해 자기 종족을 상대로 습지를 지키는 편에 섰다.'],
+ people:[
+  {n:'메이블 타나카',r:'주인공',d:'동물을 사랑하는 열아홉 살. 비버 로봇의 몸으로 동물 세계에 들어가 습지를 구하려 한다.'},
+  {n:'조지 왕',r:'동맹',d:'카리스마 있는 비버 지도자. 인간을 믿을 것인지 결정해야 하는 위치에 있다.'},
+  {n:'제리 제너라조 시장',r:'적대자',d:'말솜씨 좋은 지역 시장. 개발이라는 이름으로 서식지를 위협한다.'},
+  {n:'습지의 동물들',r:'공동체',d:'각자의 이해관계를 가진 여러 종. 하나의 위협 앞에서 연대를 배운다.'}],
+ worlds:[
+  {n:'글레이드(습지)',d:'비버가 만들어 낸 물의 건축이 곧 마을이 되는 공간. 동물의 노동이 문명으로 보이게 설계된다.'},
+  {n:'연구소',d:'“홉” 기술이 태어난 곳. 세계의 규칙과 제한 시간을 관리하는 장치.'},
+  {n:'개발 예정지',d:'인간의 계획이 그려진 도면 위 공간. 두 세계의 이해가 정면으로 충돌하는 지점.'}]
+},
+{
+ id:'toy-story-5', ko:'토이 스토리 5', en:'TOY STORY 5', year:2026, theme:'우정·동료',
+ tags:['장난감','기술','태블릿','놀이','세대'],
+ src:'https://www.pixar.com/toy-story-5',
+ tagline:'Toy Meets Tech', taglineKo:'장난감, 기술을 만나다',
+ palette:['#20385E','#5FD3E8','#F2C63C','#EAF6FF'], shape:'grid',
+ concept:'장난감들이 돌아왔다. 이번에는 장난감과 기술의 대결이다. 우디와 버즈, 제시와 친구들은 보니에게 가장 좋은 것이 무엇인지에 대해 전혀 다른 생각을 가진 신형 태블릿 릴리패드를 만나면서 자신들의 자리를 위협받는다.',
+ core:'시리즈의 오랜 질문(장난감의 쓸모)을 시대의 변화에 다시 부딪친다. 경쟁자를 사람이 아니라 매체로 설정해 갈등의 층을 바꾼다.',
+ whatif:'만약 아이의 시간을 두고 장난감이 화면과 경쟁해야 한다면?',
+ want:'보니의 놀이 시간에서 밀려나지 않는 것.',
+ need:'놀이의 형태가 달라져도 아이 곁에 있는 방법을 새로 찾는 것.',
+ rule:'장난감은 아이가 손을 뻗을 때만 살아난다 — 아이의 손이 다른 곳을 향하면 존재가 흔들린다.',
+ spine:['옛날 옛적에 우디와 버즈와 제시는 보니의 방에서 함께 지냈다.',
+  '매일 그들은 보니의 놀이 시간을 기다렸다.',
+  '그러던 어느 날 신형 태블릿 릴리패드가 집에 도착했다.',
+  '그래서 릴리패드는 보니에게 무엇이 좋은지에 대해 장난감들과 정면으로 부딪혔다.',
+  '그래서 장난감들은 자기들의 쓸모를 처음으로 의심하게 되었다.',
+  '마침내 그들은 화면과 싸우는 대신 놀이의 자리를 되찾을 새로운 방법을 찾아야 했다.'],
+ people:[
+  {n:'우디',r:'주인공',d:'시리즈를 이끌어 온 카우보이 인형. 변화한 세계에서 다시 자기 역할을 묻는다.'},
+  {n:'버즈 라이트이어',r:'동료',d:'우주 특공대 피규어. 오랜 파트너로서 함께 새로운 도전을 맞는다.'},
+  {n:'제시',r:'동료',d:'카우걸 인형. 버려짐의 기억을 지닌 채 이번 변화를 마주한다.'},
+  {n:'릴리패드',r:'새로운 힘',d:'보니에게 무엇이 좋은지에 대해 자기만의 생각을 가진 신형 태블릿. 장난감들의 일자리를 흔든다.'},
+  {n:'보니',r:'세계의 주인',d:'장난감들의 현재 주인. 그녀의 관심이 곧 세계의 무게중심이다.'}],
+ worlds:[
+  {n:'보니의 방',d:'시리즈의 전통적 무대. 이번에는 화면 불빛이 새로운 광원으로 들어온다.'},
+  {n:'화면 속 세계',d:'장난감이 들어갈 수 없는 영역. 경쟁의 규칙 자체가 다른 공간.'}]
 }
 ];
 
+/* ══════════════════════════════════════════════════════════════
+   창작 실험실 자료
+   ══════════════════════════════════════════════════════════════ */
 
-/* ── 파생 데이터 (작품 추가 시 자동 반영) ───────────────────── */
-FILMS.sort((a,b)=>a.year-b.year);
+/* 스토리 스파인 6단계 — 픽사 스토리 아티스트들이 피칭에 쓰던 구조 */
+const SPINE_STEPS = [
+ {k:'once',  lb:'옛날 옛적에',   tip:'주인공과 세계의 평상시 모습. 아직 아무 일도 일어나지 않은 상태를 한 문장으로.',
+  ph:'아이 방의 장난감들은 사람이 없을 때만 살아났다.'},
+ {k:'every', lb:'매일',         tip:'반복되는 일상과 그 안에 감춰진 결핍. “늘 이랬다”가 있어야 “그날”이 특별해진다.',
+  ph:'우디는 가장 사랑받는 장난감이라는 자리를 지켰다.'},
+ {k:'oneday',lb:'그러던 어느 날', tip:'균형을 깨뜨리는 사건. 주인공이 선택하지 않았지만 되돌릴 수 없는 일.',
+  ph:'생일 선물로 새 장난감이 도착했다.'},
+ {k:'so1',   lb:'그래서',       tip:'사건 때문에 주인공이 한 첫 번째 행동. 우연이 아니라 결정이어야 한다.',
+  ph:'우디는 질투 끝에 그를 창밖으로 밀어냈다.'},
+ {k:'so2',   lb:'그래서',       tip:'그 행동이 부른 더 큰 대가. 여기서 원하는 것과 필요한 것이 갈라진다.',
+  ph:'둘 다 집 밖으로 떨어져 위험한 곳에 갇혔다.'},
+ {k:'finally',lb:'마침내',      tip:'주인공이 치른 대가와 새로운 균형. 무엇을 얻었고 무엇을 놓아 주었는가.',
+  ph:'우디는 자기 자리를 포기하고 친구를 얻었다.'}
+];
+
+/* 엠마 코츠(Emma Coats)가 공개한 픽사 스토리텔링 원칙 22가지 — 한국어 정리 */
+const RULES = [
+ {t:'인물이 성공하는 모습보다, 애써 노력하는 모습에서 관객은 마음을 준다.', f:'monsters-university',
+  w:'마이크는 끝내 무서워지지 못한다. 그런데도 관객이 그를 응원하는 이유는 그가 쏟은 노력 때문이다.'},
+ {t:'관객으로서 보고 싶은 것과, 작가로서 쓰기 편한 것은 다르다. 늘 관객 쪽을 택하라.', f:'toy-story-3',
+  w:'소각장 장면은 쓰기 가장 어려운 선택이었지만, 관객이 시리즈 내내 기다린 감정이기도 했다.'},
+ {t:'주제를 정해 두면 도움이 되지만, 진짜 주제는 다 쓰고 나서야 보인다. 그때 다시 고쳐 써라.', f:'inside-out',
+  w:'“기쁨이 라일리를 지킨다”로 시작해, “슬픔이 있어야 사람이 다가온다”로 주제가 바뀌었다.'},
+ {t:'스토리 스파인: 옛날 옛적에 ___. 매일 ___. 그러던 어느 날 ___. 그래서 ___. 그래서 ___. 마침내 ___.', f:'finding-nemo',
+  w:'이 여섯 칸에 니모의 여정을 넣으면 두 시간짜리 영화가 여섯 문장으로 압축된다.'},
+ {t:'단순하게. 집중하라. 인물을 합치고, 돌아가는 길은 건너뛰어라. 잃는 것 같지만 오히려 자유로워진다.', f:'wall-e',
+  w:'대사를 걷어낼수록 인물의 마음이 또렷해진다는 것을 첫 40분이 증명한다.'},
+ {t:'인물이 무엇을 잘하고 무엇을 편하게 느끼는가? 그 정반대를 던져라. 어떻게 대처하는가?', f:'cars',
+  w:'속도가 전부인 인물에게서 속도를 빼앗고 가장 느린 마을에 가둔다.'},
+ {t:'결말을 먼저 정하고 중간을 만들어라. 결말은 어렵다. 미리 확보해 두라.', f:'coco',
+  w:'“마마 코코에게 노래를 불러준다”는 마지막 장면이 서 있었기에 세계의 규칙을 거기에 맞춰 지을 수 있었다.'},
+ {t:'이야기를 끝내라. 완벽하지 않아도 놓아 줘라. 다음에 더 잘하면 된다.', f:'the-good-dinosaur',
+  w:'여러 번 방향을 바꾸며 완성된 작품. 끝내는 것 자체가 다음 작품의 재료가 된다.'},
+ {t:'막혔을 때는 “다음에 일어나지 않을 일”의 목록을 적어라. 길이 열린다.', f:'up',
+  w:'노인이 모험을 떠나는 방법을 지우고 지우다 남은 것이 “집을 통째로 띄운다”였다.'},
+ {t:'좋아하는 이야기를 분해하라. 무엇이 좋았는지 알아야 자기 것에 쓸 수 있다.', f:'lightyear',
+  w:'우주 활극이라는 장르 자체를 분해해 시리즈 안에 액자로 다시 조립한 작품.'},
+ {t:'종이에 적어라. 머릿속에만 있는 완벽한 아이디어는 아무와도 나눌 수 없다.', f:'ratatouille',
+  w:'레미의 요리도, 이야기도, 밖으로 꺼내 누군가에게 맛보여야 비로소 존재한다.'},
+ {t:'처음 떠오른 것은 버려라. 두 번째, 세 번째도. 뻔한 것을 치우면 자기 것이 나온다.', f:'inside-out-2',
+  w:'“새 감정이 온다”에서 멈추지 않고 “그 감정이 자아를 다시 쓴다”까지 밀고 갔다.'},
+ {t:'의견이 있는 인물을 써라. 수동적인 인물은 쓰기 편하지만 관객에게는 독이다.', f:'brave',
+  w:'메리다는 첫 장면부터 관습에 반대한다. 그 의견이 이야기 전체를 굴린다.'},
+ {t:'왜 이 이야기를 반드시 써야 하는가? 그 믿음이 이야기의 심장이다.', f:'turning-red',
+  w:'특정 도시·특정 해·특정 가족의 기억에서 출발했기에 보편적인 사춘기 이야기가 되었다.'},
+ {t:'내가 그 상황이라면 어떤 기분일까? 정직함이 있을 법하지 않은 상황을 믿게 만든다.', f:'soul',
+  w:'태어나기 전 세계라는 황당한 설정이 설득되는 이유는 “죽기 직전의 후회”가 정직하기 때문이다.'},
+ {t:'무엇이 걸려 있는가? 인물이 실패할 이유를 만들어라. 그것이 응원할 이유가 된다.', f:'onward',
+  w:'하루라는 시한과 하반신만 남은 아버지가, 매 장면의 판돈을 눈에 보이게 만든다.'},
+ {t:'어떤 작업도 낭비가 아니다. 지금 안 되면 놓아 두라. 나중에 반드시 쓰인다.', f:'monsters-inc',
+  w:'수없이 폐기된 겁주기 설정들이 훗날 대학교 편의 세계관 재료가 되었다.'},
+ {t:'자기 자신을 알아야 한다. 최선을 다하는 것과 안달하는 것은 다르다. 이야기는 시험이 아니라 실험이다.', f:'luca',
+  w:'“실렌치오, 브루노” — 머릿속 잔소리를 잠재우는 것이 작품의 주제이자 창작 태도다.'},
+ {t:'우연으로 인물을 곤경에 빠뜨리는 건 좋다. 우연으로 곤경에서 꺼내 주는 건 반칙이다.', f:'toy-story',
+  w:'우디는 우연히 떨어지지만, 돌아오는 길은 전부 자기 선택으로 만든다.'},
+ {t:'연습: 마음에 들지 않은 영화의 부품을 골라 자기 방식으로 재조립해 보라.', f:'cars-3',
+  w:'같은 레이싱 구조를 “이기는 이야기”에서 “물려주는 이야기”로 재조립했다.'},
+ {t:'인물과 상황에 자신을 대입하라. 멋져 보이는 것 말고, 진짜 그 자리에서 나올 행동을 써라.', f:'incredibles-2',
+  w:'세상을 구하는 장면보다, 새벽에 아기를 재우지 못하는 장면이 더 오래 남는다.'},
+ {t:'이 이야기의 본질은 무엇인가? 가장 압축된 한 문장. 거기서부터 지어 올려라.', f:'elemental',
+  w:'“서로 닿으면 사라지는 둘이 사랑에 빠진다.” 이 한 줄에서 도시 전체가 설계되었다.'}
+];
+
+/* 작품을 가로지르는 창작 패턴 */
+const PATTERNS = [
+ {icon:'gavel', t:'세계의 규칙 하나로 이야기를 민다',
+  d:'설정을 잔뜩 늘어놓는 대신, 어기면 큰일 나는 규칙을 딱 하나 세운다. 그 규칙이 갈등·감정·클라이맥스를 자동으로 만들어 준다.',
+  ask:'내 이야기에서 “이것만은 절대 안 된다”는 규칙 한 줄은 무엇인가? 그 규칙을 어기면 누가 가장 아픈가?',
+  films:['coco','monsters-inc','luca','turning-red','onward']},
+ {icon:'build', t:'결점이 곧 해결책이 된다',
+  d:'주인공이 부끄러워하던 특성을, 마지막에 그 상황을 푸는 유일한 열쇠로 되돌려준다. 고쳐야 할 것이 아니라 쓸 곳을 못 찾았던 것으로 재정의한다.',
+  ask:'내 주인공이 가장 감추고 싶어 하는 특성은 무엇인가? 그것이 유일한 무기가 되는 장면을 만들 수 있는가?',
+  films:['a-bugs-life','finding-dory','the-incredibles','turning-red']},
+ {icon:'compare_arrows', t:'정반대의 짝을 붙인다',
+  d:'주인공의 신념을 정확히 뒤집은 인물을 옆에 세운다. 토론이 아니라 동행을 통해 두 세계관이 서로를 깎아낸다.',
+  ask:'내 주인공이 절대 이해할 수 없는 사람은 누구인가? 그 사람과 한 방에 며칠을 가둘 수 있는가?',
+  films:['soul','inside-out','finding-nemo','elemental','wall-e']},
+ {icon:'palette', t:'공간이 감정을 대신 말한다',
+  d:'인물의 심리 상태를 대사로 설명하지 않고, 색·질감·축척으로 보여준다. 장소가 바뀌면 관객의 체온도 바뀐다.',
+  ask:'내 주인공이 가장 불편해하는 장소는 어떤 색과 소리를 가지고 있는가? 편안한 장소와 정확히 반대인가?',
+  films:['elemental','up','ratatouille','elio','coco']},
+ {icon:'psychology', t:'원하는 것과 필요한 것을 갈라 놓는다',
+  d:'주인공이 입으로 말하는 목표(want)와 실제로 채워야 할 결핍(need)을 다르게 설계한다. 3막은 둘 중 하나를 포기하는 장면이 된다.',
+  ask:'내 주인공이 원하는 것을 그대로 손에 넣으면, 그는 행복해지는가 아니면 더 외로워지는가?',
+  films:['cars','toy-story-4','soul','the-good-dinosaur','cars-3']},
+ {icon:'dark_mode', t:'악당은 주인공의 그림자다',
+  d:'적대자에게 주인공과 같은 상처와 같은 소망을 준다. 다만 그가 택한 대처가 달랐을 뿐이다. 관객은 “나도 저럴 수 있었다”를 느낀다.',
+  ask:'내 적대자가 원하는 것은 주인공이 원하는 것과 얼마나 비슷한가? 어디서 갈라졌는가?',
+  films:['elio','toy-story-3','toy-story-4','the-incredibles','lightyear']},
+ {icon:'hourglass_top', t:'시한을 눈에 보이게 만든다',
+  d:'제한 시간을 자막이나 대사가 아니라 화면 안의 물건으로 만든다. 관객이 시계를 보지 않아도 시간이 줄어드는 것을 느낀다.',
+  ask:'내 이야기의 마감은 무엇인가? 그것을 인물이 손에 들고 다니게 만들 수 있는가?',
+  films:['onward','coco','brave','a-bugs-life']},
+ {icon:'volunteer_activism', t:'마지막에는 놓아 준다',
+  d:'승리로 끝내는 대신, 주인공이 가장 아끼던 것을 스스로 손에서 놓게 한다. 얻는 결말보다 보내는 결말이 오래 남는다.',
+  ask:'내 주인공이 마지막에 놓아 주어야 할 것은 무엇인가? 그것을 놓는 대가로 무엇을 얻는가?',
+  films:['toy-story-3','finding-nemo','up','luca','toy-story-4','cars-3']}
+];
+
+/* What-if 프리미스 생성기 재료 */
+const GEN = {
+ subject:['잃어버린 물건들','도시의 신호등','오래된 도서관의 책','밤에만 켜지는 가로등','버려진 우산',
+  '사람들의 첫인상','아이가 그린 그림','폐업한 놀이공원의 기구','계절이 바뀔 때의 바람','오래된 사진 속 인물',
+  '길고양이들의 지도','냉장고 속 남은 음식','아무도 읽지 않은 편지','학교 종소리','잊힌 사투리',
+  '이사 갈 때 버려지는 가구','노래방의 미사용 곡','병원 대기실의 침묵','횡단보도의 그림자','물려 입은 교복',
+  '수리를 기다리는 물건들','아파트 단지의 나무','일기장에 적히지 않은 날들','아무도 안 쓰는 공중전화'],
+ inner:['자기가 쓸모없다고 믿는 마음','사랑받은 기억을 잊지 못하는 마음','완벽해야 한다는 압박',
+  '작별을 미루는 습관','인정받고 싶은 갈증','틀릴까 봐 시작하지 못하는 두려움','자기 차례를 양보하는 버릇',
+  '남과 다르다는 부끄러움','한 번 더 기회를 바라는 마음','잊히는 것에 대한 공포',
+  '누군가를 대신하고 싶은 마음','돌아갈 곳이 없다는 감각'],
+ rule:['기억해 주는 사람이 있어야만 존재할 수 있다','하루에 한 번만 진심을 말할 수 있다',
+  '누군가에게 쓰이지 않으면 색이 사라진다','거짓말을 하면 몸이 조금씩 투명해진다',
+  '자기 이름을 부르는 소리에만 움직일 수 있다','두 존재가 닿으면 둘 중 하나는 사라진다',
+  '한 번 떠난 자리로는 되돌아갈 수 없다','같은 감정을 세 번 느끼면 모습이 바뀐다',
+  '밤 열두 시가 지나면 그날의 일을 잊는다','다른 이의 소원을 이뤄줄 때만 자랄 수 있다',
+  '고마움을 받아야만 무게가 생긴다','자기 자리를 벗어나면 시간이 두 배로 흐른다'],
+ event:['한 번도 오지 않던 손님이 찾아온다','정해진 자리가 갑자기 사라진다','자기와 똑같은 존재를 만난다',
+  '규칙을 어긴 첫 사례가 나타난다','아무도 모르던 과거의 기록이 발견된다','내일 이곳이 철거된다는 소식이 온다',
+  '가장 미워하던 상대에게 도움을 청해야 한다','평생 기다린 기회가 최악의 타이밍에 온다',
+  '지켜야 할 비밀을 아이가 알아 버린다','돌아갈 길이 하룻밤 만에 닫힌다',
+  '가장 아끼는 존재가 자기를 알아보지 못한다','자기를 만든 사람이 찾아온다']
+};
+
+/* ══════════════════════════════════════════════════════════════
+   파생 데이터 — 작품을 추가하면 아래는 모두 자동 갱신된다
+   ══════════════════════════════════════════════════════════════ */
+FILMS.sort((a,b)=>a.year-b.year || a.ko.localeCompare(b.ko,'ko'));
 FILMS.forEach(f=>{ if(!f.poster) f.poster = AUTO_POSTER(f); });
 
 const SLOT_COLS = 4;                                   // 슬롯 코드 열 개수 (A1~A4, B1~B4 …)
 const ROW_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 FILMS.forEach((f,i)=>{ f.code = ROW_LETTERS[Math.floor(i/SLOT_COLS)] + ((i%SLOT_COLS)+1); });
 
-const oneLine = f => (f.concept.split(/(?<=다\.)\s|(?<=[.。])\s/)[0] || f.concept).trim();
-const THEMES = ['전체', ...new Set(FILMS.map(f=>f.theme))];
-const ROWS = [...new Set(FILMS.map(f=>f.code[0]))];     // 사용 중인 행 문자
+const BY_ID = new Map(FILMS.map(f=>[f.id,f]));
+const ROWS = [...new Set(FILMS.map(f=>f.code[0]))];
 const MAX_CMP = 4;
+const THEMES = THEME_ORDER.filter(t=>FILMS.some(f=>f.theme===t));
 
-/* ── 상태 ── */
-let activeTheme='전체', query='', cmpSel=[], entry='', history=[];
+/* 검색 인덱스는 한 번만 만들어 둔다 */
+FILMS.forEach(f=>{
+  f._hay = [f.code,f.ko,f.en,String(f.year),f.theme,(f.tags||[]).join(' '),
+    f.tagline,f.taglineKo,f.concept,f.core,f.whatif,f.want,f.need,f.rule,
+    (f.spine||[]).join(' '),
+    ...f.people.map(p=>p.n+' '+p.r+' '+p.d),
+    ...f.worlds.map(w=>w.n+' '+w.d)].join(' ').toLowerCase();
+});
 
-/* ── DOM ── */
+const oneLine = f => {
+  const t = f.concept.trim();
+  const i = t.indexOf('다. ');
+  if(i>0) return t.slice(0,i+2);
+  const j = t.indexOf('. ');
+  return j>0 ? t.slice(0,j+1) : t;
+};
+
+/* ══ 상태 ══ */
+const STORE = 'pixar-vm:v2';
+let activeThemes = new Set();
+let query = '';
+let sortMode = 'year-asc';
+let cmpSel = [];
+let entry = '';
+let history = [];
+let viewList = FILMS.slice();     // 현재 진열된 순서 (상세 이전/다음 이동에 사용)
+let openId = null;
+
+/* ══ DOM ══ */
 const $ = id => document.getElementById(id);
 const glass=$('glass'), chipsBox=$('chips'), overlay=$('overlay'), sheet=$('sheet');
 const ledCode=$('ledCode'), ledMsg=$('ledMsg'), trayEl=$('tray');
 const cmpChips=$('cmpChips'), cmpBody=$('cmpBody'), cmpNote=$('cmpNote');
 const resultCount=$('resultCount'), resetFilter=$('resetFilter'), toast=$('toast');
-let lastFocused=null;
-let toastTimer=null;
+let lastFocused=null, lastFocusedId=null, toastTimer=null;
 
-$('heroDesc').innerHTML = `${FILMS.length}편의 작품을 <strong>컨셉 · 등장인물 · 세계</strong> 세 축으로 정리했습니다. `
- + `진열대에서 한 편을 뽑거나, 비교 트레이에 여러 편을 올려 나란히 살펴보세요.`;
+/* ══ 유틸 ══ */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+function hi(text, q){
+  const safe = esc(text);
+  if(!q) return safe;
+  try{ return safe.replace(new RegExp('('+escRe(esc(q))+')','gi'), '<mark>$1</mark>'); }
+  catch(e){ return safe; }
+}
+function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+function showToast(message){
+  toast.textContent=message; toast.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),2800);
+}
+async function copyText(text, okMsg){
+  try{
+    if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); }
+    else{
+      const ta=document.createElement('textarea');
+      ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    showToast(okMsg||'복사했습니다.');
+  }catch(e){ showToast('복사에 실패했습니다. 직접 선택해 복사해 주세요.'); }
+}
+function downloadText(filename, text){
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
 
-/* ── 탭 ── */
+/* ══ 저장 (이 브라우저에만 보관) ══ */
+function save(){
+  try{
+    localStorage.setItem(STORE, JSON.stringify({
+      history: history.map(f=>f.id), cmp: cmpSel, spine: spineData, sort: sortMode
+    }));
+  }catch(e){/* 프라이빗 모드 등에서는 조용히 무시 */}
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE); if(!raw) return;
+    const d=JSON.parse(raw)||{};
+    history=(d.history||[]).map(id=>BY_ID.get(id)).filter(Boolean).slice(0,6);
+    cmpSel=(d.cmp||[]).filter(id=>BY_ID.has(id)).slice(0,MAX_CMP);
+    if(d.spine && typeof d.spine==='object') Object.assign(spineData, d.spine);
+    if(['year-asc','year-desc','title'].includes(d.sort)) sortMode=d.sort;
+  }catch(e){/* 손상된 저장값은 무시 */}
+}
+
+/* ══ URL 상태 (공유용) ══ */
+function syncUrl(){
+  const p=new URLSearchParams();
+  if(query) p.set('q', query);
+  if(activeThemes.size) p.set('theme', [...activeThemes].join('|'));
+  if(sortMode!=='year-asc') p.set('sort', sortMode);
+  if(cmpSel.length) p.set('cmp', cmpSel.join(','));
+  if(openId) p.set('film', openId);
+  const qs=p.toString();
+  history_replace(location.pathname + (qs?'?'+qs:'') + location.hash);
+}
+function history_replace(url){ try{ window.history.replaceState(null,'',url); }catch(e){} }
+function readUrl(){
+  const p=new URLSearchParams(location.search);
+  if(p.has('q')) query=p.get('q').trim();
+  if(p.has('theme')) activeThemes=new Set(p.get('theme').split('|').filter(t=>THEMES.includes(t)));
+  if(p.has('sort') && ['year-asc','year-desc','title'].includes(p.get('sort'))) sortMode=p.get('sort');
+  if(p.has('cmp')) cmpSel=p.get('cmp').split(',').filter(id=>BY_ID.has(id)).slice(0,MAX_CMP);
+  return p.get('film');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   탭
+   ══════════════════════════════════════════════════════════════ */
+const TABS=[{id:'tabGallery',view:'viewGallery'},{id:'tabCompare',view:'viewCompare'},{id:'tabLab',view:'viewLab'}];
 function setTab(name){
-  const galleryActive=name==='gallery';
-  $('tabGallery').setAttribute('aria-selected', galleryActive);
-  $('tabCompare').setAttribute('aria-selected', !galleryActive);
-  $('tabGallery').tabIndex=galleryActive?0:-1;
-  $('tabCompare').tabIndex=galleryActive?-1:0;
-  $('viewGallery').hidden = name!=='gallery';
-  $('viewCompare').hidden = name!=='compare';
+  const idx = {gallery:0, compare:1, lab:2}[name];
+  TABS.forEach((t,i)=>{
+    const on = i===idx;
+    const btn=$(t.id);
+    btn.setAttribute('aria-selected', String(on));
+    btn.tabIndex = on?0:-1;
+    $(t.view).hidden = !on;
+  });
   if(name==='compare') renderCompare();
 }
-$('tabGallery').onclick=()=>setTab('gallery');
-$('tabCompare').onclick=()=>setTab('compare');
-$('tabCompare').tabIndex=-1;
+TABS.forEach((t,i)=>{ $(t.id).onclick=()=>setTab(['gallery','compare','lab'][i]); });
 $('tabGallery').parentElement.addEventListener('keydown',e=>{
   if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
   e.preventDefault();
-  const toCompare=e.key==='ArrowRight'||e.key==='End';
-  setTab(toCompare?'compare':'gallery');
-  $(toCompare?'tabCompare':'tabGallery').focus();
+  const cur=TABS.findIndex(t=>$(t.id).getAttribute('aria-selected')==='true');
+  let next = e.key==='Home' ? 0 : e.key==='End' ? TABS.length-1
+    : e.key==='ArrowRight' ? (cur+1)%TABS.length : (cur-1+TABS.length)%TABS.length;
+  setTab(['gallery','compare','lab'][next]);
+  $(TABS[next].id).focus();
 });
 
-/* ── 필터 ── */
-THEMES.forEach(t=>{
-  const b=document.createElement('button');
-  b.className='pchip'; b.type='button'; b.textContent=t;
-  b.setAttribute('aria-pressed', t===activeTheme);
-  b.onclick=()=>{activeTheme=t;
-    [...chipsBox.children].forEach(c=>c.setAttribute('aria-pressed', c.textContent===t));
-    renderShelves();};
-  chipsBox.appendChild(b);
-});
-
-function matches(f){
-  if(activeTheme!=='전체' && f.theme!==activeTheme) return false;
-  if(!query) return true;
-  const q=query.toLowerCase();
-  const hay=[f.code,f.ko,f.en,String(f.year),f.theme,f.tagline,f.taglineKo,f.concept,f.core,
-    ...f.people.map(p=>p.n+' '+p.r+' '+p.d),
-    ...f.worlds.map(w=>w.n+' '+w.d)].join(' ').toLowerCase();
-  return hay.includes(q);
+/* ══════════════════════════════════════════════════════════════
+   진열대 — 검색 · 주제 · 정렬
+   ══════════════════════════════════════════════════════════════ */
+function themeCount(t){ return FILMS.filter(f=>f.theme===t).length; }
+function buildChips(){
+  chipsBox.innerHTML='';
+  THEMES.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='pchip'; b.type='button'; b.dataset.theme=t;
+    b.innerHTML=`${esc(t)}<span class="cnt">${themeCount(t)}</span>`;
+    b.setAttribute('aria-pressed', String(activeThemes.has(t)));
+    b.onclick=()=>{
+      activeThemes.has(t) ? activeThemes.delete(t) : activeThemes.add(t);
+      b.setAttribute('aria-pressed', String(activeThemes.has(t)));
+      renderShelves(); save(); syncUrl();
+    };
+    chipsBox.appendChild(b);
+  });
 }
-
-/* ── 진열대 ── */
+function matches(f){
+  if(activeThemes.size && !activeThemes.has(f.theme)) return false;
+  if(!query) return true;
+  return f._hay.includes(query.toLowerCase());
+}
+function sortList(list){
+  const c=list.slice();
+  if(sortMode==='year-desc') c.sort((a,b)=>b.year-a.year || a.ko.localeCompare(b.ko,'ko'));
+  else if(sortMode==='title') c.sort((a,b)=>a.ko.localeCompare(b.ko,'ko'));
+  else c.sort((a,b)=>a.year-b.year || a.ko.localeCompare(b.ko,'ko'));
+  return c;
+}
 function renderShelves(){
-  const list=FILMS.filter(matches);
-  resultCount.textContent=`전체 ${FILMS.length}편 중 ${list.length}편 표시`;
-  resetFilter.hidden=!query && activeTheme==='전체';
+  const list = sortList(FILMS.filter(matches));
+  viewList = list;
+  const filtered = !!query || activeThemes.size>0;
+  resultCount.innerHTML = filtered
+    ? `전체 ${FILMS.length}편 중 <b>${list.length}편</b> 표시`
+    : `<b>${FILMS.length}편</b> 전체 진열 중`;
+  resetFilter.hidden = !filtered;
+  $('clearQ').hidden = !query;
+
   if(!list.length){
-    glass.innerHTML='<p class="empty">해당하는 상품이 없습니다.<br>검색어나 주제를 바꿔 보세요.</p>';
-    setLed(null,'조건에 맞는 상품 없음'); return;
+    glass.innerHTML=`<div class="empty">
+      <p>조건에 맞는 상품이 없습니다.<br>검색어나 주제를 바꿔 보세요.</p>
+      <div class="acts">
+        <button class="pchip" type="button" data-act="reset">검색·필터 초기화</button>
+        <button class="pchip" type="button" data-act="random">아무거나 한 편 뽑기</button>
+      </div></div>`;
+    setLed(null,'조건에 맞는 상품 없음');
+    return;
   }
   let html='';
   for(let i=0;i<list.length;i+=SLOT_COLS){
-    html+='<div class="shelf">'+list.slice(i,i+SLOT_COLS).map(f=>`
-      <button class="slot" type="button" data-id="${f.id}" aria-label="${f.code} ${f.ko} ${f.year} 뽑기">
-        <span class="code">${f.code}</span>
-        <span class="ph">${f.poster}</span>
-        <span class="nm">${f.ko}</span>
-        <span class="yr">${f.en} · ${f.year}</span>
-      </button>`).join('')+'</div>';
+    html+='<div class="shelf">'+list.slice(i,i+SLOT_COLS).map(f=>{
+      const inCmp=cmpSel.includes(f.id);
+      return `<div class="slot-wrap">
+        <button class="slot${inCmp?' is-cmp':''}" type="button" data-id="${f.id}"
+          aria-label="${esc(f.code)} ${esc(f.ko)} ${f.year} 상세 열기">
+          <span class="ph">${f.poster}</span>
+          <span class="nm">${hi(f.ko, query)}</span>
+          <span class="yr">${hi(f.en, query)} · ${f.year}</span>
+          <span class="th">${esc(f.theme)}</span>
+        </button>
+        <span class="code" aria-hidden="true">${esc(f.code)}</span>
+        <button class="slot-add" type="button" data-cmp="${f.id}" aria-pressed="${inCmp}" data-fb="${inCmp?'담김':'담기'}"
+          aria-label="${esc(f.ko)} ${inCmp?'비교 트레이에서 빼기':'비교 트레이에 담기'}"
+          title="${inCmp?'비교 트레이에서 빼기':'비교 트레이에 담기'}">
+          <span class="material-icons-outlined" aria-hidden="true">${inCmp?'check':'add'}</span></button>
+      </div>`;}).join('')+'</div>';
   }
   glass.innerHTML=html;
-  glass.querySelectorAll('.slot').forEach(b=>{
-    b.onclick=()=>dispense(FILMS.find(f=>f.id===b.dataset.id), b);
-  });
   setLed(null, `${list.length}개 상품 진열 중`);
 }
-$('q').addEventListener('input', e=>{ query=e.target.value.trim(); renderShelves(); });
-resetFilter.onclick=()=>{
-  query=''; activeTheme='전체'; $('q').value='';
-  [...chipsBox.children].forEach(c=>c.setAttribute('aria-pressed',c.textContent==='전체'));
-  renderShelves(); $('q').focus();
-};
-
-function showToast(message){
-  toast.textContent=message; toast.classList.add('show'); clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>toast.classList.remove('show'),2600);
+/* 담기 상태가 바뀐 카드 한 장만 갱신한다 — 진열대를 통째로 다시 그리면
+   방금 누른 버튼이 사라져 포커스를 잃는다 */
+function paintSlot(id){
+  const card=glass.querySelector(`.slot[data-id="${id}"]`);
+  const add=glass.querySelector(`.slot-add[data-cmp="${id}"]`);
+  if(!card||!add) return;
+  const f=BY_ID.get(id), on=cmpSel.includes(id);
+  card.classList.toggle('is-cmp', on);
+  add.setAttribute('aria-pressed', String(on));
+  const t = on?'비교 트레이에서 빼기':'비교 트레이에 담기';
+  add.setAttribute('aria-label', `${f.ko} ${t}`);
+  add.title=t;
+  add.dataset.fb = on?'담김':'담기';
+  add.querySelector('.material-icons-outlined').textContent = on?'check':'add';
 }
 
-/* ── LED · 키패드 ── */
+/* 이벤트 위임 — 작품이 늘어나도 리스너는 하나 */
+glass.addEventListener('click', e=>{
+  const add=e.target.closest('.slot-add');
+  if(add){ toggleCmp(add.dataset.cmp); paintSlot(add.dataset.cmp); return; }
+  const slot=e.target.closest('.slot');
+  if(slot){ dispense(BY_ID.get(slot.dataset.id), slot); return; }
+  const act=e.target.closest('[data-act]');
+  if(!act) return;
+  if(act.dataset.act==='reset') doReset();
+  if(act.dataset.act==='random') randomPick();
+});
+
+const onSearch = debounce(()=>{ renderShelves(); save(); syncUrl(); }, 160);
+$('q').addEventListener('input', e=>{ query=e.target.value.trim(); onSearch(); });
+$('clearQ').onclick=()=>{ query=''; $('q').value=''; renderShelves(); $('q').focus(); syncUrl(); };
+function doReset(){
+  query=''; activeThemes.clear(); $('q').value='';
+  [...chipsBox.children].forEach(c=>c.setAttribute('aria-pressed','false'));
+  renderShelves(); save(); syncUrl(); $('q').focus();
+}
+resetFilter.onclick=doReset;
+
+$('sortbar').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-sort]'); if(!b) return;
+  sortMode=b.dataset.sort;
+  [...$('sortbar').children].forEach(c=>c.setAttribute('aria-pressed', String(c===b)));
+  renderShelves(); save(); syncUrl();
+});
+function randomPick(){ dispense(FILMS[Math.floor(Math.random()*FILMS.length)]); }
+
+/* ══ LED · 키패드 ══ */
 function setLed(code,msg){
   ledCode.textContent = code || (entry ? entry+'_' : '- -');
   if(msg) ledMsg.textContent = msg;
@@ -767,17 +2254,18 @@ function buildKeypad(){
   ROWS.forEach(r=>{
     const b=document.createElement('button');
     b.className='key'; b.type='button'; b.textContent=r;
+    b.setAttribute('aria-label', r+'행');
     b.onclick=()=>press(r); kp.appendChild(b);
   });
   for(let n=1;n<=SLOT_COLS;n++){
     const b=document.createElement('button');
-    b.className='key'; b.type='button'; b.textContent=n;
+    b.className='key'; b.type='button'; b.textContent=String(n);
+    b.setAttribute('aria-label', n+'번');
     b.onclick=()=>press(String(n)); kp.appendChild(b);
   }
   const rnd=document.createElement('button');
   rnd.className='key wide act'; rnd.type='button'; rnd.textContent='랜덤 뽑기';
-  rnd.onclick=()=>{ const f=FILMS[Math.floor(Math.random()*FILMS.length)];
-    entry=''; dispense(f); };
+  rnd.onclick=()=>{ entry=''; randomPick(); };
   kp.appendChild(rnd);
   const clr=document.createElement('button');
   clr.className='key wide warn'; clr.type='button'; clr.textContent='취소';
@@ -785,170 +2273,520 @@ function buildKeypad(){
   kp.appendChild(clr);
 }
 function press(ch){
-  if(/[A-Z]/.test(ch)){ entry=ch; setLed(null,'번호를 눌러 주세요'); }
-  else {
-    if(!entry){ setLed(null,'먼저 행 문자를 눌러 주세요'); return; }
-    entry+=ch;
-    const f=FILMS.find(x=>x.code===entry);
-    if(f){ const code=entry; entry=''; setLed(code,'출고 중…'); dispense(f); }
-    else { setLed(entry,'없는 코드입니다'); entry=''; }
-    return;
-  }
-  setLed();
+  if(/^[A-Z]$/.test(ch)){ entry=ch; setLed(null,'번호를 눌러 주세요'); setLed(); return; }
+  if(!entry){ setLed(null,'먼저 행 문자를 눌러 주세요'); return; }
+  const code=entry+ch;
+  const f=FILMS.find(x=>x.code===code);
+  entry='';
+  if(f){ setLed(code,'출고 중…'); dispense(f); }
+  else setLed(code,'없는 코드입니다');
 }
+/* 키보드로 코드를 바로 입력 (키패드가 열려 있을 때) */
+$('kpBox').addEventListener('keydown', e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  const k=e.key.toUpperCase();
+  if(ROWS.includes(k) || (/^[1-9]$/.test(k) && +k<=SLOT_COLS)){ e.preventDefault(); press(k); }
+});
 
-/* ── 출고 ── */
+/* ══ 출고구 (최근 본 작품) ══ */
 function dispense(f, trigger){
   if(!f) return;
-  history = [f, ...history.filter(x=>x.id!==f.id)].slice(0,4);
-  renderTray(true);
+  history = [f, ...history.filter(x=>x.id!==f.id)].slice(0,6);
+  renderTray(true); save();
   setLed(f.code, `${f.ko} 출고 완료`);
   openSheet(f, trigger);
 }
 function renderTray(anim){
-  if(!history.length){ trayEl.innerHTML='<span class="hint">아직 뽑은 작품이 없습니다.</span>'; return; }
+  $('clearHistory').hidden = !history.length;
+  if(!history.length){ trayEl.innerHTML='<span class="hint">아직 뽑은 작품이 없습니다. 진열대에서 한 편 골라 보세요.</span>'; return; }
   trayEl.innerHTML = history.map((f,i)=>`
-    <button class="dropped ${anim&&i===0?'anim':''}" type="button" data-id="${f.id}" aria-label="${f.ko} 다시 보기">
+    <button class="dropped ${anim&&i===0?'anim':''}" type="button" data-id="${f.id}" aria-label="${esc(f.ko)} 다시 보기">
       <span class="mini">${f.poster}</span>
-      <span class="tx">${f.ko}<small>${f.code} · ${f.year}</small></span>
+      <span class="tx">${esc(f.ko)}<small>${esc(f.code)} · ${f.year}</small></span>
     </button>`).join('');
-  trayEl.querySelectorAll('.dropped').forEach(b=>{
-    b.onclick=()=>openSheet(FILMS.find(f=>f.id===b.dataset.id), b);
-  });
 }
+trayEl.addEventListener('click', e=>{
+  const b=e.target.closest('.dropped'); if(!b) return;
+  openSheet(BY_ID.get(b.dataset.id), b);
+});
+$('clearHistory').onclick=()=>{ history=[]; renderTray(false); save(); showToast('최근 기록을 지웠습니다.'); };
 
-/* ── 상세 (제품 라벨) ── */
+/* ══════════════════════════════════════════════════════════════
+   상세 시트
+   ══════════════════════════════════════════════════════════════ */
+function craftNote(f){
+  return [`【${f.ko} (${f.en}, ${f.year}) · ${f.theme}】`, '',
+   `한 줄 컨셉: ${f.taglineKo}`,
+   `What if: ${f.whatif}`,
+   `세계의 규칙: ${f.rule}`,
+   `원하는 것: ${f.want}`,
+   `필요한 것: ${f.need}`,
+   `창작 장치: ${f.core}`, '',
+   '스토리 스파인',
+   ...f.spine.map((s,i)=>`  ${i+1}. ${SPINE_STEPS[i].lb} — ${s}`), '',
+   `출처: ${f.src}`].join('\n');
+}
 function openSheet(f, trigger){
   if(!f) return;
-  lastFocused=trigger||null;
-  const inCmp = cmpSel.includes(f.id);
+  if(trigger){ lastFocused=trigger; lastFocusedId=trigger.dataset ? trigger.dataset.id||null : null; }
+  openId=f.id;
+  const pos=viewList.findIndex(x=>x.id===f.id);
+  const prev = pos>0 ? viewList[pos-1] : null;
+  const next = pos>=0 && pos<viewList.length-1 ? viewList[pos+1] : null;
+
   sheet.innerHTML=`
+  <div class="sheet-bar">
+    <button class="nav-btn" type="button" id="prevFilm" ${prev?'':'disabled'}
+      aria-label="${prev?esc(prev.ko)+' 이전 작품':'이전 작품 없음'}" data-fb="◀"><span class="material-icons-outlined" aria-hidden="true">chevron_left</span></button>
+    <button class="nav-btn" type="button" id="nextFilm" ${next?'':'disabled'}
+      aria-label="${next?esc(next.ko)+' 다음 작품':'다음 작품 없음'}" data-fb="▶"><span class="material-icons-outlined" aria-hidden="true">chevron_right</span></button>
+    <span class="pos">${pos>=0?pos+1:'-'} / ${viewList.length}</span>
+    <span class="sp"></span>
+    <button class="nav-btn" type="button" id="closeSheet" aria-label="닫기" data-fb="✕"><span class="material-icons-outlined" aria-hidden="true">close</span></button>
+  </div>
   <div class="sheet-top">
-    <button class="close-btn" type="button" aria-label="닫기" onclick="closeSheet()"><span class="material-icons-outlined">close</span></button>
     <div class="sheet-poster">${f.poster}</div>
     <div class="sheet-head">
-      <span class="slotcode">SLOT ${f.code}</span>
-      <h2 id="sheetTitle">${f.ko}</h2>
-      <p class="en">${f.en} · <span class="yr">${f.year}</span> · ${f.theme}</p>
-      <p class="line">“${f.taglineKo}”<span class="orig">${f.tagline}</span></p>
+      <span class="slotcode">SLOT ${esc(f.code)}</span>
+      <h2 id="sheetTitle">${esc(f.ko)}</h2>
+      <p class="en">${esc(f.en)} · <span class="yr">${f.year}</span> · ${esc(f.theme)}</p>
+      <p class="line">“${esc(f.taglineKo)}”<span class="orig">${esc(f.tagline)}</span></p>
+      <div class="tagrow">${(f.tags||[]).map(t=>`<span>#${esc(t)}</span>`).join('')}</div>
     </div>
   </div>
   <div class="sheet-act">
-    <button class="btn btn-secondary" type="button" id="addCmp">
-      <span class="material-icons-outlined">${inCmp?'remove_circle_outline':'add_circle_outline'}</span>
-      ${inCmp?'비교 트레이에서 빼기':'비교 트레이에 담기'}</button>
+    <button class="btn btn-secondary" type="button" id="addCmp"></button>
+    <button class="btn btn-secondary" type="button" id="toSpine">
+      <span class="material-icons-outlined" aria-hidden="true">timeline</span>이 작품으로 스파인 연습</button>
+    <button class="btn btn-secondary" type="button" id="copyNote">
+      <span class="material-icons-outlined" aria-hidden="true">content_copy</span>창작 노트 복사</button>
   </div>
+
   <section class="section">
-    <h3><span class="material-icons-outlined">lightbulb</span>컨셉</h3>
-    <div class="concept"><strong>이야기의 출발점</strong>${f.concept}</div>
-    <div class="concept"><strong>창작 관점에서 눈여겨볼 점</strong>${f.core}</div>
+    <h3><span class="material-icons-outlined" aria-hidden="true">lightbulb</span>컨셉</h3>
+    <div class="concept"><strong>이야기의 출발점</strong>${esc(f.concept)}</div>
+    <div class="concept"><strong>창작 관점에서 눈여겨볼 점</strong>${esc(f.core)}</div>
   </section>
+
   <section class="section">
-    <h3><span class="material-icons-outlined">groups</span>등장인물 <span class="cnt">${f.people.length}명</span></h3>
+    <h3><span class="material-icons-outlined" aria-hidden="true">architecture</span>창작 해부</h3>
+    <div class="craft-card whatif" style="margin-bottom:var(--spacing-sm)">
+      <p class="k"><span class="material-icons-outlined" aria-hidden="true">help_center</span>WHAT IF</p>
+      <p class="v">${esc(f.whatif)}</p>
+    </div>
+    <div class="wn" style="margin-bottom:var(--spacing-sm)">
+      <div class="wn-item want"><p class="k">원하는 것 (WANT)</p><p class="v">${esc(f.want)}</p></div>
+      <div class="wn-item need"><p class="k">필요한 것 (NEED)</p><p class="v">${esc(f.need)}</p></div>
+    </div>
+    <div class="craft-card">
+      <p class="k"><span class="material-icons-outlined" aria-hidden="true">gavel</span>세계를 굴리는 규칙</p>
+      <p class="v">${esc(f.rule)}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h3><span class="material-icons-outlined" aria-hidden="true">timeline</span>스토리 스파인</h3>
+    <ol class="spine-list">${f.spine.map((s,i)=>`
+      <li><span><span class="sp-lb">${esc(SPINE_STEPS[i].lb)}</span><span class="sp-tx">${esc(s)}</span></span></li>`).join('')}</ol>
+  </section>
+
+  <section class="section">
+    <h3><span class="material-icons-outlined" aria-hidden="true">groups</span>등장인물 <span class="cnt">${f.people.length}명</span></h3>
     <div class="people">${f.people.map(p=>`
-      <div class="person"><div class="row"><span class="nm">${p.n}</span><span class="rl">${p.r}</span></div>
-      <p class="ds">${p.d}</p></div>`).join('')}</div>
+      <div class="person"><div class="row"><span class="nm">${esc(p.n)}</span><span class="rl">${esc(p.r)}</span></div>
+      <p class="ds">${esc(p.d)}</p></div>`).join('')}</div>
   </section>
+
   <section class="section">
-    <h3><span class="material-icons-outlined">public</span>세계 <span class="cnt">${f.worlds.length}곳</span></h3>
+    <h3><span class="material-icons-outlined" aria-hidden="true">public</span>세계 <span class="cnt">${f.worlds.length}곳</span></h3>
     <div class="worlds">${f.worlds.map(w=>`
-      <div class="world"><p class="nm">${w.n}</p><p class="ds">${w.d}</p></div>`).join('')}</div>
+      <div class="world"><p class="nm">${esc(w.n)}</p><p class="ds">${esc(w.d)}</p></div>`).join('')}</div>
   </section>
+
   <p class="note"><strong>포스터 안내</strong> — 공식 포스터는 저작권 보호 대상이므로, 각 작품의 컨셉과 색채를 바탕으로 제작한 오리지널 추상 이미지를 사용했습니다.</p>
-  <p class="src">정보 출처: <a href="${f.src}" target="_blank" rel="noopener noreferrer">Pixar Animation Studios 공식 사이트</a><br>${f.src}</p>`;
-  $('addCmp').onclick=()=>{ toggleCmp(f.id); openSheet(f, lastFocused); };
-  overlay.classList.add('open');
-  document.querySelector('main').setAttribute('inert','');
-  document.querySelector('footer').setAttribute('inert','');
-  document.body.style.overflow='hidden';
-  sheet.querySelector('.close-btn').focus();
+  <p class="src">정보 출처: <a href="${esc(f.src)}" target="_blank" rel="noopener noreferrer">Pixar Animation Studios 공식 사이트</a><br>${esc(f.src)}</p>`;
+
+  paintCmpBtn(f);
+  $('closeSheet').onclick=closeSheet;
+  if(prev) $('prevFilm').onclick=()=>openSheet(prev);
+  if(next) $('nextFilm').onclick=()=>openSheet(next);
+  $('addCmp').onclick=()=>{ toggleCmp(f.id); paintCmpBtn(f); paintSlot(f.id); };
+  $('copyNote').onclick=()=>copyText(craftNote(f), `${f.ko} 창작 노트를 복사했습니다.`);
+  $('toSpine').onclick=()=>{
+    lastFocused=null;                 // 갤러리 탭이 숨겨지므로 원래 위치로 되돌리지 않는다
+    closeSheet(); setTab('lab'); setLabTab('spine');
+    $('spineExample').value=f.id; renderSpine();
+    $('viewLab').scrollIntoView({block:'start'});
+    $('sp-once').focus();
+    showToast(`${f.ko}의 스파인을 예시로 불러왔습니다.`);
+  };
+
+  if(!overlay.classList.contains('open')){
+    overlay.classList.add('open');
+    document.querySelector('main').setAttribute('inert','');
+    document.querySelector('footer').setAttribute('inert','');
+    document.body.style.overflow='hidden';
+  }
+  overlay.scrollTop=0;
+  sheet.querySelector('#closeSheet').focus();
+  syncUrl();
+}
+function paintCmpBtn(f){
+  const btn=$('addCmp'); if(!btn) return;
+  const on=cmpSel.includes(f.id);
+  btn.className='btn '+(on?'btn-on':'btn-secondary');
+  btn.setAttribute('aria-pressed', String(on));
+  btn.innerHTML=`<span class="material-icons-outlined" aria-hidden="true">${on?'remove_circle_outline':'add_circle_outline'}</span>`
+    + (on?'비교 트레이에서 빼기':'비교 트레이에 담기');
 }
 function closeSheet(){
   overlay.classList.remove('open');
   document.querySelector('main').removeAttribute('inert');
   document.querySelector('footer').removeAttribute('inert');
   document.body.style.overflow='';
-  if(lastFocused && document.contains(lastFocused)) lastFocused.focus();
+  openId=null; syncUrl();
+  if(lastFocused && document.contains(lastFocused)){ lastFocused.focus(); return; }
+  const back = lastFocusedId && glass.querySelector(`.slot[data-id="${lastFocusedId}"]`);
+  if(back) back.focus(); else document.getElementById('mainContent').focus();
 }
 overlay.addEventListener('click', e=>{ if(e.target===overlay) closeSheet(); });
 document.addEventListener('keydown', e=>{
   if(!overlay.classList.contains('open')) return;
   if(e.key==='Escape'){ closeSheet(); return; }
+  if((e.key==='ArrowLeft'||e.key==='ArrowRight') && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)){
+    const btn=$(e.key==='ArrowLeft'?'prevFilm':'nextFilm');
+    if(btn && !btn.disabled){ e.preventDefault(); btn.click(); }
+    return;
+  }
   if(e.key!=='Tab') return;
-  const focusable=[...sheet.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])')];
+  const focusable=[...sheet.querySelectorAll('button:not([disabled]),a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')];
   if(!focusable.length) return;
   const first=focusable[0], last=focusable[focusable.length-1];
   if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
   else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
 });
 
-/* ── 비교 트레이 ── */
+/* ══════════════════════════════════════════════════════════════
+   비교 트레이
+   ══════════════════════════════════════════════════════════════ */
 function buildCmpChips(){
+  const q=($('cmpFind').value||'').trim().toLowerCase();
+  const list = q ? FILMS.filter(f=>f._hay.includes(q)) : FILMS;
   cmpChips.innerHTML='';
-  FILMS.forEach(f=>{
+  if(!list.length){ cmpChips.innerHTML='<span class="cmp-note">검색 결과가 없습니다.</span>'; return; }
+  list.forEach(f=>{
+    const on=cmpSel.includes(f.id);
+    const full=!on && cmpSel.length>=MAX_CMP;
     const b=document.createElement('button');
     b.className='pchip'; b.type='button'; b.dataset.id=f.id;
     b.textContent=`${f.code} ${f.ko}`;
-    b.setAttribute('aria-pressed', cmpSel.includes(f.id));
-    b.onclick=()=>{ toggleCmp(f.id); };
+    b.setAttribute('aria-pressed', String(on));
+    if(full) b.setAttribute('aria-disabled','true');
+    b.onclick=()=>{ toggleCmp(f.id); paintSlot(f.id); };
     cmpChips.appendChild(b);
   });
 }
+$('cmpFind').addEventListener('input', debounce(buildCmpChips, 160));
+
 function toggleCmp(id){
   const i=cmpSel.indexOf(id);
   if(i>=0) cmpSel.splice(i,1);
-  else {
-    if(cmpSel.length>=MAX_CMP){ showToast(`최대 ${MAX_CMP}편까지 비교할 수 있습니다.`); return false; }
+  else{
+    if(cmpSel.length>=MAX_CMP){ showToast(`최대 ${MAX_CMP}편까지 비교할 수 있습니다. 하나를 빼고 담아 주세요.`); return false; }
     cmpSel.push(id);
   }
-  renderCompare();
+  renderCompare(); save(); syncUrl();
   return true;
 }
-$('cmpClear').onclick=()=>{ cmpSel=[]; renderCompare(); };
-$('cmpRandom').onclick=()=>{ cmpSel=[...FILMS].sort(()=>Math.random()-.5).slice(0,3).map(f=>f.id); renderCompare(); };
+$('cmpClear').onclick=()=>{ cmpSel=[]; renderCompare(); renderShelves(); save(); syncUrl(); };
+$('cmpRandom').onclick=()=>{
+  cmpSel=[...FILMS].sort(()=>Math.random()-.5).slice(0,3).map(f=>f.id);
+  renderCompare(); renderShelves(); save(); syncUrl();
+};
+$('cmpTheme').onclick=()=>{
+  const pool=THEMES.filter(t=>FILMS.filter(f=>f.theme===t).length>=2);
+  const t=pool[Math.floor(Math.random()*pool.length)];
+  cmpSel=FILMS.filter(f=>f.theme===t).sort(()=>Math.random()-.5).slice(0,MAX_CMP).map(f=>f.id);
+  renderCompare(); renderShelves(); save(); syncUrl();
+  showToast(`‘${t}’ 주제의 작품을 담았습니다.`);
+};
 
 function renderCompare(){
-  [...cmpChips.children].forEach(c=>c.setAttribute('aria-pressed', cmpSel.includes(c.dataset.id)));
+  buildCmpChips();
   $('cmpCount').textContent=cmpSel.length;
   $('cmpCount').setAttribute('aria-label',`${cmpSel.length}편 선택됨`);
 
   if(cmpSel.length===0){
-    cmpNote.innerHTML = `트레이가 비어 있어 <strong>전체 ${FILMS.length}편</strong>의 한 줄 요약을 보여 줍니다. 아래에서 작품을 담으면 항목별로 나란히 비교합니다.`;
-    cmpBody.innerHTML = `<div class="sum-list">${FILMS.map(f=>`
+    cmpNote.innerHTML=`트레이가 비어 있어 <strong>전체 ${FILMS.length}편</strong>의 한 줄 요약을 보여 줍니다. 아래에서 작품을 담으면 항목별로 나란히 비교합니다.`;
+    cmpBody.innerHTML=`<div class="sum-list">${sortList(FILMS).map(f=>`
       <article class="sum-item">
-        <div class="hd"><span class="cd">${f.code}</span><span class="tt">${f.ko}</span>
-          <span class="yy">${f.year}</span><span class="th">${f.theme}</span></div>
-        <p class="ln">${oneLine(f)}</p>
-        <p class="dv">${f.core}</p>
+        <div class="hd"><span class="cd">${esc(f.code)}</span><span class="tt">${esc(f.ko)}</span>
+          <span class="yy">${f.year}</span><span class="th">${esc(f.theme)}</span></div>
+        <p class="ln">${esc(oneLine(f))}</p>
+        <p class="dv">${esc(f.core)}</p>
         <p class="st">인물 ${f.people.length}명 · 세계 ${f.worlds.length}곳</p>
+        <div class="acts">
+          <button class="filmchip" type="button" data-open="${f.id}">상세 보기</button>
+          <button class="filmchip" type="button" data-pick="${f.id}">비교에 담기</button>
+        </div>
       </article>`).join('')}</div>`;
     return;
   }
 
-  const sel = FILMS.filter(f=>cmpSel.includes(f.id));
+  const sel = cmpSel.map(id=>BY_ID.get(id)).filter(Boolean);
   cmpNote.innerHTML = sel.length===1
     ? '한 편 더 담으면 나란히 비교됩니다. 좌우로 밀어 살펴보세요.'
     : `<strong>${sel.length}편</strong>을 비교 중입니다. 좌우로 밀어 살펴보세요. (최대 ${MAX_CMP}편)`;
 
-  const row=(lb,html)=>`<div class="cmp-row"><p class="lb">${lb}</p>${html}</div>`;
+  const row=(lb,html,cls)=>`<div class="cmp-row${cls?' '+cls:''}"><p class="lb">${lb}</p>${html}</div>`;
   cmpBody.innerHTML = `<div class="cmp-scroll"><div class="cmp-cols">${sel.map(f=>`
     <article class="cmp-col">
-      <div class="top"><p class="t">${f.code} · ${f.ko}</p><p class="y">${f.en} · ${f.year} · ${f.theme}</p></div>
-      ${row('컨셉 문장', `<p class="vl">“${f.taglineKo}”</p>`)}
-      ${row('이야기의 출발점', `<p class="vl">${oneLine(f)}</p>`)}
-      ${row('창작 장치', `<p class="vl">${f.core}</p>`)}
-      ${row(`주요 인물 (총 ${f.people.length}명)`, `<ul>${f.people.slice(0,4).map(p=>`<li><strong>${p.n}</strong> — ${p.r}</li>`).join('')}</ul>`)}
-      ${row(`주요 세계 (총 ${f.worlds.length}곳)`, `<ul>${f.worlds.slice(0,4).map(w=>`<li>${w.n}</li>`).join('')}</ul>`)}
+      <div class="top">
+        <span><span class="t">${esc(f.code)} · ${esc(f.ko)}</span><br><span class="y">${esc(f.en)} · ${f.year} · ${esc(f.theme)}</span></span>
+        <button class="x" type="button" data-pick="${f.id}" aria-label="${esc(f.ko)} 비교에서 빼기" data-fb="✕">
+          <span class="material-icons-outlined" aria-hidden="true">close</span></button>
+      </div>
+      ${row('컨셉 문장', `<p class="vl">“${esc(f.taglineKo)}”</p>`)}
+      ${row('WHAT IF', `<p class="vl">${esc(f.whatif)}</p>`,'hl')}
+      ${row('세계의 규칙', `<p class="vl">${esc(f.rule)}</p>`)}
+      ${row('원하는 것', `<p class="vl">${esc(f.want)}</p>`)}
+      ${row('필요한 것', `<p class="vl">${esc(f.need)}</p>`)}
+      ${row('창작 장치', `<p class="vl">${esc(f.core)}</p>`)}
+      ${row(`주요 인물 (총 ${f.people.length}명)`, `<ul>${f.people.slice(0,4).map(p=>`<li><strong>${esc(p.n)}</strong> — ${esc(p.r)}</li>`).join('')}</ul>`)}
+      ${row(`주요 세계 (총 ${f.worlds.length}곳)`, `<ul>${f.worlds.slice(0,4).map(w=>`<li>${esc(w.n)}</li>`).join('')}</ul>`)}
       ${row('규모', `<p class="num">${f.people.length}<small> 인물</small> &nbsp; ${f.worlds.length}<small> 세계</small></p>`)}
+      ${row('', `<button class="filmchip" type="button" data-open="${f.id}">상세 보기</button>`)}
     </article>`).join('')}</div></div>`;
 }
+cmpBody.addEventListener('click', e=>{
+  const o=e.target.closest('[data-open]');
+  if(o){ openSheet(BY_ID.get(o.dataset.open), o); return; }
+  const p=e.target.closest('[data-pick]');
+  if(p){ toggleCmp(p.dataset.pick); paintSlot(p.dataset.pick); }
+});
 
-/* ── 초기화 ── */
+/* ══════════════════════════════════════════════════════════════
+   창작 실험실
+   ══════════════════════════════════════════════════════════════ */
+const LAB_PANELS={spine:'labSpine', whatif:'labWhatif', rules:'labRules', patterns:'labPatterns'};
+const labNav=document.querySelector('.lab-nav');
+function setLabTab(name){
+  Object.entries(LAB_PANELS).forEach(([k,id])=>{ $(id).hidden = k!==name; });
+  [...labNav.children].forEach(b=>{
+    const on=b.dataset.lab===name;
+    b.setAttribute('aria-selected', String(on)); b.tabIndex=on?0:-1;
+  });
+}
+labNav.addEventListener('click', e=>{
+  const b=e.target.closest('button[data-lab]'); if(b) setLabTab(b.dataset.lab);
+});
+labNav.addEventListener('keydown', e=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+  e.preventDefault();
+  const keys=Object.keys(LAB_PANELS);
+  const cur=keys.findIndex(k=>$(LAB_PANELS[k]).hidden===false);
+  const next = e.key==='Home'?0 : e.key==='End'?keys.length-1
+    : e.key==='ArrowRight'?(cur+1)%keys.length : (cur-1+keys.length)%keys.length;
+  setLabTab(keys[next]);
+  labNav.querySelector(`[data-lab="${keys[next]}"]`).focus();
+});
+
+/* ── 스토리 스파인 빌더 ── */
+const spineData = {};
+SPINE_STEPS.forEach(s=>spineData[s.k]='');
+const saveSpine = debounce(()=>{ save(); updateSpineMeta(); }, 400);
+
+function renderSpine(){
+  const ex = BY_ID.get($('spineExample').value);
+  $('spineGrid').innerHTML = SPINE_STEPS.map((s,i)=>`
+    <div class="spine-step">
+      <div class="sh"><span class="no" aria-hidden="true">${i+1}</span>
+        <label class="lb" for="sp-${s.k}">${esc(s.lb)} <span style="color:var(--color-gray-500);font-weight:600">…</span></label></div>
+      <p class="tip" id="tip-${s.k}">${esc(s.tip)}</p>
+      <textarea id="sp-${s.k}" data-k="${s.k}" aria-describedby="tip-${s.k}"
+        placeholder="예) ${esc(s.ph)}">${esc(spineData[s.k]||'')}</textarea>
+      ${ex?`<p class="ex"><b>${esc(ex.ko)}</b> — ${esc(ex.spine[i])}</p>`:''}
+    </div>`).join('');
+  updateSpinePreview();
+}
+$('spineGrid').addEventListener('input', e=>{
+  const ta=e.target.closest('textarea[data-k]'); if(!ta) return;
+  spineData[ta.dataset.k]=ta.value;
+  updateSpinePreview(); saveSpine();
+});
+function spineText(){
+  return SPINE_STEPS.map(s=>{
+    const v=(spineData[s.k]||'').trim();
+    return v ? `${s.lb} ${v}` : '';
+  }).filter(Boolean).join('\n');
+}
+function updateSpinePreview(){
+  const t=spineText(); const box=$('spinePreview');
+  if(!t){ box.classList.add('empty'); box.textContent='여섯 칸을 채우면 여기에 한 편의 줄거리가 만들어집니다.'; }
+  else{ box.classList.remove('empty'); box.textContent=t; }
+  updateSpineMeta();
+}
+function updateSpineMeta(){
+  const done=SPINE_STEPS.filter(s=>(spineData[s.k]||'').trim()).length;
+  $('spineMeta').textContent = done===0
+    ? '아직 작성한 칸이 없습니다. 입력하면 이 브라우저에 자동 저장됩니다.'
+    : `${done} / ${SPINE_STEPS.length}칸 작성됨 · 자동 저장됨`;
+}
+$('spineExample').addEventListener('change', renderSpine);
+$('spineFill').onclick=()=>{
+  const f=BY_ID.get($('spineExample').value);
+  if(!f){ showToast('먼저 참고할 작품을 선택해 주세요.'); return; }
+  const hasContent=SPINE_STEPS.some(s=>(spineData[s.k]||'').trim());
+  if(hasContent && !confirm('지금 입력한 내용을 예시로 덮어씁니다. 계속할까요?')) return;
+  SPINE_STEPS.forEach((s,i)=>spineData[s.k]=f.spine[i]);
+  renderSpine(); save();
+  showToast(`${f.ko}의 스파인을 채웠습니다. 단어를 바꿔 가며 연습해 보세요.`);
+};
+$('spineCopy').onclick=()=>{
+  const t=spineText();
+  if(!t){ showToast('아직 작성한 내용이 없습니다.'); return; }
+  copyText(t, '줄거리를 복사했습니다.');
+};
+$('spineDownload').onclick=()=>{
+  const t=spineText();
+  if(!t){ showToast('아직 작성한 내용이 없습니다.'); return; }
+  downloadText('내-스토리-스파인.txt', '나의 스토리 스파인\n\n'+t+'\n\n— 픽사 스토리 자판기에서 작성');
+};
+$('spineReset').onclick=()=>{
+  if(!confirm('작성한 여섯 칸을 모두 지웁니다. 계속할까요?')) return;
+  SPINE_STEPS.forEach(s=>spineData[s.k]='');
+  renderSpine(); save(); showToast('모두 지웠습니다.');
+};
+
+/* ── What-if 프리미스 생성기 ── */
+const GEN_KEYS=[
+ {k:'subject', lb:'주체 — 마음을 갖게 될 대상'},
+ {k:'inner',   lb:'주인공의 내면 — 감추고 있는 결핍'},
+ {k:'rule',    lb:'세계의 규칙 — 어기면 큰일 나는 것'},
+ {k:'event',   lb:'균형을 깨뜨리는 사건'}
+];
+let genState={}, genLock={};
+function rollGen(){
+  GEN_KEYS.forEach(({k})=>{
+    if(genLock[k] && genState[k]) return;
+    const pool=GEN[k];
+    genState[k]=pool[Math.floor(Math.random()*pool.length)];
+  });
+  renderGen();
+}
+function genPremise(){
+  return [`만약 「${genState.subject}」에게 마음이 있다면?`,
+   `· 주인공의 내면: ${genState.inner}`,
+   `· 세계의 규칙: ${genState.rule}`,
+   `· 균형을 깨뜨리는 사건: ${genState.event}`].join('\n');
+}
+function renderGen(){
+  $('genLine').innerHTML=`만약 <em>${esc(genState.subject)}</em>에게 마음이 있다면?`;
+  $('genParts').innerHTML=GEN_KEYS.map(({k,lb})=>`
+    <div class="gen-part">
+      <p class="k">${esc(lb)}</p>
+      <p class="v" style="display:flex;align-items:flex-start;gap:8px">
+        <span>${esc(genState[k])}</span>
+        <button class="mini-btn gen-lock" type="button" data-lock="${k}" aria-pressed="${!!genLock[k]}" data-fb="${genLock[k]?'고정':'해제'}"
+          aria-label="${esc(lb)} ${genLock[k]?'고정 해제':'고정'}">
+          <span class="material-icons-outlined" aria-hidden="true">${genLock[k]?'lock':'lock_open'}</span></button>
+      </p>
+    </div>`).join('');
+}
+$('genParts').addEventListener('click', e=>{
+  const b=e.target.closest('[data-lock]'); if(!b) return;
+  const k=b.dataset.lock; genLock[k]=!genLock[k]; renderGen();
+});
+$('genRoll').onclick=rollGen;
+$('genCopy').onclick=()=>copyText(genPremise(), '프리미스를 복사했습니다.');
+$('genToSpine').onclick=()=>{
+  if((spineData.once||'').trim() && !confirm('스파인 1번 칸에 이미 쓴 내용이 있습니다. 덮어쓸까요?')) return;
+  spineData.once=`「${genState.subject}」의 세계에서는 ${genState.rule}.`;
+  spineData.every=spineData.every || `매일 주인공은 ${genState.inner}을(를) 감추며 지냈다.`;
+  spineData.oneday=spineData.oneday || `${genState.event}.`;
+  setLabTab('spine'); renderSpine(); save();
+  showToast('스파인 1~3번 칸에 옮겼습니다. 이어서 다듬어 보세요.');
+};
+
+/* ── 창작 원칙 22 ── */
+function renderRules(){
+  $('rulesBox').innerHTML=RULES.map((r,i)=>{
+    const f=BY_ID.get(r.f);
+    return `<article class="rule">
+      <p class="n">RULE ${String(i+1).padStart(2,'0')}</p>
+      <p class="t">${esc(r.t)}</p>
+      <p class="w"><b>${f?esc(f.ko):''}</b> — ${esc(r.w)}</p>
+      ${f?`<div><button class="filmchip" type="button" data-open="${f.id}">${esc(f.ko)} 상세 열기</button></div>`:''}
+    </article>`;}).join('');
+}
+/* ── 패턴 색인 ── */
+function renderPatterns(){
+  $('patternsBox').innerHTML=PATTERNS.map(p=>`
+    <article class="pat">
+      <p class="t"><span class="material-icons-outlined" aria-hidden="true">${p.icon}</span>${esc(p.t)}</p>
+      <p class="d">${esc(p.d)}</p>
+      <p class="ask"><b>점검 질문 —</b> ${esc(p.ask)}</p>
+      <div class="films">${p.films.map(id=>{const f=BY_ID.get(id);
+        return f?`<button class="filmchip" type="button" data-open="${f.id}">${esc(f.code)} ${esc(f.ko)}</button>`:'';}).join('')}</div>
+    </article>`).join('');
+}
+$('viewLab').addEventListener('click', e=>{
+  const o=e.target.closest('[data-open]'); if(!o) return;
+  openSheet(BY_ID.get(o.dataset.open), o);
+});
+
+/* ══ 링크 공유 ══ */
+$('shareBtn').onclick=()=>{ syncUrl(); copyText(location.href, '현재 화면의 링크를 복사했습니다.'); };
+
+/* ══════════════════════════════════════════════════════════════
+   초기화
+   ══════════════════════════════════════════════════════════════ */
+load();
+const urlFilm = readUrl();
+
+$('heroDesc').innerHTML = `픽사 장편 <strong>${FILMS.length}편</strong>을 컨셉 · 등장인물 · 세계 · <strong>창작 장치</strong>로 정리했습니다. `
+ + `진열대에서 한 편을 뽑고, 비교 트레이로 나란히 놓고, <strong>창작 실험실</strong>에서 내 이야기의 뼈대를 세워 보세요.`;
+
+$('q').value=query;
+[...$('sortbar').children].forEach(c=>c.setAttribute('aria-pressed', String(c.dataset.sort===sortMode)));
+
+buildChips();
 buildKeypad();
-buildCmpChips();
 renderShelves();
 renderTray(false);
 renderCompare();
+renderRules();
+renderPatterns();
+
+$('spineExample').innerHTML='<option value="">— 작품 선택 —</option>'
+  + FILMS.map(f=>`<option value="${f.id}">${esc(f.code)} · ${esc(f.ko)} (${f.year})</option>`).join('');
+renderSpine();
+setLabTab('spine');
+rollGen();
+
+if(urlFilm && BY_ID.has(urlFilm)) openSheet(BY_ID.get(urlFilm));
+else syncUrl();
+
+/* 아이콘 폰트 로드 확인 — 실패하면(오프라인·CDN 차단) 글리프 대신 글자 대체본을 쓴다.
+   document.fonts.check()는 @font-face가 아예 없을 때도 true를 돌려주므로,
+   합자(ligature)가 실제로 적용됐는지 폭을 재서 판별한다. */
+(function checkIconFont(){
+  const probe=fam=>{
+    const s=document.createElement('span');
+    s.textContent='close';
+    s.style.cssText='position:absolute;left:-9999px;top:-9999px;font-size:64px;line-height:1;'
+      +'white-space:nowrap;visibility:hidden;font-family:'+fam;
+    document.body.appendChild(s);
+    const w=s.offsetWidth; s.remove(); return w;
+  };
+  const verify=()=>{
+    const loaded = probe('"Material Icons Outlined",monospace') !== probe('monospace');
+    document.documentElement.classList.toggle('no-icons', !loaded);
+  };
+  const run=()=>{ verify(); setTimeout(verify,1500); };
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(run, run);
+  else window.addEventListener('load', run);
+})();
 </script>
 </body>
 </html>
